@@ -1,0 +1,221 @@
+{% extends "base.html"%}
+
+
+{% block content %} 
+     <head>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+          <style>
+            .info-msg,
+            .success-msg,
+            .warning-msg,
+            .error-msg {
+              margin: 10px 0;
+              padding: 10px;
+              border-radius: 3px 3px 3px 3px;
+            }
+            
+            .success-msg {
+              color: #270;
+              background-color: #DFF2BF;
+            }
+            
+            .error-msg {
+              color: #D8000C;
+              background-color: #FFBABA;
+            }
+
+            .zoomOut{
+              transition: transform .2s; /* Animation */
+            }
+
+            .zoomOut:hover{
+              transform: scale(1.2);
+            }
+
+            .card-service p {
+                margin-top: 10px;
+                margin-left: 32px;
+            }
+
+            .circle-shape {
+                flex-shrink: 0;
+                padding: 0;
+                width: 85px;
+                height: 85px;
+                line-height: 64px;
+                border-radius: 50%;
+                text-align: center;
+                font-size: 32px;
+            }
+
+            .bg-accent {
+                background-color: #16a085 !important;
+            }
+
+            #one{
+                margin-top: -3rem !important;
+            }
+            #button1{
+                background-color: #16a085;
+                border-color: #16a085;   
+            }
+
+            .page-hero {
+              height: 100%;
+              width: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              /* background-color: white; */
+              background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0.5, 0.5));
+            }
+
+            .container-home {
+                width: 100%;
+                padding-right: 15px;
+                padding-left: 15px;
+                margin-right: auto;
+                margin-left: auto;
+                margin-top: -30%;
+                text-align: center;
+            }
+
+            .bg-image{
+              position: relative;
+              background-position: center top;
+              background-size: cover;
+              background-repeat: no-repeat;
+              background-image: url('../static/homePage.png');
+            }
+
+            html, body {
+              margin: 0;
+              padding: 0;
+              height: 100%;
+              width: 100%;
+              color: #587892;
+            }
+            
+            .hero-section {
+              text-align: center;
+            }
+
+            .custom-index {
+                z-index: 11;
+            }
+            .page-section {
+                position: relative;
+                padding-top: 80px;
+                padding-bottom: 80px;
+                overflow: hidden;
+            }
+            .card-service {
+                display: inline-flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 20px;
+                margin: 0 auto;
+                width: 100%;
+                height: 100px;
+                font-size: 20px;
+                line-height: normal;
+                background-color: #fff;
+                border-radius: 4px;
+                box-shadow: 0 2px 6px rgb(154 159 151 / 20%);
+            }
+
+            .card-service {
+                width: 260px;
+            }
+
+            .custom-img-1 {
+                width: auto;
+                max-width: 390px;
+            }
+            .img-place {
+                position: relative;
+                display: -ms-flexbox;
+                display: flex;
+                -ms-flex-align: center;
+                align-items: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+                margin: 0 auto;
+                width: 100%;
+                height: 100%;
+                text-align: center;
+                overflow: hidden;
+            }
+            #homeContent{
+              padding-top: 30px;
+            }
+
+            .btn-primary{
+              background-color: #B0A99F !important;
+              border-color: #B0A99F !important;
+            }
+                
+          </style>
+          {% if messages %}
+          {% for message in messages %} 
+          {% if message.tags %}
+             <div class="{{message.tags}}-msg" style="  text-align: center;">{% endif %}
+               
+         
+           <i ></i>
+               {{message}}
+               </div>
+               {% endfor %} 
+             {% endif %}	
+         
+     </head>
+    
+   <div class="page-hero overlay-dark">
+       <div class="container-home wow zoomIn">
+         <h1 style="font-size: 50px;">Biobank Information Management System (BIMS) for a Genetic Research Institution        </h1>
+         <h2 style="color: #767C80;"></h2>
+         <br>
+         <!-- This is what is present in the homepage given a role -->
+         {% if request.session.role %}
+            {% if request.session.role == 'Admin' %}
+              <h1>Pending User Approvals</h1>
+              <table>
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Action</th>
+                </tr>
+                {% for user in pending_users %}
+                <tr>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <form method="post" action="{% url 'approve_users' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="user_id" value="{{ user.id }}">
+                      <button type="submit">Approve</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% elif request.session.role == 'Researcher' %}
+
+              {% elif request.session.role == 'BiobankManager' %}
+               
+              {% else %}
+              
+            {% endif %}
+           {% else %}
+           <a class="nav-link active" href="/accounts/managerlogin"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Login as Biobank Manager</button></a>
+           <a class="nav-link active" href="/accounts/researcherlogin"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Login as Researcher</button></a>
+           <a class="nav-link active" href="/accounts/loginpage"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Admin Log in</button></a>
+           <a href="/accounts/createaccount/" class="btn btn-primary btn-lg zoomOut" id="button1">Create Psychiatrist </a>
+           
+         {% endif %}
+       </div>
+   </div>
+
+
+{% endblock %}

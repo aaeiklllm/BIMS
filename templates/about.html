@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        {% block title %} <title>About Us </title>{% endblock %}
+
+        <style>
+            #about{
+                display: grid;
+                padding: 2rem;
+                grid-template-columns: 600px 2fr;
+                gap: 0.7rem;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+                
+            }
+            #aboutImage{
+                max-width: 100%;
+                height: auto;
+            }
+
+            @media (max-width: 650px) {
+                #about {
+                  display: block;
+                  font-size: 80%;
+                }
+            }
+
+            p {
+                text-align: justify;
+                font-family: Helvetica, sans-serif;
+                font-size: large;
+                color: #587892;
+            }
+
+            body{
+                width: 100%;
+                background-color: #EEEAE3;
+            }
+
+            
+        </style>
+    </head>
+    <body>
+    <div class="container-fluid" style="background-color: #EEEAE3; border-color: #EEEAE3" id="about">
+        <div class="container-fluid" class="aboutImage" >
+            <img class="img-fluid"  src='{% static "/logIn.png" %}' alt="" height="700" width="700"> 
+        </div>
+        <div class="container-fluid" id="aboutContent" style="background-color: #EEEAE3; border-color: #EEEAE3">
+
+            <p>Mend is a resource dedicated to empowering individuals on their journey to mental well-being. We provide evidence-based information, connect you with helpful tools, and guide you towards finding the support you deserve.</p>
+            <p>We understand that mental health is unique to each person. Here, you'll find resources to navigate a variety of challenges and build resilience.</p>
+            <p>Our team is committed to providing accurate, up-to-date information and fostering a supportive community.</p>
+            <p>Let's work together to create a world where mental health is a priority.</p>
+        </div>
+
+    </div>
+    </body>
+{% endblock %}
