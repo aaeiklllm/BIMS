@@ -87,14 +87,14 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;Mend </span></a>
+            <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;BIMS </span></a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style="margin-right: 0%;">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-1">
                 <li class="nav-item">
                   <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: white;">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: white;">About Us</a>
+                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: white;">FAQS</a>
                 </li>
 
                 {% if request.session.role %}
@@ -102,9 +102,9 @@
                     <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton" style="background-color: #767C80 !important; border-color: #767C80 !important; ">Logout</button></a>
                   </li>
                   {% else %}
-                  <!-- <li class="nav-item">
+                  <li class="nav-item">
                     <a class="nav-link active" href="/accounts/loginpage"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Login</button></a>
-                  </li> -->
+                  </li>
                 {% endif %}
               </ul>
             </div>

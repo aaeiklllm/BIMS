@@ -208,10 +208,9 @@
               
             {% endif %}
            {% else %}
-           <a class="nav-link active" href="/accounts/managerlogin"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Login as Biobank Manager</button></a>
-           <a class="nav-link active" href="/accounts/researcherlogin"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Login as Researcher</button></a>
-           <a class="nav-link active" href="/accounts/loginpage"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Admin Log in</button></a>
-           <a href="/accounts/createaccount/" class="btn btn-primary btn-lg zoomOut" id="button1">Create Psychiatrist </a>
+    
+           <a href="/accounts/createaccount/?role=BiobankManager" class="btn btn-primary btn-lg zoomOut" id="button1">Create Biobank Manager</a>
+           <a href="/accounts/createaccount/?role=Researcher" class="btn btn-primary btn-lg zoomOut" id="button1">Create Researcher</a>
            
          {% endif %}
        </div>

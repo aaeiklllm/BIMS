@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/mika/Desktop/Mental-Health-Form/venv"
+VIRTUAL_ENV="/Users/mika/Desktop/BIMS/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

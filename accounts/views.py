@@ -13,18 +13,24 @@ def register_user(request, roledata):
         if request.method =='POST':
             uname=request.POST.get('uname',None)
             email=request.POST.get('eml',None)
+            first_name = request.POST.get('first_name',None)
+            middle_name = request.POST.get('middle_name',None)
+            last_name = request.POST.get('last_name',None)
+            position = request.POST.get('position',None)
+            mobile_number = request.POST.get('mobile_number',None)
+
             pwd=request.POST.get('pwd',None)
 
             if User.objects.filter(username=uname).exists():
                 messages.add_message(request, messages.ERROR, "User Already Exists")
                 return redirect('')
             else:
-                user_obj=User.objects.create(username=uname,password=pwd,email=email,is_active=False)
+                user_obj=User.objects.create(username=uname,first_name=first_name, middle_name=middle_name,last_name=last_name, position=position, mobile_number=mobile_number, password=pwd,email=email, is_active=False, is_superuser=False)
                 user_obj.set_password(pwd)
                 user_obj.save()
                 if roledata == 'BiobankManager':
                     role_name = Role.objects.filter(role='BiobankManager').first()
-                    print(role_name.id)
+                    
                     userRole= UserroleMap.objects.create(user_id=user_obj, role_id=role_name)
                     userRole.save()
                     messages.add_message(request, messages.SUCCESS, "Biobank Manager pending approval")
@@ -46,12 +52,24 @@ def register_user(request, roledata):
         # Change this index.html
 
 def create_account(request):
-    try:
-        data={'roledata': 'BiobankManager' , 'message': "Create Biobank Manager"} #Create option to have choices for this
-        return  render(request, 'ragister.html', context= data )
-    except:
-        messages.add_message(request, messages.ERROR, "Something Went Wrong!")  
-        return render(request, 'index.html')
+    role = request.GET.get('role')
+
+    roledata_mapping = {
+        'BiobankManager': 'BiobankManager',
+        'Researcher': 'Researcher',
+    }
+
+    roledata = roledata_mapping.get(role)
+    message = f"Create {roledata}"
+    
+    # Pass roledata and message to the template context
+    context = {
+        'roledata': roledata,
+        'message': message,
+    }
+    
+    return render(request, 'ragister.html', context=context)
+
 
 # @auth_middleware
 # def addResearcher(request):
@@ -64,85 +82,28 @@ def create_account(request):
 
 def approve_users(request):
     pending_users = User.objects.filter(is_active=False)
-    print(pending_users)
     
-
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
-        user = User.objects.get(id=user_id)
-        user.is_active = True 
-        user.save()
-        # Send email notification
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+                user.is_active = True
+                user.save()
+                # send email notification here
+            except User.DoesNotExist:
+                pass  
 
-    return render(request, 'approve_users.html', {'pending_users': pending_users})
+    return render(request, 'home.html', {'pending_users': pending_users})
 
-
-
-def researcher_login(request):
-    try:
-        if request.method =='POST':
-            email=request.POST.get('eml',None)
-            pwd=request.POST.get('pwd',None)
-            print(email)
-            print(pwd)
-            ubj= authenticate(request, username=email, password=pwd) 
-            if ubj == None:
-                messages.add_message(request, messages.ERROR, "Invalid credentials!")
-                print(ubj)
-                return redirect('/accounts/researcherlogin')
-
-            q = User.objects.filter(username=email).filter(is_staff=True)
-            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
-            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
-            request.session["role"]=userRole.role
-            if q and ubj:
-                messages.add_message(request, messages.SUCCESS, "Welcome Back Researcher")
-                return redirect("")
-            else:
-                messages.add_message(request, messages.SUCCESS, "Welcome Back Researcher")
-                return redirect("")
-        else:
-            return render(request, 'loginResearcher.html')
-    except Exception as e:
-        print(e)
-        messages.add_message(request, messages.ERROR, "Something Went Wrong!")
-        return render(request, 'loginResearcher.html')
-    
-def manager_login(request):
+def login(request):
     try:
         if request.method =='POST':
             email=request.POST.get('eml',None)
             pwd=request.POST.get('pwd',None)
             ubj= authenticate(request, username=email, password=pwd) 
             if ubj == None:
-                messages.add_message(request, messages.ERROR, "Invalid credentials!")
-                return redirect('/accounts/managerlogin')
-
-            q = User.objects.filter(username=email).filter(is_staff=True)
-            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
-            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
-            request.session["role"]=userRole.role
-            if q and ubj:
-                messages.add_message(request, messages.SUCCESS, "Welcome Back Researcher")
-                return redirect("")
-            else:
-                messages.add_message(request, messages.SUCCESS, "Welcome Back Researcher")
-                return redirect("")
-        else:
-            return render(request, 'loginBM.html')
-    except Exception as e:
-        print(e)
-        messages.add_message(request, messages.ERROR, "Something Went Wrong!")
-        return render(request, 'loginBM.html')
-
-def admin_login(request):
-    try:
-        if request.method =='POST':
-            email=request.POST.get('eml',None)
-            pwd=request.POST.get('pwd',None)
-            ubj= authenticate(request, username=email, password=pwd) 
-            if ubj == None:
-                messages.add_message(request, messages.ERROR, "Invalid credentials!")
+                messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 return redirect('/accounts/loginpage')
 
             q = User.objects.filter(username=email).filter(is_staff=True)
@@ -150,10 +111,9 @@ def admin_login(request):
             userRole= Role.objects.filter(id=table1_data.role_id.id).first()
             request.session["role"]=userRole.role
             if q and ubj:
-                messages.add_message(request, messages.SUCCESS, "Welcome Back")
+                messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
                 return redirect("")
             else:
-                messages.add_message(request, messages.SUCCESS, "Welcome Back")
                 return redirect("")
         else:
             return render(request, 'index.html')
