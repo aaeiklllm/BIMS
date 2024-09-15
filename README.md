@@ -38,6 +38,7 @@ To get started with BIMS, follow these installation steps:
 5. Apply database migrations:
 
     ```bash
+    python3 manage.py makemigrations
     python3 manage.py migrate
     ```
 
