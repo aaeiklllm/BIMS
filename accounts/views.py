@@ -7,6 +7,8 @@ from django.contrib import messages
 from .models import *
 from django.contrib.auth import authenticate
 from django.contrib import messages 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 def register_user(request, roledata):
     try:
