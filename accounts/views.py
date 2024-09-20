@@ -4,10 +4,21 @@ from django.http import HttpResponse, response
 from django.contrib.auth.models import User
 import uuid
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import *
 from django.contrib.auth import authenticate
 from django.contrib import messages 
 from django.contrib.auth import get_user_model
+from datetime import datetime
+import json
+from urllib import response
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
+import random
+import logging
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 User = get_user_model()
 
 def register_user(request, roledata):
@@ -36,15 +47,44 @@ def register_user(request, roledata):
                     userRole= UserroleMap.objects.create(user_id=user_obj, role_id=role_name)
                     userRole.save()
                     messages.add_message(request, messages.SUCCESS, "Biobank Manager pending approval")
-                    return redirect('')
+                    try:
+                        send_mail(
+                            subject='Thank you for creating an account with us!',
+                            message='',
+                            html_message=f'''Hi {uname}, <br><br>
+                        We will send you a response using the email address you have provided within 2-4 business days.<br><br>
+                        For further inquiries, please contact us at bims@gmail.com.<br><br>Regards,<br>
+                        BIMS''',
+                            from_email=settings.EMAIL_HOST_USER,
+                            recipient_list=[email]
+                        )
+                    except Exception as e:
+                        print(e)
+                        return render(request, 'ragister.html',{'message':'Failed To Send Email'})
+                    finally:
+                        return redirect('')
                 else:
                     role_name = Role.objects.filter(role='Researcher').first()
             
                     userRole= UserroleMap.objects.create(user_id=user_obj, role_id=role_name)
                     userRole.save()
                     messages.add_message(request, messages.SUCCESS, "Researcher pending approval")
-
-                    return redirect('')
+                    try:
+                        send_mail(
+                            subject='Thank you for creating an account with us!',
+                            message='',
+                            html_message=f'''Hi {uname}, <br><br>
+                        We will send you a response using the email address you have provided within 2-4 business days.<br><br>
+                        For further inquiries, please contact us at bims@gmail.com.<br><br>Regards,<br>
+                        BIMS''',
+                            from_email=settings.EMAIL_HOST_USER,
+                            recipient_list=[email]
+                        )
+                    except Exception as e:
+                        print(e)
+                        return render(request, 'ragister.html',{'message':'Failed To Send Email'})
+                    finally:
+                        return redirect('')
         messages.add_message(request, messages.ERROR, "Please Add Valid Details !")
         return render(request, 'ragister.html')    
     except Exception as e:
@@ -87,12 +127,36 @@ def approve_users(request):
     
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
+
         if user_id:
             try:
                 user = User.objects.get(id=user_id)
+                uname = user.username
+                email = user.email
                 user.is_active = True
                 user.save()
                 # send email notification here
+                try:
+                    send_mail(
+                        subject='Your Account Creation Has Been Approved!',
+                        message='',  # Leave plain text message empty since we're using HTML
+                        html_message=f'''Hi {uname}, <br><br>
+                                        We are pleased to inform you that your request to create an account has been <strong>approved</strong>. You can now access your account and begin using our services.<br><br>
+                                        <strong>Account Details:</strong><br>
+                                        Username: {uname}<br>
+                                        Email: {email}<br><br>
+                                        To log in, visit <a href="https://example.com/login">our login page</a> and enter your credentials.<br><br>
+                                        If you have any questions or need assistance, please contact us at bims@gmail.com.<br><br>
+                                        Regards,<br>
+                                        BIMS''',
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[email]
+                    )
+                except Exception as e:
+                    print(e)
+                    return render(request, 'home.html',{'message':'Failed To Send Email'})
+                finally:
+                    return render(request, 'home.html', {'pending_users': pending_users})
             except User.DoesNotExist:
                 pass  
 
