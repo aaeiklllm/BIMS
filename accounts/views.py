@@ -126,9 +126,22 @@ def create_account(request):
 #         messages.add_message(request, messages.ERROR, "something went wrong!!")
 #         return render(request, 'index.html')
 
+
 def approve_users(request):
+    # Fetch all pending users with their roles
     pending_users = User.objects.filter(is_active=False)
-    
+
+    pending_researchers = []
+    pending_bbms = []
+
+    for user in pending_users:
+        roles = UserroleMap.objects.filter(user_id=user)
+        for role in roles:
+            if role.role_id.role == 'Researcher':
+                pending_researchers.append(user)
+            elif role.role_id.role == 'BiobankManager':
+                pending_bbms.append(user)
+
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
 
@@ -139,7 +152,8 @@ def approve_users(request):
                 email = user.email
                 user.is_active = True
                 user.save()
-                # send email notification here
+
+                # Send email notification here
                 try:
                     send_mail(
                         subject='Your Account Creation Has Been Approved!',
@@ -158,13 +172,14 @@ def approve_users(request):
                     )
                 except Exception as e:
                     print(e)
-                    return render(request, 'home.html',{'message':'Failed To Send Email'})
+                    return render(request, 'home.html', {'message': 'Failed To Send Email'})
                 finally:
-                    return render(request, 'home.html', {'pending_users': pending_users})
+                    return render(request, 'home.html', {'pending_researchers': pending_researchers, 'pending_bbms': pending_bbms})
             except User.DoesNotExist:
                 pass  
 
-    return render(request, 'home.html', {'pending_users': pending_users})
+    return render(request, 'home.html', {'pending_researchers': pending_researchers, 'pending_bbms': pending_bbms, 'pending_users':pending_users})
+
 
 def login(request):
     try:

@@ -199,11 +199,11 @@
     <!-- Content based on the role -->
     {% if request.session.role %}
       {% if request.session.role == 'Admin' %}
-        <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
+      <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
 
         <!-- Display pending Biobank Manager -->
-        <h4>Biobank Manager ({{ pending_users|length }})</h4>
-        {% for user in pending_users %}
+        <h4>Biobank Manager ({{ pending_bbms|length }})</h4>
+        {% for user in pending_bbms %}
         <div class="pending-user">
             <div class="pending-user-details">
                 <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -228,8 +228,8 @@
         {% endfor %}
         
         <!-- Display pending Researchers -->
-        <h4>Researcher ({{ pending_users|length }})</h4>
-        {% for user in pending_users %}
+        <h4>Researcher ({{ pending_researchers|length }})</h4>
+        {% for user in pending_researchers %}
         <div class="pending-user">
             <div class="pending-user-details">
                 <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
