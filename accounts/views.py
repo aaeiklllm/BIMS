@@ -30,6 +30,7 @@ def register_user(request, roledata):
             middle_name = request.POST.get('middle_name',None)
             last_name = request.POST.get('last_name',None)
             position = request.POST.get('position',None)
+            unit = request.POST.get('unit',None)
             mobile_number = request.POST.get('mobile_number',None)
 
             pwd=request.POST.get('pwd',None)
@@ -37,8 +38,11 @@ def register_user(request, roledata):
             if User.objects.filter(username=uname).exists():
                 messages.add_message(request, messages.ERROR, "User Already Exists")
                 return redirect('')
+            elif User.objects.filter(email=email).exists():
+                messages.add_message(request, messages.ERROR, "User Already Exists")
+                return redirect('')
             else:
-                user_obj=User.objects.create(username=uname,first_name=first_name, middle_name=middle_name,last_name=last_name, position=position, mobile_number=mobile_number, password=pwd,email=email, is_active=False, is_superuser=False)
+                user_obj=User.objects.create(username=uname,first_name=first_name, middle_name=middle_name,last_name=last_name, position=position,unit=unit, mobile_number=mobile_number, password=pwd,email=email, is_active=False, is_superuser=False)
                 user_obj.set_password(pwd)
                 user_obj.save()
                 if roledata == 'BiobankManager':
