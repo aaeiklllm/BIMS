@@ -6,11 +6,25 @@ User = get_user_model()
 # Create your views here.
 def homePage(request):
     try:
+        # Fetch the user ID from the session
+        user_id = request.session.get('id')
+
+        # Fetch the user details if the session contains an ID
+        if user_id:
+            user = User.objects.get(id=user_id)
+        else:
+            return render(request, 'home.html') 
+
+        # You can also fetch other users (if needed, as per your original logic)
         pending_users = User.objects.filter(is_active=False)
-        return render(request, 'home.html', {'pending_users': pending_users})
+
+        # Pass the user and any other required context to the template
+        return render(request, 'home.html', {'user': user, 'pending_users': pending_users})
+    
     except Exception as e:
         print(e)
-        return HttpResponse("<h1>something went wrong!!!</h1>")    
+        return HttpResponse("<h1>Something went wrong!</h1>")  
+
 def aboutUs(request):
     try:
         return render(request, 'about.html', {})

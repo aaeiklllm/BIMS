@@ -175,7 +175,9 @@ def login(request):
             q = User.objects.filter(username=email).filter(is_staff=True)
             table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
             userRole= Role.objects.filter(id=table1_data.role_id.id).first()
+            user = User.objects.get(id=ubj.id)
             request.session["role"]=userRole.role
+            request.session["id"]=user.id
             if q and ubj:
                 messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
                 return redirect("")
@@ -194,4 +196,31 @@ def logout(request):
         return redirect('')
     except:
         return HttpResponse('<h3 style="text-align:center"> Somthing went wrong !!!!!</h3>')
+
+def update_user(request, user_id):
+    user = User.objects.get(id=user_id)
+
+    if request.method == 'POST':
+        # Get the updated information from the form
+        user.username = request.POST.get('uname', user.username)
+        user.email = request.POST.get('email', user.email)
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.middle_name = request.POST.get('middle_name', user.middle_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.position = request.POST.get('position', user.position)
+        user.mobile_number = request.POST.get('mobile_number', user.mobile_number)
+
+        try:
+            # Attempt to save user
+            user.save()
+            messages.success(request, "User details updated successfully")
+            return redirect('')
+        except Exception as e:
+            print(f"Error saving user: {e}")  # Log the error
+            messages.error(request, f"Error updating user: {e}")
+
+    context = {
+        'user': user
+    }
+    return render(request, 'home.html', context)
 

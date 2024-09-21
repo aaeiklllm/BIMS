@@ -192,10 +192,76 @@
         </table>
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
+        <h1>Welcome, Researcher</h1>
+
+        <!-- Researcher update form -->
+        <h2>Update Your Information</h2>
+        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' %} -->
+          {% csrf_token %}
+          <label for="uname">Username:</label>
+          <input type="text" name="uname" value="{{ user.username }}" required><br>
+
+          <label for="email">Email:</label>
+          <input type="email" name="email" value="{{ user.email }}" required><br>
+
+          <label for="first_name">First Name:</label>
+          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+
+          <label for="middle_name">Middle Name:</label>
+          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
+
+          <label for="last_name">Last Name:</label>
+          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+
+          <label for="position">Position:</label>
+          <input type="text" name="position" value="{{ user.position }}" required><br>
+
+          <label for="mobile_number">Mobile Number:</label>
+          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+
+        
       {% elif request.session.role == 'BiobankManager' %}
         <!-- Biobank Manager content -->
-      {% endif %}
-    {% else %}
+        <h1>Welcome, Biobank Manager</h1>
+
+        <!-- Biobank Manager update form -->
+        <h2>Update Your Information</h2>
+
+        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' user.id %} -->
+          {% csrf_token %}
+          <label for="uname">Username:</label>
+          <input type="text" name="uname" value="{{ user.username }}" required><br>
+
+          <label for="email">Email:</label>
+          <input type="email" name="email" value="{{ user.email }}" required><br>
+
+          <label for="first_name">First Name:</label>
+          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+
+          <label for="middle_name">Middle Name:</label>
+          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
+
+          <label for="last_name">Last Name:</label>
+          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+
+          <label for="position">Position:</label>
+          <input type="text" name="position" value="{{ user.position }}" required><br>
+
+          <label for="mobile_number">Mobile Number:</label>
+          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+
+        
+
+      {% else %}
+        <h2>Unauthorized access</h2>            
+    {% endif %}
+   {% else %}
       <div style="text-align: center; margin: 30px;">
         <a href="/accounts/createaccount/?role=BiobankManager" class="btn btn-primary btn-lg zoomOut" id="button1">Create Biobank Manager</a>
         <a href="/accounts/createaccount/?role=Researcher" class="btn btn-primary btn-lg zoomOut" id="button1">Create Researcher</a>
