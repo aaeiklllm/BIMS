@@ -132,6 +132,36 @@
       font-size: 18px;
       color: #333;
     }
+
+    .pending-user {
+      font-size: 18px;
+      color: #333;
+      border: 1px solid #644ca4;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pending-user-details {
+        flex-grow: 1;
+    }
+
+    .pending-user-buttons {
+        text-align: right;
+    }
+
+    .pending-user-buttons form {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .pending-user-buttons button {
+        width: 100px;
+    }
   </style>
 </head>
 
@@ -169,27 +199,60 @@
     <!-- Content based on the role -->
     {% if request.session.role %}
       {% if request.session.role == 'Admin' %}
-        <h3>Pending User Approvals</h3>
-        <table>
-          <tr>
-            <th>Username&emsp;&emsp;&emsp;&emsp;&emsp;</th>
-            <th>Email&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</th>
-            <th>Action</th>
-          </tr>
-          {% for user in pending_users %}
-            <tr>
-              <td>{{ user.username }}</td>
-              <td>{{ user.email }}</td>
-              <td>
+        <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
+
+        <!-- Display pending Biobank Manager -->
+        <h4>Biobank Manager ({{ pending_users|length }})</h4>
+        {% for user in pending_users %}
+        <div class="pending-user">
+            <div class="pending-user-details">
+                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                <p><strong>Position:</strong> {{ user.position }}</p>
+                <p><strong>Contact Information</strong></p>
+                <p>Email: {{ user.email }}</p>
+                <p>Mobile: {{ user.mobile_number }}</p>
+            </div>
+            <div class="pending-user-buttons">
                 <form method="post" action="{% url 'approve_users' %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="user_id" value="{{ user.id }}">
-                  <button type="submit">Approve</button>
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button class="btn btn-success" type="submit">Approve</button>
                 </form>
-              </td>
-            </tr>
-          {% endfor %}
-        </table>
+                <form method="post" action="{% url 'approve_users' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button class="btn btn-danger" type="submit">Deny</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- Display pending Researchers -->
+        <h4>Researcher ({{ pending_users|length }})</h4>
+        {% for user in pending_users %}
+        <div class="pending-user">
+            <div class="pending-user-details">
+                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                <p><strong>Position:</strong> {{ user.position }}</p>
+                <p><strong>Contact Information</strong></p>
+                <p>Email: {{ user.email }}</p>
+                <p>Mobile: {{ user.mobile_number }}</p>
+            </div>
+            <div class="pending-user-buttons">
+                <form method="post" action="{% url 'approve_users' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button class="btn btn-success" type="submit">Approve</button>
+                </form>
+                <form method="post" action="{% url 'approve_users' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button class="btn btn-danger" type="submit">Deny</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
       {% elif request.session.role == 'BiobankManager' %}
