@@ -8,59 +8,105 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         
-        {% block title %} <title>About Us </title>{% endblock %}
+        {% block title %} <title>Biobank Information Management System (BIMS)</title> {% endblock %}
 
         <style>
-            #about{
-                display: grid;
-                padding: 2rem;
-                grid-template-columns: 600px 2fr;
-                gap: 0.7rem;
-                align-items: center;
+            /* Styling for the FAQ section */
+            .faq-section {
+                padding: 0;
                 max-width: 1200px;
                 margin: 0 auto;
-                
-            }
-            #aboutImage{
-                max-width: 100%;
-                height: auto;
             }
 
-            @media (max-width: 650px) {
-                #about {
-                  display: block;
-                  font-size: 80%;
-                }
+            /* FAQ question and answer styling */
+            .faq-question {
+                font-weight: bold;
+                color: #644ca4;
+                margin-top: 1.5rem;
+                font-size: 20px;
             }
 
-            p {
+            .faq-answer {
+                margin-top: 0.5rem;
+                color: #333;
                 text-align: justify;
                 font-family: Helvetica, sans-serif;
-                font-size: large;
-                color: #587892;
+                font-size: medium;
             }
 
-            body{
-                width: 100%;
-                background-color: #EEEAE3;
-            }
+            /* Media query for smaller screens */
+            @media (max-width: 767px) {
+                .bims-title {
+                    font-size: 2rem;
+                }
 
-            
+                .faq-question {
+                    font-size: 1rem;
+                }
+
+                .faq-answer {
+                    font-size: 0.9rem;
+                }
+            }
         </style>
     </head>
     <body>
-    <div class="container-fluid" style="background-color: #EEEAE3; border-color: #EEEAE3" id="about">
-        <div class="container-fluid" class="aboutImage" >
-            <img class="img-fluid"  src='{% static "/logIn.png" %}' alt="" height="700" width="700"> 
-        </div>
-        <div class="container-fluid" id="aboutContent" style="background-color: #EEEAE3; border-color: #EEEAE3">
+    <div class="container-fluid faq-section">
+        <h1 style="font-size: 45px; text-align: center; color: #644ca4"><b>Biobank Information Management System (BIMS)</b></h1>
+        <h2 style="font-size: 30px; text-align: center;"><b>Frequently Asked Questions</b></h1>
+        <br>
+        <!-- Frequently Asked Questions section -->
+        <div class="container-fluid">
+            <p>
+                <span class="faq-question">Q: What is the Biobank Information Management System (BIMS)?</span><br>
+                <span class="faq-answer">A: BIMS is a web-based platform designed to streamline the management and tracking of biobanked samples. It allows biobank managers to easily track and manage samples, while offering researchers a streamlined process for requesting and accessing samples.</span>
+            </p>
 
-            <p>Mend is a resource dedicated to empowering individuals on their journey to mental well-being. We provide evidence-based information, connect you with helpful tools, and guide you towards finding the support you deserve.</p>
-            <p>We understand that mental health is unique to each person. Here, you'll find resources to navigate a variety of challenges and build resilience.</p>
-            <p>Our team is committed to providing accurate, up-to-date information and fostering a supportive community.</p>
-            <p>Let's work together to create a world where mental health is a priority.</p>
-        </div>
+            <p>
+                <span class="faq-question">Q: How do I create an account on BIMS?</span><br>
+                <span class="faq-answer">A: To create an account, visit the BIMS homepage and choose 'Login as Biobank Manager' or 'Login as Researcher.' Follow the on-screen instructions to register. You'll need to provide necessary information and verify your email address.</span>
+            </p>
 
+            <p>
+                <span class="faq-question">Q: What should I do if I forget my password?</span><br>
+                <span class="faq-answer">A: Click 'Forgot Password?' on the login page and follow the instructions to reset your password via email. For additional help, contact our support team at techassist.bims@gmail.com.</span>
+            </p>
+
+            <p>
+                <span class="faq-question">Q: How can I request a sample?</span><br>
+                <span class="faq-answer">A: Log in to your researcher account, navigate to the 'Request Sample' section, and complete the request form. You will receive confirmation and tracking information once your request is processed.</span>
+            </p>
+
+            <p>
+                <span class="faq-question">Q: Can I track the status of my sample request?</span><br>
+                <span class="faq-answer">A: Yes, after submitting a request, you can track its status through the 'My Requests' section in your account dashboard. You will also receive email notifications regarding updates.</span>
+            </p>
+
+            <p>
+                <span class="faq-question">Q: How does BIMS handle data security and privacy?</span><br>
+                <span class="faq-answer">A: Access to sensitive information is restricted based on user roles to ensure privacy.</span>
+            </p>
+
+            <p>
+                <span class="faq-question">Q: Who can I contact for technical support?</span><br>
+                <span class="faq-answer">A: For technical assistance, please reach out to our support team at techassist.bims@gmail.com. We are dedicated to promptly resolving any issues you encounter.</span>
+            </p>
+
+            <p>
+                <span class="faq-question">Q: Can I update my account information?</span><br>
+                <span class="faq-answer">A: Yes, you can update your account information by logging in and accessing the 'My Profile' section. Make sure to save any changes you make.</span>
+            </p>
+
+            <p>
+                <span class="faq-question">Q: What do I do if I encounter a problem with the system?</span><br>
+                <span class="faq-answer">A: If you experience any issues with the system, please report them to our support team with a detailed description of the problem. We will work to resolve it as quickly as possible.</span>
+            </p>
+
+            <p>
+                <span class="faq-question">Q: How can I provide feedback about BIMS?</span><br>
+                <span class="faq-answer">A: We welcome feedback from users to help improve our system. Please send your comments and suggestions to techassist.bims@gmail.com.</span>
+            </p>
+        </div>
     </div>
     </body>
 {% endblock %}

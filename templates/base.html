@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     {% block title %}<title>Home</title>{% endblock %}
@@ -12,8 +13,8 @@
     
     <style>
         #loginButton{
-            background-color: #587892;
-            border-color: #587892;
+            background-color: #f2c434;
+            border-color: #f2c434;
             
         }
 
@@ -25,7 +26,7 @@
 
 
         #navbar-custom{
-          background-color: #767C80;           
+          background-color: #ffffff;           
         }
         #navBar a{
           transition: transform .2s; /* Animation */
@@ -87,14 +88,19 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;BIMS </span></a>
+            <!-- <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;BIMS </span></a> -->
+            <a class="navbar-brand" href="/" style="font-size: 22px; font-family: Helvetica, sans-serif;">
+              <span style="color: white;">
+                  <img src="{% static 'BIMS_transparent.png' %}" alt="Logo" style="height: 75px; vertical-align: middle;">&nbsp;
+              </span>
+          </a>         
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style="margin-right: 0%;">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-1">
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: white;">Home</a>
+                  <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: white;">FAQS</a>
+                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">FAQs</a>
                 </li>
 
                 {% if request.session.role %}
