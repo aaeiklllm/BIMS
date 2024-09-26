@@ -8,6 +8,8 @@ class UserProfile(AbstractUser):
     position = models.CharField(max_length=1000, verbose_name='position', blank=True)
     unit = models.CharField(max_length=1000, verbose_name='unit', null=True, blank=True)
     mobile_number = models.CharField(max_length=30, verbose_name='mobile number', blank=True)
+    deletion_requested = models.BooleanField(default=False, verbose_name='Deletion Requested')
+    deletion_approved = models.BooleanField(default=False, verbose_name='Deletion Approved')
 
 class Role(models.Model):
     role= models.CharField(max_length=1000, default=None)
