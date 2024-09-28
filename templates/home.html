@@ -199,11 +199,11 @@
     <!-- Content based on the role -->
     {% if request.session.role %}
       {% if request.session.role == 'Admin' %}
-      <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
+        <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
 
         <!-- Display pending Biobank Manager -->
-        <h4>Biobank Manager ({{ pending_bbms|length }})</h4>
-        {% for user in pending_bbms %}
+        <h4>Biobank Manager ({{ pending_users|length }})</h4>
+        {% for user in pending_users %}
         <div class="pending-user">
             <div class="pending-user-details">
                 <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -228,8 +228,8 @@
         {% endfor %}
         
         <!-- Display pending Researchers -->
-        <h4>Researcher ({{ pending_researchers|length }})</h4>
-        {% for user in pending_researchers %}
+        <h4>Researcher ({{ pending_users|length }})</h4>
+        {% for user in pending_users %}
         <div class="pending-user">
             <div class="pending-user-details">
                 <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -253,10 +253,118 @@
         </div>
         {% endfor %}
 
+      
+        <!-- Display Account Deletion Requests -->
+        <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
+
+        {% for user in deletion_requests %}
+        <div class="pending-user">
+          <div class="pending-user-details">
+            <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            <p><strong>Position:</strong> {{ user.position }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Mobile:</strong> {{ user.mobile_number }}</p>
+          </div>
+          <div class="pending-user-buttons">
+            <form method="post" action="{% url 'approve_deletion' %}">
+              {% csrf_token %}
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <button class="btn btn-success" type="submit">Approve Deletion</button>
+            </form>
+            <form method="post" action="{% url 'deny_deletion' %}">
+              {% csrf_token %}
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <button class="btn btn-danger" type="submit">Deny Deletion</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
+        <h1>Welcome, Researcher</h1>
+
+        <!-- Researcher update form -->
+        <h2>Update Your Information</h2>
+        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' %} -->
+          {% csrf_token %}
+          <label for="uname">Username:</label>
+          <input type="text" name="uname" value="{{ user.username }}" required><br>
+
+          <label for="email">Email:</label>
+          <input type="email" name="email" value="{{ user.email }}" required><br>
+
+          <label for="first_name">First Name:</label>
+          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+
+          <label for="middle_name">Middle Name:</label>
+          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
+
+          <label for="last_name">Last Name:</label>
+          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+
+          <label for="position">Position:</label>
+          <input type="text" name="position" value="{{ user.position }}" required><br>
+
+          <label for="mobile_number">Mobile Number:</label>
+          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+
+        <!-- Request Deletion Section -->
+        <div class="request-deletion">
+          <h2>Account Deletion Request</h2>
+          <p>If you wish to delete your account, please click the button below.</p>
+          <form method="POST" action="{% url 'request_deletion' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Request Account Deletion</button>
+          </form>
+        </div>
+
       {% elif request.session.role == 'BiobankManager' %}
         <!-- Biobank Manager content -->
+        <h1>Welcome, Biobank Manager</h1>
+
+        <!-- Biobank Manager update form -->
+        <h2>Update Your Information</h2>
+
+        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' user.id %} -->
+          {% csrf_token %}
+          <label for="uname">Username:</label>
+          <input type="text" name="uname" value="{{ user.username }}" required><br>
+
+          <label for="email">Email:</label>
+          <input type="email" name="email" value="{{ user.email }}" required><br>
+
+          <label for="first_name">First Name:</label>
+          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+
+          <label for="middle_name">Middle Name:</label>
+          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
+
+          <label for="last_name">Last Name:</label>
+          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+
+          <label for="position">Position:</label>
+          <input type="text" name="position" value="{{ user.position }}" required><br>
+
+          <label for="mobile_number">Mobile Number:</label>
+          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+        <!-- Request Deletion Section -->
+        <div class="request-deletion">
+          <h2>Account Deletion Request</h2>
+          <p>If you wish to delete your account, please click the button below.</p>
+          <form method="POST" action="{% url 'request_deletion' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Request Account Deletion</button>
+          </form>
+        </div>
+
+
       {% endif %}
     {% else %}
       <div style="text-align: center; margin: 30px;">

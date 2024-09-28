@@ -18,6 +18,7 @@ import random
 import logging
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import UserProfile
 
 User = get_user_model()
 
@@ -126,22 +127,9 @@ def create_account(request):
 #         messages.add_message(request, messages.ERROR, "something went wrong!!")
 #         return render(request, 'index.html')
 
-
 def approve_users(request):
-    # Fetch all pending users with their roles
     pending_users = User.objects.filter(is_active=False)
-
-    pending_researchers = []
-    pending_bbms = []
-
-    for user in pending_users:
-        roles = UserroleMap.objects.filter(user_id=user)
-        for role in roles:
-            if role.role_id.role == 'Researcher':
-                pending_researchers.append(user)
-            elif role.role_id.role == 'BiobankManager':
-                pending_bbms.append(user)
-
+    
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
 
@@ -152,8 +140,7 @@ def approve_users(request):
                 email = user.email
                 user.is_active = True
                 user.save()
-
-                # Send email notification here
+                # send email notification here
                 try:
                     send_mail(
                         subject='Your Account Creation Has Been Approved!',
@@ -172,14 +159,13 @@ def approve_users(request):
                     )
                 except Exception as e:
                     print(e)
-                    return render(request, 'home.html', {'message': 'Failed To Send Email'})
+                    return render(request, 'home.html',{'message':'Failed To Send Email'})
                 finally:
-                    return render(request, 'home.html', {'pending_researchers': pending_researchers, 'pending_bbms': pending_bbms})
+                    return render(request, 'home.html', {'pending_users': pending_users})
             except User.DoesNotExist:
                 pass  
 
-    return render(request, 'home.html', {'pending_researchers': pending_researchers, 'pending_bbms': pending_bbms, 'pending_users':pending_users})
-
+    return render(request, 'home.html', {'pending_users': pending_users})
 
 def login(request):
     try:
@@ -194,7 +180,9 @@ def login(request):
             q = User.objects.filter(username=email).filter(is_staff=True)
             table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
             userRole= Role.objects.filter(id=table1_data.role_id.id).first()
+            user = User.objects.get(id=ubj.id)
             request.session["role"]=userRole.role
+            request.session["id"]=user.id
             if q and ubj:
                 messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
                 return redirect("")
@@ -214,3 +202,75 @@ def logout(request):
     except:
         return HttpResponse('<h3 style="text-align:center"> Somthing went wrong !!!!!</h3>')
 
+def update_user(request, user_id):
+    user = User.objects.get(id=user_id)
+
+    if request.method == 'POST':
+        # Get the updated information from the form
+        user.username = request.POST.get('uname', user.username)
+        user.email = request.POST.get('email', user.email)
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.middle_name = request.POST.get('middle_name', user.middle_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.position = request.POST.get('position', user.position)
+        user.mobile_number = request.POST.get('mobile_number', user.mobile_number)
+
+        try:
+            # Attempt to save user
+            user.save()
+            messages.success(request, "User details updated successfully")
+            return redirect('')
+        except Exception as e:
+            print(f"Error saving user: {e}")  # Log the error
+            messages.error(request, f"Error updating user: {e}")
+
+    context = {
+        'user': user
+    }
+    return render(request, 'home.html', context)
+
+
+def request_deletion(request):
+    user_id = request.session.get('id')  # Assuming you set 'id' in the session upon login
+    
+    # Handle deletion request
+    if user_id:  # Check if the user is logged in
+        user = UserProfile.objects.get(id=user_id)  # Get the user profile based on session id
+        user.deletion_requested = True  # Set the flag for deletion request
+        user.save()
+        messages.success(request, "Deletion request has been made.")
+    else:
+        messages.error(request, "You need to be logged in to request deletion.")
+        return redirect('/accounts/loginpage/')  # Redirect to the login page
+    
+    # Get all users who requested deletion (for admin to see)
+    # if request.session.get('role') == 'Admin':
+    deletion_requests = UserProfile.objects.filter(deletion_requested=True)
+    # else:
+    #     deletion_requests = []
+
+    
+    # Pass the user to the template as well
+    return render(request, 'home.html', {
+        'deletion_requests': deletion_requests,  # Pass deletion requests to the template for admin
+        'user': user,  # Pass the logged-in user to the template
+    })
+
+def approve_deletion(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        user = UserProfile.objects.get(id=user_id)
+        # Perform the actual deletion of the user
+        user.delete()
+        messages.success(request, f"Account for {user.first_name} {user.last_name} has been deleted.")
+    return redirect('')  # Redirect to the admin page
+
+def deny_deletion(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        user = UserProfile.objects.get(id=user_id)
+        # Simply reset the deletion_requested flag
+        user.deletion_requested = False
+        user.save()
+        messages.success(request, f"Account deletion request for {user.first_name} {user.last_name} has been denied.")
+    return redirect('')  # Redirect to the admin page
