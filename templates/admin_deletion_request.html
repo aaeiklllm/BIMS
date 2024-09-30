@@ -1,0 +1,18 @@
+<h2>Pending User Deletion Requests</h2>
+{% if pending_deletion_requests %}
+    {% for user in pending_deletion_requests %}
+        <div class="pending-user-deletion">
+            <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            <form method="POST" action="{% url 'admin_approve_deletion' user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Approve</button>
+            </form>
+            <form method="POST" action="{% url 'admin_deny_deletion' user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Deny</button>
+            </form>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No pending deletion requests at this time.</p>
+{% endif %}

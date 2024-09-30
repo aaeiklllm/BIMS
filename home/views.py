@@ -17,17 +17,16 @@ def homePage(request):
 
         # You can also fetch other users (if needed, as per your original logic)
         pending_users = User.objects.filter(is_active=False)
-
+        deletion_requests = User.objects.filter(deletion_requested=True)
         # Pass the user and any other required context to the template
-        return render(request, 'home.html', {'user': user, 'pending_users': pending_users})
-    
+        return render(request, 'home.html', {'user': user, 'pending_users': pending_users, 'deletion_requests': deletion_requests})
     except Exception as e:
         print(e)
-        return HttpResponse("<h1>Something went wrong!</h1>")  
-
+        return HttpResponse("<h1>Something went wrong!</h1>")   
 def aboutUs(request):
     try:
         return render(request, 'about.html', {})
     except Exception as e:
         print(e)
         return HttpResponse("<h1>something went wrong!!!</h1>")       
+
