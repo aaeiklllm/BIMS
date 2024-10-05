@@ -12,7 +12,7 @@ class UserProfile(AbstractUser):
     deletion_approved = models.BooleanField(default=False, verbose_name='Deletion Approved')
 
 class Role(models.Model):
-    role= models.CharField(max_length=1000, default=None)
+    role= models.CharField(max_length=150, default=None)
 
 class UserroleMap(models.Model):
     user_id= models.ForeignKey(UserProfile, on_delete=models.CASCADE)
