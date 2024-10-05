@@ -123,9 +123,9 @@ def create_account(request):
     
     return render(request, 'ragister.html', context=context)
 
-def create_sample(request):
+# def create_sample(request):
 
-    return render(request, 'create_sample.html')
+#     return render(request, 'create_sample.html')
 
 
 # @auth_middleware

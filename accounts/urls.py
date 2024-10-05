@@ -4,7 +4,6 @@ from .views import request_deletion
 
 urlpatterns = [
     path('createaccount/', views.create_account),
-    path('createsample', views.create_sample),
     path('checkusercheck/<roledata>' ,views.register_user),
     path('loginpage' , views.login),
     path('logout' , views.logout),
