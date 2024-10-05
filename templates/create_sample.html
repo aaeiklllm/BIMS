@@ -190,7 +190,7 @@
 <body>
     <div class="container mt-5">
         <h2 class="text-primary">Create Sample</h2>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" action="{% url 'createsample' %}">
             {% csrf_token %}
             
             <div class="form-check">
@@ -215,6 +215,9 @@
             <div class="dropdown">
                 <label for="type" class="form-label">Type:</label>
                 <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" readonly onclick="toggleDropdown()">
+                
+                <input type="hidden" id="typeValue" name="typeValue">
+
                 <div id="type-dropdown" class="dropdown-content">
                     <div class="nested-dropdown">
                         <a href="#">Molecular (specify):</a>
@@ -401,8 +404,8 @@
                     <input type="number" class="form-control" id="amount" name="amount" step="0.01">
                 </div>
                 <div class="col-md-6">
-                    <label for="amount_unit" class="form-label">Unit:</label>
-                    <select class="form-select" id="amount_unit" name="amount_unit">
+                    <label for="unit" class="form-label">Unit:</label>
+                    <select class="form-select" id="unit" name="unit">
                         <option value="mL">mL</option>
                         <option value="uL">µL</option>
                         <option value="slides">Slides</option>
@@ -417,69 +420,53 @@
 
             <div class="mb-3">
                 <label for="storage" class="form-label">Storage:</label>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#storageModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#storageModal" data-sample-id="{{ sample.id }}">
                     Select Storage
                 </button>
                 <input type="text" id="selectedStorage" class="form-control mt-2" readonly>
             </div>
             
-            <!-- Storage Modal -->
-            <div class="modal fade" id="storageModal" tabindex="-1" aria-labelledby="storageModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="storageModalLabel">Select Storage Location</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Dropdowns for Storage Selection -->
-                            <div class="mb-3">
-                                <label for="freezer" class="form-label">Under-counter ULT Freezer:</label>
-                                <select class="form-select" id="freezer">
-                                    <option value="Freezer 1">Freezer 1</option>
-                                    <option value="Freezer 2">Freezer 2</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="shelf" class="form-label">Shelf No.:</label>
-                                <select class="form-select" id="shelf">
-                                    <option value="Shelf 1">Shelf No. 1</option>
-                                    <option value="Shelf 2">Shelf No. 2</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="rack" class="form-label">Rack No.:</label>
-                                <select class="form-select" id="rack">
-                                    <option value="Rack 1">Rack No. 1</option>
-                                    <option value="Rack 2">Rack No. 2</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="box" class="form-label">Box No.:</label>
-                                <select class="form-select" id="box">
-                                    <option value="Box 1">Box No. 1</option>
-                                    <option value="Box 2">Box No. 2</option>
-                                    <!-- Add options for Box No. 1-15 -->
-                                    <option value="Box 15">Box No. 15</option>
-                                </select>
-                            </div>
-            
-                            <!-- Container Selection (10x10 Grid) -->
-                            <label class="form-label">Container No.:</label>
-                            <div class="container-grid">
-                                <!-- Grid of buttons (10 rows x 10 columns, A1 to J10) -->
-                                <div id="container-grid" class="grid-container">
-                                    <!-- JavaScript will dynamically populate the grid with buttons -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="saveStorage">Save Storage</button>
-                        </div>
+                <!-- <input type="hidden" id="modal-sample-id" name="sample_id" value=""> -->
+
+                <div class="mb-3">
+                    <label for="freezer" class="form-label">Under-counter ULT Freezer:</label>
+                    <select class="form-select" id="freezer" name="freezer_num">
+                        <option value="1">Freezer 1</option>
+                        <option value="2">Freezer 2</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="shelf" class="form-label">Shelf No.:</label>
+                    <select class="form-select" id="shelf" name="shelf_num">
+                        <option value="1">Shelf No. 1</option>
+                        <option value="2">Shelf No. 2</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="rack" class="form-label">Rack No.:</label>
+                    <select class="form-select" id="rack" name="rack_num">
+                        <option value="1">Rack No. 1</option>
+                        <option value="2">Rack No. 2</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="box" class="form-label">Box No.:</label>
+                    <select class="form-select" id="box" name="box_num">
+                        <option value="1">Box No. 1</option>
+                        <option value="2">Box No. 2</option>
+                        <option value="15">Box No. 15</option>
+                    </select>
+                </div>
+
+                <!-- Container Selection (10x10 Grid) -->
+                <label class="form-label">Container No.:</label>
+                <input type="hidden" id="container-input" name="container" value="">
+                <div class="container-grid">
+                    <div id="container-grid" class="grid-container">
+                        <!-- JavaScript will dynamically populate the grid with buttons -->
                     </div>
                 </div>
-            </div>
+
 
             <div class="mb-3">
                 <label for="consent_form" class="form-label">Informed Consent Form</label>
@@ -491,6 +478,7 @@
     </div>
 
     <script>
+       
         // Dynamically generate 10x10 grid for container selection
         document.addEventListener('DOMContentLoaded', function () {
             const containerGrid = document.getElementById('container-grid');
@@ -585,8 +573,11 @@
 
         function selectContainer(containerNo) {
             selectedContainer = containerNo;
+            document.getElementById("container-input").value = selectedContainer; // Set hidden input value
             alert('Selected Container: ' + selectedContainer); // Visual feedback
         }
+
+
 
         // Save storage selection
         document.getElementById('saveStorage').addEventListener('click', function () {
@@ -614,9 +605,23 @@
         // Function to select an option and update units dynamically
         function selectOption(option, category) {
             document.getElementById("selectedOption").value = option;
+            document.getElementById('typeValue').value = option; 
             updateUnitOptions(category, option);
             document.getElementById("type-dropdown").classList.remove("show");
         }
+
+
+        // Capture the input in the "Other" field and update the display
+        function captureOtherInput(type) {
+            const otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
+            const selectedType = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize the first letter of the type
+            if (otherValue) {
+                // Combine the type and the specified other value
+                document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
+                document.getElementById("typeValue").value = selectedType + " - " + otherValue; // Set the hidden input value as well
+            }
+        }
+
 
         // Function to show the "Other" input field
         function showOtherInput(type) {
@@ -628,7 +633,7 @@
 
         // Update unit options based on category and selected option
         function updateUnitOptions(category, option) {
-            const amountUnitSelect = document.getElementById('amount_unit');
+            const amountUnitSelect = document.getElementById('unit');
             amountUnitSelect.innerHTML = ''; // Clear existing options
 
             if (category === 'molecular') {
@@ -646,14 +651,6 @@
             }
         }
 
-        // Capture the input in the "Other" field and update the display
-        function captureOtherInput(type) {
-            const otherValue = document.getElementById(type + '-other').value;
-            const selectedType = type.charAt(0).toUpperCase() + type.slice(1);
-            if (otherValue) {
-                document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
-            }
-        }
 
         // Close dropdown if clicked outside
         window.onclick = function(event) {

@@ -53,10 +53,37 @@ def aboutUs(request):
 
 from .models import Samples, Comorbidities, Lab_Test, Aliquot, Storage
 
+# def create_storage(request):
+#     if request.method == 'POST':
+#         sample_id = request.POST.get('sample_id')  # Get the sample ID
+#         # Retrieve the sample instance if needed
+#         sample = get_object_or_404(Samples, id=sample_id)
+
+#         # Collect other storage data
+#         freezer_num = request.POST.get('freezer_num')
+#         shelf_num = request.POST.get('shelf_num')
+#         rack_num = request.POST.get('rack_num')
+#         box_num = request.POST.get('box_num')
+#         container = request.POST.get('container')
+
+#         # Create and save storage instance
+#         storage_instance = Storage(
+#             sample=sample,  # Reference the sample instance directly
+#             freezer_num=freezer_num,
+#             shelf_num=shelf_num,
+#             rack_num=rack_num,
+#             box_num=box_num,
+#             container=container
+#         )
+#         storage_instance.save()
+
+#         return redirect('success_url')  # Redirect as needed
+
+
 def create_sample(request):
     if request.method == 'POST':
         # Collect Sample data
-        type = request.POST.get('type')
+        type_selected = request.POST.get('typeValue')
         sex = request.POST.get('sex')
         age = request.POST.get('age')
         clinical_diagnosis = request.POST.get('clinical_diagnosis')
@@ -67,7 +94,7 @@ def create_sample(request):
 
         # Create and save Sample instance
         sample = Samples(
-            type=type,
+            type=type_selected,
             sex=sex,
             age=age,
             clinical_diagnosis=clinical_diagnosis,
@@ -78,51 +105,51 @@ def create_sample(request):
         )
         sample.save()
 
+        freezer_num = request.POST.get('freezer_num')
+        shelf_num = request.POST.get('shelf_num')
+        rack_num = request.POST.get('rack_num')
+        box_num = request.POST.get('box_num')
+        container = request.POST.get('container')
+
+        # Create and save storage instance
+        storage_instance = Storage(
+            sample_id=sample,  # Reference the sample instance directly
+            freezer_num=freezer_num,
+            shelf_num=shelf_num,
+            rack_num=rack_num,
+            box_num=box_num,
+            container=container
+        )
+        storage_instance.save()
+
         # Collect Comorbidity data
-        comorbidity = request.POST.get('comorbidity')
-        if comorbidity:  # Only save if there's a comorbidity
-            comorbidity_instance = Comorbidities(
-                sample_id=sample,
-                comorbidity=comorbidity
-            )
-            comorbidity_instance.save()
+        # comorbidity = request.POST.get('comorbidity')
+        # if comorbidity:  # Only save if there's a comorbidity
+        #     comorbidity_instance = Comorbidities(
+        #         sample_id=sample,
+        #         comorbidity=comorbidity
+        #     )
+        #     comorbidity_instance.save()
 
-        # Collect Lab Test data
-        labtest = request.POST.get('labtest')
-        if labtest:  # Only save if there's a lab test
-            lab_test_instance = Lab_Test(
-                sample_id=sample,
-                labtest=labtest
-            )
-            lab_test_instance.save()
+        # # Collect Lab Test data
+        # labtest = request.POST.get('labtest')
+        # if labtest:  # Only save if there's a lab test
+        #     lab_test_instance = Lab_Test(
+        #         sample_id=sample,
+        #         labtest=labtest
+        #     )
+        #     lab_test_instance.save()
 
-        # Collect Aliquot data
-        aliquot_amount = request.POST.get('aliquot_amount')
-        aliquot_unit = request.POST.get('aliquot_unit')
-        if aliquot_amount and aliquot_unit:  # Ensure both fields are filled
-            aliquot_instance = Aliquot(
-                sample_id=sample,
-                amount=aliquot_amount,
-                unit=aliquot_unit
-            )
-            aliquot_instance.save()
-
-            # Collect Storage data
-            freezer_num = request.POST.get('freezer_num')
-            shelf_num = request.POST.get('shelf_num')
-            rack_num = request.POST.get('rack_num')
-            box_num = request.POST.get('box_num')
-            container = request.POST.get('container')
-            storage_instance = Storage(
-                aliquot_id=aliquot_instance,
-                sample_id=sample,
-                freezer_num=freezer_num,
-                shelf_num=shelf_num,
-                rack_num=rack_num,
-                box_num=box_num,
-                container=container
-            )
-            storage_instance.save()
+        # # Collect Aliquot data
+        # aliquot_amount = request.POST.get('aliquot_amount')
+        # aliquot_unit = request.POST.get('aliquot_unit')
+        # if aliquot_amount and aliquot_unit:  # Ensure both fields are filled
+        #     aliquot_instance = Aliquot(
+        #         sample_id=sample,
+        #         amount=aliquot_amount,
+        #         unit=aliquot_unit
+        #     )
+        #     aliquot_instance.save()
 
         return redirect('')  # Redirect to a success page after saving
 

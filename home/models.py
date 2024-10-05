@@ -28,7 +28,7 @@ class Aliquot(models.Model):
     unit = models.CharField(max_length=100, blank=True)
 class Storage(models.Model):
     # Parents
-    aliquot_id = models.ForeignKey(Aliquot, on_delete=models.CASCADE)
+    aliquot_id = models.ForeignKey(Aliquot, on_delete=models.CASCADE, null=True, blank=True)
     sample_id = models.ForeignKey(Samples, on_delete=models.CASCADE)
 
     freezer_num = models.IntegerField(null=True, blank=True)

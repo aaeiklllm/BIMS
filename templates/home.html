@@ -284,30 +284,7 @@
                     <input type="hidden" name="user_id" value="{{ user.id }}">
                     <button class="btn btn-success" type="submit">Approve</button>
                 </form>
-<<<<<<< HEAD
                 <form method="post" action="{% url 'delete_users' %}">
-=======
-        <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
-
-        <!-- Display pending Biobank Manager -->
-        <h4>Biobank Manager ({{ pending_users|length }})</h4>
-        {% for user in pending_users %}
-        <div class="pending-user">
-            <div class="pending-user-details">
-                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong>Position:</strong> {{ user.position }}</p>
-                <p><strong>Contact Information</strong></p>
-                <p>Email: {{ user.email }}</p>
-                <p>Mobile: {{ user.mobile_number }}</p>
-            </div>
-            <div class="pending-user-buttons">
-                <form method="post" action="{% url 'approve_users' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-success" type="submit">Approve</button>
-                </form>
-                <form method="post" action="{% url 'approve_users' %}">
->>>>>>> origin/merge-pass-smpl-back
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ user.id }}">
                     <button class="btn btn-danger" type="submit">Deny</button>
@@ -369,10 +346,6 @@
               <button class="btn btn-danger" type="submit">Deny Deletion</button>
             </form>
           </div>
-        </div>
-        {% endfor %}
-
-            </div>
         </div>
         {% endfor %}
 
