@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+	<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"> -->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        p {
+            font-size: 18px;
+            color: #666;
+            margin: 20px 0;
+        }
+
+        a {
+            display: inline-block;
+            background-color: #644ca4;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #5c459b;
+        }
+
+        .email {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thank you for creating an account with us!</h1>
+        <p>We will send you a response using the email address you have provided within 2-4 business days.</p>
+        <p>For further inquiries, please contact us at <span class="email">techassist.bims@gmail.com</span></p>
+        <a href="{% url 'home' %}">Go Back to Home Page</a>
+    </div>
+</body>
+</html>
