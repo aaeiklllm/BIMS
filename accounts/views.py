@@ -19,6 +19,12 @@ import logging
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import UserProfile
+from django.contrib.auth.hashers import make_password
+# Model to store reset codes (create this if you don't have one)
+from .models import PasswordResetCode
+from django.utils import timezone
+from datetime import timedelta
+
 
 User = get_user_model()
 
@@ -80,7 +86,7 @@ def register_user(request, roledata):
                             message='',
                             html_message=f'''Hi {uname}, <br><br>
                         We will send you a response using the email address you have provided within 2-4 business days.<br><br>
-                        For further inquiries, please contact us at bims@gmail.com.<br><br>Regards,<br>
+                        For further inquiries, please contact us at techassist.bims@gmail.com.<br><br>Regards,<br>
                         BIMS''',
                             from_email=settings.EMAIL_HOST_USER,
                             recipient_list=[email]
@@ -116,6 +122,10 @@ def create_account(request):
     }
     
     return render(request, 'ragister.html', context=context)
+
+def create_sample(request):
+
+    return render(request, 'create_sample.html')
 
 
 # @auth_middleware
@@ -172,11 +182,40 @@ def login(request):
         if request.method =='POST':
             email=request.POST.get('eml',None)
             pwd=request.POST.get('pwd',None)
+            
+            # print(request.POST)
+            user = User.objects.get(username=email)
+            if 'forgot_password' in request.POST:
+                if not email:
+                    messages.error(request, "Please enter your username.")
+                    return redirect('loginpage')
+                # Proceed with password reset logic
+                # Send the reset code to the email/username
+                # Generate a random verification code
+                reset_code = random.randint(100000, 999999)
+
+                # Save code in the PasswordResetCode model (linked with User)
+                PasswordResetCode.objects.create(user=user, code=reset_code, created_at=timezone.now())
+
+                # Send code via email
+                try:
+                    send_mail(
+                        subject='Password Reset Code',
+                        message='',  # Leave plain text message empty since we're using HTML
+                        html_message=f'''Your password reset code is {reset_code}''',
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[user.email]
+                )
+                except Exception as e:
+                    print(e)
+                    return render(request, 'index.html',{'message':'Failed To Send Email'})
+                messages.success(request, "Password reset code sent to your email.")
+                return render(request, 'reset.html')
+
             ubj= authenticate(request, username=email, password=pwd) 
             if ubj == None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 return redirect('/accounts/loginpage')
-
             q = User.objects.filter(username=email).filter(is_staff=True)
             table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
             userRole= Role.objects.filter(id=table1_data.role_id.id).first()
@@ -274,3 +313,36 @@ def deny_deletion(request):
         user.save()
         messages.success(request, f"Account deletion request for {user.first_name} {user.last_name} has been denied.")
     return redirect('')  # Redirect to the admin page
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        code = request.POST.get('code')
+        new_password = request.POST.get('new_password')
+
+        try:
+            reset_code_obj = PasswordResetCode.objects.get(code=code, is_used=False)
+
+            # Check if code is still valid (e.g., within 24 hours)
+            if timezone.now() - reset_code_obj.created_at > timedelta(hours=24):
+                return JsonResponse({'success': False, 'message': 'Code expired'})
+
+            # Update the user password
+            user = reset_code_obj.user
+            user.password = make_password(new_password)
+            user.save()
+
+            # Mark the reset code as used
+            reset_code_obj.is_used = True
+            reset_code_obj.save()
+
+            # return JsonResponse({'success': True, 'message': 'Password updated successfully'})
+            messages.success(request, 'Password updated successfully')
+            return render(request, 'index.html')
+        except PasswordResetCode.DoesNotExist:
+            messages.error(request, "Invalid code")
+            return render(request, 'reset.html')
+            # return JsonResponse({'success': False, 'message': 'Invalid code'})
+
+    return render(request, 'reset.html')
+

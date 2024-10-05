@@ -162,6 +162,36 @@
     .pending-user-buttons button {
         width: 100px;
     }
+
+    .pending-user {
+      font-size: 18px;
+      color: #333;
+      border: 1px solid #644ca4;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pending-user-details {
+        flex-grow: 1;
+    }
+
+    .pending-user-buttons {
+        text-align: right;
+    }
+
+    .pending-user-buttons form {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .pending-user-buttons button {
+        width: 100px;
+    }
   </style>
 </head>
 
@@ -325,7 +355,9 @@
       {% elif request.session.role == 'BiobankManager' %}
         <!-- Biobank Manager content -->
         <h1>Welcome, Biobank Manager</h1>
-
+        <li class="nav-item">
+          <a class="nav-link active" href="/accounts/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Create Sample</a>
+        </li>
         <!-- Biobank Manager update form -->
         <h2>Update Your Information</h2>
 

@@ -317,11 +317,12 @@ footer a {
         {% csrf_token %}
         <h1 style="color: #674FA7;">Login</h1>
        
-        <input type='text' placeholder="Username" name='eml'>
-        <input type="password" placeholder="Password" name='pwd'  />
-        <u>Forgot Password?</u>
+        <input type='text' placeholder="Username" name='eml' required>
+        <input type="password" placeholder="Password" name='pwd' />
+        <u>
+			<button type="submit" name="forgot_password" value="1" style="background: none; border: none; color: blue; cursor: pointer;">Forgot Password?</button>
+		</u>
         <button class="btn btn-primary">LOGIN</button>
-      
       </form>
       {% csrf_token %}
 
@@ -369,8 +370,7 @@ signInButton.addEventListener('click', () => {
 
 
 
-
-
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
 {% endblock %}

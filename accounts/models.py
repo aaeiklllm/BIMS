@@ -18,5 +18,13 @@ class UserroleMap(models.Model):
     user_id= models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     role_id= models.ForeignKey(Role, on_delete=models.CASCADE)
 
+class PasswordResetCode(models.Model):
+    code = models.CharField(max_length=20)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Use AUTH_USER_MODEL
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.code
 
 
