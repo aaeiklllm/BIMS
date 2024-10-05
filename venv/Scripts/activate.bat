@@ -8,7 +8,11 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
+<<<<<<< HEAD
 set VIRTUAL_ENV=D:\UP-CMSC-Projects\CMSC128.2-MP-BIMS\BIMS\venv
+=======
+set VIRTUAL_ENV=C:\Users\Ethan\Desktop\BIMS 128.2\BIMS\venv
+>>>>>>> origin/ui-ethan-new
 
 if not defined PROMPT set PROMPT=$P$G
 

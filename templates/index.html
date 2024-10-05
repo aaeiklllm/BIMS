@@ -72,12 +72,18 @@
       text-align: center;
     }
 
+	.grid-container {
+		display: grid;
+		grid-template-columns: 50% 50%;
+	}
+
 html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
       color: #644ca4;
+	  background-color: #fcfcfc;
     }
 
 .btn-primary {
@@ -85,6 +91,10 @@ html, body {
 	border-color: #674FA7 !important;
 	color: #FFFFFF;
 	transition: transform 80ms ease-in;
+}
+
+.btn-login {
+	margin: 10px;
 }
 
 button:active {
@@ -127,25 +137,36 @@ input {
 	width: 768px;
 	max-width: 100%;
 	min-height: 480px;
+	box-shadow: 8px 12px 28px rgba(0,0,0,0.25), 
+			8px 8px 10px rgba(0,0,0,0.22);
+	margin-top: 100px;
 }
 
 .form-container {
 	position: absolute;
 	top: 0;
 	height: 100%;
-	transition: all 0.6s ease-in-out;
-	background-color: #F8DD8C !important;
+	width: 100%;
+	/* transition: all 0.6s ease-in-out; */
+	background-color: #644ca4 !important;
 }
+
 
 .sign-in-container {
 	left: 0;
-	width: 50%;
+	width: 60%;
 	z-index: 2;
-	background-color: #F8DD8C !important;
+	background-color: #644ca4 !important;
+}
+
+.splash-container {
+	background-color: #ffffff;
+	width: 100%;
+	height: 100%;
 }
 
 .container.right-panel-active .sign-in-container {
-	transform: translateX(100%);
+	/* transform: translateX(100%); */
 }
 
 .sign-up-container {
@@ -157,7 +178,7 @@ input {
 }
 
 .container.right-panel-active .sign-up-container {
-	transform: translateX(100%);
+	/* transform: translateX(100%); */
 	opacity: 1;
 	z-index: 5;
 	animation: show 0.6s;
@@ -178,8 +199,8 @@ input {
 .overlay-container {
 	position: absolute;
 	top: 0;
-	left: 50%;
-	width: 50%;
+	left: 60%;
+	width: 40%;
 	height: 100%;
 	overflow: hidden;
 	transition: transform 0.6s ease-in-out;
@@ -187,27 +208,27 @@ input {
 }
 
 .container.right-panel-active .overlay-container{
-	transform: translateX(-100%);
+	/* transform: translateX(-100%); */
 }
 
 .overlay {
 	background: #F8DD8C;
-	background: -webkit-linear-gradient(to right, #F8DD8C, #F8DD8C);
-	background: linear-gradient(to right, #F8DD8C, #F8DD8C);
+	background: -webkit-linear-gradient(to right, #755cb9, #644ca4);
+	background: linear-gradient(to right, #755cb9, #644ca4);
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: 0 0;
-	color: #674FA7;
+	color: #ffffff;
 	position: relative;
 	left: -100%;
 	height: 100%;
 	width: 200%;
-  	transform: translateX(0);
-	transition: transform 0.6s ease-in-out;
+  	/* transform: translateX(50);
+	transition: transform 0.6s ease-in-out; */
 }
 
 .container.right-panel-active .overlay {
-  	transform: translateX(50%);
+  	/* transform: translateX(50%); */
 }
 
 .overlay-panel {
@@ -221,25 +242,25 @@ input {
 	top: 0;
 	height: 100%;
 	width: 50%;
-	transform: translateX(0);
-	transition: transform 0.6s ease-in-out;
+	/* transform: translateX(0);
+	transition: transform 0.6s ease-in-out; */
 }
 
 .overlay-left {
-	transform: translateX(-20%);
+	transform: translateX(-60%);
 }
 
 .container.right-panel-active .overlay-left {
-	transform: translateX(0);
+	/* transform: translateX(30); */
 }
 
 .overlay-right {
 	right: 0;
-	transform: translateX(0);
+	/* transform: translateX(0); */
 }
 
 .container.right-panel-active .overlay-right {
-	transform: translateX(20%);
+	/* transform: translateX(20%); */
 }
 
 .social-container {
@@ -288,13 +309,14 @@ footer a {
   height: auto; /* Ensure the height adjusts proportionally to the width */
 }
 
+
  </style>   
 </head>
 <body>
 
 
 
-	<div class="col-md-12 ">
+	<div class="col-md-12">
 
 		{% if messages %}
  {% for message in messages %} 
@@ -311,7 +333,7 @@ footer a {
 
 
   <div class="container" id="container">
-    <div class="form-container sign-up-container">
+    <div class="form-container sign-in-container">
 
       <form action="loginpage" method="post">
         {% csrf_token %}
@@ -327,9 +349,11 @@ footer a {
       {% csrf_token %}
 
     </div>
-    <div class="form-container sign-in-container">
-      <div class="newclass">
-      <img src="{% static 'logIn.png' %}" class="img-responsive">
+    <div class="form-container sign-up-container">
+		<div class="splash-container">
+
+		</div>
+      	<div class="newclass">
     </div>
 	
 	
@@ -346,9 +370,9 @@ footer a {
 		
         <div class="overlay-panel overlay-right">
 		<h1><div class="d-flex p-2 bd-highlight">Welcome to BIMS!</div></h1>
-
-        <h5 style="color: #767C80;">BIMS</h5><br>
-          <button class="btn btn-primary" id="signUp">Sign in</button>
+		<p style="margin-bottom: 0; font-size: smaller; opacity: 80%;">Log in as a <b>Researcher</b> or register by clicking the button below</p>
+		<a href="/accounts/createaccount/?role=Researcher" class="btn zoomOut" style="background-color: #FFFFFF; color: #644ca4; border-color: #FFFFFF; margin-top: 10px;" id="button1">Register</a>
+          
         </div>
       </div>
     </div>
@@ -361,11 +385,11 @@ const signInButton = document.getElementById('signIn');
 const container = document.getElementById('container');
 
 signUpButton.addEventListener('click', () => {
-	container.classList.add("right-panel-active");
+	// container.classList.add("right-panel-active");
 });
 
 signInButton.addEventListener('click', () => {
-	container.classList.remove("right-panel-active");
+	// container.classList.remove("right-panel-active");
 });
 
 

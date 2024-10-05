@@ -7,254 +7,327 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title style="color: #674FA7">Create User</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
- <style>
- @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+		
+		.info-msg,
+		   .success-msg,
+		   .warning-msg,
+		   .error-msg {
+			 margin: 10px 0;
+			 padding: 10px;
+			 border-radius: 3px 3px 3px 3px;
+		   }
+	   
+		   .success-msg {
+			 color: #270;
+			 background-color: #DFF2BF;
+		   }
+	   
+		   .error-msg {
+			 color: #D8000C;
+			 background-color: #FFBABA;
+		   }
+	   
+		   .zoomOut {
+			 transition: transform .2s;
+		   }
+	   
+		   .zoomOut:hover {
+			 transform: scale(1.2);
+		   }
+	   
+		   .circle-shape {
+			 flex-shrink: 0;
+			 padding: 0;
+			 width: 85px;
+			 height: 85px;
+			 line-height: 64px;
+			 border-radius: 50%;
+			 text-align: center;
+			 font-size: 32px;
+		   }
+	   
+	   html, body {
+			 margin: 0;
+			 padding: 0;
+			 height: 100%;
+			 width: 100%;
+			 color: #644ca4;
+		   }
+	   
+	   .btn-primary {
+		   background-color: #674FA7 !important;
+		   border-color: #674FA7 !important;
+		   color: #FFFFFF;
+		   transition: transform 80ms ease-in;
+	   }
+	   
+	   .btn-login {
+		   margin: 10px;
+	   }
+	   
+	   button:active {
+		   transform: scale(0.95);
+	   }
+	   
+	   button:focus {
+		   outline: none;
+	   }
+	   
+	   button.ghost {
+		   background-color: transparent;
+		   border-color: #eeeeee;
+	   }
+	   
+	   form {
+		   background-color: #f;
+		   display: flex;
+		   align-items: center;
+		   justify-content: center;
+		   flex-direction: column;
+		   padding: 0 50px;
+		   height: 100%;
+		   text-align: center;
+	   }
 
-* {
-	box-sizing: border-box;
-}
+	   	form button{
+          transition: transform .2s; /* Animation */
+        }
+		
+		form button:hover{
+          transform: scale(1.2); 
+    	}
 
-html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      color: #644ca4;
-	}
+	   
+	   input {
+		   background-color: #ffffff;
+		   border: none;
+		   padding: 5px 10px;
+		   margin: 2px 0;
+		   width: 100%;
+		   border-radius: .25rem;
+	   }
 
-a {
-	color: #333;
-	font-size: 14px;
-	text-decoration: none;
-	margin: 15px 0;
-}
-
-button {
-	border-radius: 20px;
-	border: 1px solid #767C80;
-	background-color: #767C80;
-	color: #FFFFFF;
-	font-size: 12px;
-	font-weight: bold;
-	padding: 12px 45px;
-	letter-spacing: 1px;
-	text-transform: uppercase;
-	transition: transform 80ms ease-in;
-}
-
-button:active {
-	transform: scale(0.95);
-}
-
-button:focus {
-	outline: none;
-}
-
-button.ghost {
-	background-color: transparent;
-	border-color: #FFFFFF;
-}
-
-form {
-	background-color: #F8DD8C;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	padding: 0 50px;
-	height: 100%;
-	text-align: center;
-}
-
-input {
-	background-color: #eee;
-	border: none;
-	padding: 12px 15px;
-	margin: 8px 0;
-	width: 100%;
-}
-
-.container {
-	background-color: #eeeeee;
-	border-radius: 10px;
-	position: relative;
-	overflow: hidden;
-	max-width: 80%;
-	min-height: 700px;
-}
-
-.form-container {
-	position: absolute;
-	top: 0;
-	height: 100%;
-	width: 100%;
-	transition: all 0.6s ease-in-out;
-}
-
-.sign-in-container {
-	left: 0;
-	width: 50%;
-	z-index: 2;
-}
-
-.container.right-panel-active .sign-in-container {
-	transform: translateX(100%);
-}
-
-.sign-up-container {
-	left: 0;
-	width: 50%;
-	opacity: 0;
-	z-index: 1;
-}
-
-.container.right-panel-active .sign-up-container {
-	transform: translateX(100%);
-	opacity: 1;
-	z-index: 5;
-	animation: show 0.6s;
-}
-
-@keyframes show {
-	0%, 49.99% {
-		opacity: 0;
-		z-index: 1;
-	}
-	
-	50%, 100% {
-		opacity: 1;
-		z-index: 5;
-	}
-}
-
-.overlay-container {
-	position: absolute;
-	top: 0;
-	left: 50%;
-	width: 50%;
-	height: 100%;
-	overflow: hidden;
-	transition: transform 0.6s ease-in-out;
-	z-index: 100;
-}
-
-.container.right-panel-active .overlay-container{
-	transform: translateX(-100%);
-}
-
-.overlay {
-	background: #eeeeee;
-	/* background: -webkit-linear-gradient(to right, #39576f, #a9b5c2);
-	background: linear-gradient(to right, #39576f, #a9b5c2); */
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: 0 0;
-	color: #674FA7;
-	position: relative;
-	left: -100%;
-	height: 100%;
-	width: 200%;
-  	transform: translateX(0);
-	transition: transform 0.6s ease-in-out;
-}
-
-.container.right-panel-active .overlay {
-  	transform: translateX(50%);
-}
-
-.overlay-panel {
-	position: absolute;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	padding: 0 40px;
-	text-align: center;
-	top: 0;
-	height: 100%;
-	width: 50%;
-	transform: translateX(0);
-	transition: transform 0.6s ease-in-out;
-}
-
-.overlay-left {
-	transform: translateX(-20%);
-}
-
-.container.right-panel-active .overlay-left {
-	transform: translateX(0);
-}
-
-.overlay-right {
-	right: 0;
-	transform: translateX(0);
-}
-
-.container.right-panel-active .overlay-right {
-	transform: translateX(20%);
-}
-
-.social-container {
-	margin: 20px 0;
-}
-
-.social-container a {
-	border: 1px solid #a9b5c2;
-	border-radius: 50%;
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	margin: 0 5px;
-	height: 40px;
-	width: 40px;
-}
-
-.custom-select {
-	background-color: #eee;
-	border: none;
-	padding: 12px 15px;
-	margin: 8px 0;
-	width: 100%;
-}
-
-.custom-select select {
-  appearance: none;
-  width: 100%;
-  font-size: 1.15rem;
-  padding: 0.675em 6em 0.675em 1em;
-  background-color: #fff;
-  border: 1px solid #caced1;
-  border-radius: 0.25rem;
-  color: #000;
-  cursor: pointer;
-}
-
-footer {
-    background-color: #222;
-    color: #fff;
-    font-size: 14px;
-    bottom: 0;
-    position: fixed;
-    left: 0;
-    right: 0;
-    text-align: center;
-    z-index: 999;
-}
-
-footer p {
-    margin: 10px 0;
-}
-
-footer i {
-    color: #16a085;
-}
-
-footer a {
-    color: #3c97bf;
-    text-decoration: none;
-} 
-
- </style>   
+	   #number-input {
+			padding-left: 50px;
+	   }
+	   
+	   .custom-select {
+		   border: none;
+		   padding: 5px 10px;
+		   margin: 2px 0;
+		   width: 100%;
+		   border-radius: .25rem;
+	   }
+	   
+	   .custom-select select {
+		 appearance: none;
+		 width: 100%;
+		 font-size: 1.15rem;
+		 padding: 0.675em 6em 0.675em 1em;
+		 background-color: #fff;
+		 border: 1px solid #caced1;
+		 border-radius: 0.25rem;
+		 color: #000;
+		 cursor: pointer;
+	   }
+	   
+	   .container {
+		   background-color: #eeeeee;
+		   border-radius: 10px;
+		   position: relative;
+		   overflow: hidden;
+		   max-width: 63%;
+		   min-height: 78%;
+		   margin-top: 2.8%;
+		   box-shadow: 8px 12px 28px rgba(0,0,0,0.25), 8px 8px 10px rgba(0,0,0,0.22);
+	   }
+	   
+	   
+	   .container label {
+		   width: 100%;
+		   text-align: left;
+		   margin-top: 5px;
+		   font-size: 14px;
+		   font-weight: 550;
+		   color: #644ca4;
+	   }
+	   
+	   .form-container {
+		   position: absolute;
+		   top: 0;
+		   height: 100%;
+		   width: 100%;
+		   transition: all 0.6s ease-in-out;
+	   }
+	   
+	   .sign-in-container {
+		   left: 0;
+		   width: 65%;
+		   z-index: 2;
+	   }
+	   
+	   .container.right-panel-active .sign-in-container {
+		   transform: translateX(100%);
+	   }
+	   
+	   .sign-up-container {
+		   left: 0;
+		   width: 50%;
+		   opacity: 0;
+		   z-index: 1;
+		   background-color: #F2EDFC !important;
+	   }
+	   
+	   .container.right-panel-active .sign-up-container {
+		   transform: translateX(100%);
+		   opacity: 1;
+		   z-index: 5;
+		   animation: show 0.6s;
+	   }
+	   
+	   @keyframes show {
+		   0%, 49.99% {
+			   opacity: 0;
+			   z-index: 1;
+		   }
+		   
+		   50%, 100% {
+			   opacity: 1;
+			   z-index: 5;
+		   }
+	   }
+	   
+	   .overlay-container {
+		   position: absolute;
+		   top: 0;
+		   left: 65%;
+		   width: 35%;
+		   height: 100%;
+		   overflow: hidden;
+		   transition: transform 0.6s ease-in-out;
+		   z-index: 100;
+	   }
+	   
+	   .container.right-panel-active .overlay-container{
+		   transform: translateX(-100%);
+	   }
+	   
+	   .overlay {
+		   background: -webkit-linear-gradient(to right, #644ca4, #674FA7);
+		   background: linear-gradient(to right, #644ca4, #674FA7);
+		   background-repeat: no-repeat;
+		   background-size: cover;
+		   background-position: 0 0;
+		   color: #ffffff;
+		   position: relative;
+		   left: -100%;
+		   height: 100%;
+		   width: 200%;
+			 transform: translateX(0);
+		   transition: transform 0.6s ease-in-out;
+	   }
+	   
+	   .container.right-panel-active .overlay {
+			 transform: translateX(50%);
+	   }
+	   
+	   .overlay-panel {
+		   position: absolute;
+		   display: flex;
+		   align-items: center;
+		   justify-content: center;
+		   flex-direction: column;
+		   padding: 0 40px;
+		   text-align: center;
+		   top: 0;
+		   height: 100%;
+		   width: 50%;
+		   transform: translateX(0);
+		   transition: transform 0.6s ease-in-out;
+	   }
+	   
+	   .overlay-left {
+		   transform: translateX(-20%);
+	   }
+	   
+	   .container.right-panel-active .overlay-left {
+		   transform: translateX(0);
+	   }
+	   
+	   .overlay-right {
+		   right: 0;
+		   transform: translateX(0);
+	   }
+	   
+	   .container.right-panel-active .overlay-right {
+		   transform: translateX(20%);
+	   }
+	   
+	   .social-container {
+		   margin: 20px 0;
+	   }
+	   
+	   
+	   .social-container a {
+		   border: 1px solid #F2EDFC;
+		   border-radius: 50%;
+		   display: inline-flex;
+		   justify-content: center;
+		   align-items: center;
+		   margin: 0 5px;
+		   height: 40px;
+		   width: 40px;
+	   }
+	   
+	   footer {
+		   background-color: #222;
+		   color: #fff;
+		   font-size: 14px;
+		   bottom: 0;
+		   position: fixed;
+		   left: 0;
+		   right: 0;
+		   text-align: center;
+		   z-index: 999;
+	   }
+	   
+	   footer p {
+		   margin: 10px 0;
+	   }
+	   
+	   footer i {
+		   color: red;
+	   }
+	   
+	   footer a {
+		   color: #3c97bf;
+		   text-decoration: none;
+	   }
+	   
+	   .newclass img {
+		 max-width: 100%; /* Set the maximum width of the image to 100% of its container */
+		 height: auto; /* Ensure the height adjusts proportionally to the width */
+	   }
+	   
+	   .name-grid {
+		   display: grid;
+		   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+		   text-align: left;
+		   width: 100%;
+		   gap: 0 10px;
+	   }
+	   
+	   .name-grid input {
+		   width: 100%;
+	   }
+	   
+	   .name-grid cell {
+		   display: grid;
+	   }
+	   
+		</style>     
 </head>
 <body>
 
@@ -262,16 +335,27 @@ footer a {
     <div class="form-container sign-in-container">
       <form action="/accounts/checkusercheck/{{roledata}}" method="post">
         {% csrf_token %}
-		<div style="display: flex;">
-			<input type="text" placeholder="First Name" name="first_name" required/>
-			<input style="margin-left: 6px; margin-right: 6px" type="text" placeholder="Middle Name" name="middle_name"/>
-			<input type="text" placeholder="Last Name" name="last_name" required/>
+		<div class="name-grid">
+			<div class="cell">
+				<label class="required">First Name</label>
+				<input type="text" name="first_name" required/>
+			</div>
+			<div class="cell">
+				<label class="required">Middle Name</label>
+				<input type="text" name="middle_name"/>
+			</div>
+			<div class="cell">
+				<label class="required">Last Name</label>
+				<input type="text" name="last_name" required/>
+			</div>
+			
+			
 		</div>
 
 		{% if roledata == 'BiobankManager' %}
-
+		<label class="required">Position</label>
 		<select name="position" class="position custom-select" required>
-			<option value="0">Position</option>
+			<option value="0"> </option>
 			<option value="Science Research Specialist I">Science Research Specialist I</option>
 			<option value="Science Research Specialist II">Science Research Specialist II</option>
 			<option value="University Research Associate I">University Research Associate I</option>
@@ -282,8 +366,9 @@ footer a {
 		</select>
 
 		{% elif roledata == 'Researcher' %}
+		<label class="required">Unit</label>
 		<select name="unit" class="unit custom-select" required>
-			<option value="0">Unit</option>
+			<option value="0"></option>
 			<option value="Biochemical Genetics Laboratory">Biochemical Genetics Laboratory </option>
 			<option value="Clinical Genetics and Research Unit">Clinical Genetics and Research Unit</option>
 			<option value="Cytogenetics Laboratory">Cytogenetics Laboratory</option>
@@ -292,9 +377,9 @@ footer a {
 			<option value="Molecular Genetics Laboratory">Molecular Genetics Laboratory </option>
 			<option value="Newborn Screening Center - NIH">Newborn Screening Center - NIH</option>
 		</select>
-
+		<label class="required">Position</label>
 		<select name="position" class="position custom-select" required>
-			<option value="0">Position</option>
+			<option value="0"></option>
 			<option value="Research Fellow I">Research Fellow I</option>
 			<option value="Research Fellow II">Research Fellow II</option>
 			<option value="Research Fellow III">Research Fellow III</option>
@@ -307,16 +392,20 @@ footer a {
 		</select>
 		
 		{% endif %}
-		
-        <input type="email" placeholder="Email" name='eml'required/>
-		<input type="text" placeholder="Mobile Number" name="mobile_number" required/>
+		<label class="required">Email</label>
+        <input type="email" name='eml'required/>
+		<label class="required">Mobile Number</label>
+		<input type="text" id="number-input" name="mobile_number" required/>
 		<br>
-		<input type="text" placeholder="Username" name="uname" id="username" oninput="toLowerCase(this)" />
-        <input id="password" type="password" placeholder="Password" name='pwd' pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
-        <input  id="confirm_password" type="password" placeholder="Re-enter password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
+		<label class="required">Username</label>
+		<input type="text" name="uname" id="username" oninput="toLowerCase(this)" />
+		<label class="required">Password</label>
+        <input id="password" type="password" name='pwd' pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
+		<label class="required">Confirm Password</label>
+        <input  id="confirm_password" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
 
 		<br>
-			<button style="background-color: #674FA7;">Register</button>
+			<button class="btn btn-primary btn-sm-2" style="background-color: #674FA7;">Register</button>
 			<a href="/">or back to Home</a>			
 
       </form>
@@ -326,15 +415,15 @@ footer a {
         <div class="overlay-panel overlay-left">
           <h1>Welcome Back!</h1>
           <p>To keep connected with us please login with your personal info</p>
-          <button class="ghost" id="signIn">Register</button>
+          <button class="register ghost" id="signIn">Register</button>
         </div>
         <div class="overlay-panel overlay-right">
           <h1>Welcome</h1>
-		  <h3 style="color: #587892">{{message}}</h3>
+		  <h5 style="color: #ffffff; opacity: 80%;">{{message}}</h5>
         </div>
       </div>
     </div>
-  </div>     
+  </div> 
 </body>
 <script>
 	var password = document.getElementById("password")

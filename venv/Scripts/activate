@@ -38,7 +38,11 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
+<<<<<<< HEAD
 VIRTUAL_ENV="D:\UP-CMSC-Projects\CMSC128.2-MP-BIMS\BIMS\venv"
+=======
+VIRTUAL_ENV="C:\Users\Ethan\Desktop\BIMS 128.2\BIMS\venv"
+>>>>>>> origin/ui-ethan-new
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

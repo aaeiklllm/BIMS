@@ -60,19 +60,24 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 75vh;
+      height: 100%;
+      background-image: url("{% static 'bg_image_1.jpg' %}");
     }
+
 
     .container-home {
       width: 100%;
       text-align: center;
     }
 
-    html, body {
+    html{
+      height: 100%;
+    }
+
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      width: 100%;
+      min-height: 100%;
       color: #644ca4;
     }
 
@@ -90,9 +95,14 @@
     }
 
     .content-section {
-      max-width: 900px;
-      margin: 0 auto;
+      max-width: 70%;
+      min-height: 600px;
+      margin: 5vh;
+      padding: 2vh;
       text-align: left;
+      background-color: rgb(250, 250, 250);
+      border-radius: 20px;
+      background-blend-mode: multiply;
     }
 
     .description {
@@ -195,10 +205,10 @@
   </style>
 </head>
 
-<div class="page-hero bg-image">
+<section class="page-hero bg-image">
   <div class="content-section">
     <!-- Main Title -->
-    <h1 style="font-size: 45px; text-align: center;"><b>Biobank Information Management System (BIMS) for a Genetic Research Institution</b></h1>
+    <h1 style="font-size: 45px; text-align: center; margin-top: 10px;"><b>Biobank Information Management System (BIMS) for a Genetic Research Institution</b></h1>
     
     <!-- Description text -->
     <p class="description">
@@ -400,10 +410,10 @@
       {% endif %}
     {% else %}
       <div style="text-align: center; margin: 30px;">
-        <a href="/accounts/createaccount/?role=BiobankManager" class="btn btn-primary btn-lg zoomOut" id="button1">Create Biobank Manager</a>
-        <a href="/accounts/createaccount/?role=Researcher" class="btn btn-primary btn-lg zoomOut" id="button1">Create Researcher</a>
+        <!-- <a href="/accounts/createaccount/?role=BiobankManager" class="btn btn-primary btn-lg zoomOut" id="button1">Create Biobank Manager</a>
+        <a href="/accounts/createaccount/?role=Researcher" class="btn btn-primary btn-lg zoomOut" id="button1">Create Researcher</a> -->
       </div>
     {% endif %}
   </div>
-</div>
+</section>
 {% endblock %}
