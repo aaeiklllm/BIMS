@@ -13,8 +13,9 @@
     
     <style>
         #loginButton{
-            background-color: #f2c434;
-            border-color: #f2c434;
+            background-color: #ffffff;
+            border-color: #ffffff;
+            color: #644ca4;
             
         }
 
@@ -22,11 +23,32 @@
         font-family: Helvetica, sans-serif;
         color: white;
         background-color: #F2F3F4;
+        z-index: 100;
+        top: 0;
+        left: 0;
+        width: 100%;
+        
       }
+
+      html{
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      color: #644ca4;
+    }
+
+    .btn-primary {
+      background-color: #ffffff !important;
+      border-color: #ffffff !important;
+    }
 
 
         #navbar-custom{
-          background-color: #ffffff;           
+          background-color: #644ca4;           
         }
         #navBar a{
           transition: transform .2s; /* Animation */
@@ -73,6 +95,9 @@
           list-style: none;
         }
         
+    .container-fluid {
+      max-height: 10%;
+    }
        
         
         
@@ -91,25 +116,28 @@
             <!-- <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;BIMS </span></a> -->
             <a class="navbar-brand" href="/" style="font-size: 22px; font-family: Helvetica, sans-serif;">
               <span style="color: white;">
-                  <img src="{% static 'BIMS_transparent.png' %}" alt="Logo" style="height: 75px; vertical-align: middle;">&nbsp;
+                  <img src="{% static 'BIMS_transparent_new.png' %}" alt="Logo" style="height: 60px; vertical-align: middle; padding-left: 20%;">&nbsp;
               </span>
           </a>         
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style="margin-right: 0%;">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-1">
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Home</a>
+                  <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Home</a> <!--#644ca4-->
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">FAQs</a>
+                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">FAQs</a>
                 </li>
 
                 {% if request.session.role %}
                   <li class="nav-item">
-                    <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton" style="background-color: #767C80 !important; border-color: #767C80 !important; ">Logout</button></a>
+                    <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #767C80 !important; border-color: #767C80 !important; ">Logout</button></a>
                   </li>
                   {% else %}
                   <li class="nav-item">
-                    <a class="nav-link active" href="/accounts/loginpage"><button type="button" class="btn btn-primary btn-sm-2" id="loginButton">Login</button></a>
+                    <a class="nav-link active" href="/accounts/loginpage_researcher"><button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Researcher</button></a>
+                  </li>
+                  <li class="nav-item"></li>
+                    <a class="nav-link active" href="/accounts/loginpage_manager"><button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Manager</button></a>
                   </li>
                 {% endif %}
               </ul>

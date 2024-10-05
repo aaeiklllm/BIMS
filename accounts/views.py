@@ -206,6 +206,84 @@ def login(request):
         print(e)
         messages.add_message(request, messages.ERROR, "Something Went Wrong!")
         return render(request, 'index.html')
+    
+def login(request):
+    try:
+        if request.method =='POST':
+            email=request.POST.get('eml',None)
+            pwd=request.POST.get('pwd',None)
+            ubj= authenticate(request, username=email, password=pwd) 
+            if ubj == None:
+                messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
+                return redirect('/accounts/loginpage_researcher')
+
+            q = User.objects.filter(username=email).filter(is_staff=True)
+            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
+            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
+            request.session["role"]=userRole.role
+            if q and ubj:
+                messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                return redirect("")
+            else:
+                return redirect("")
+        else:
+            return render(request, 'index.html')
+    except Exception as e:
+        print(e)
+        messages.add_message(request, messages.ERROR, "Something Went Wrong!")
+        return render(request, 'index.html')
+    
+def login_manager(request):
+    try:
+        if request.method =='POST':
+            email=request.POST.get('eml',None)
+            pwd=request.POST.get('pwd',None)
+            ubj= authenticate(request, username=email, password=pwd) 
+            if ubj == None:
+                messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
+                return redirect('/accounts/loginpage_manager')
+
+            q = User.objects.filter(username=email).filter(is_staff=True)
+            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
+            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
+            request.session["role"]=userRole.role
+            if q and ubj:
+                messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                return redirect("")
+            else:
+                return redirect("")
+        else:
+            return render(request, 'index_manager.html')
+    except Exception as e:
+        print(e)
+        messages.add_message(request, messages.ERROR, "Something Went Wrong!")
+        return render(request, 'index_manager.html')
+    
+def login_admin(request):
+    try:
+        if request.method =='POST':
+            email=request.POST.get('eml',None)
+            pwd=request.POST.get('pwd',None)
+            ubj= authenticate(request, username=email, password=pwd) 
+            if ubj == None:
+                messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
+                return redirect('/accounts/loginpage')
+
+            q = User.objects.filter(username=email).filter(is_staff=True)
+            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
+            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
+            request.session["role"]=userRole.role
+            if q and ubj:
+                messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                return redirect("")
+            else:
+                return redirect("")
+        else:
+            return render(request, 'index_admin.html')
+    except Exception as e:
+        print(e)
+        messages.add_message(request, messages.ERROR, "Something Went Wrong!")
+        return render(request, 'index_admin.html')
 
 def logout(request):
     try:
@@ -213,4 +291,23 @@ def logout(request):
         return redirect('')
     except:
         return HttpResponse('<h3 style="text-align:center"> Somthing went wrong !!!!!</h3>')
+    
+def test(request):
+    role = request.GET.get('role')
+
+    roledata_mapping = {
+        'BiobankManager': 'BiobankManager',
+        'Researcher': 'Researcher',
+    }
+
+    roledata = roledata_mapping.get(role)
+    message = f"Create {roledata}"
+    
+    # Pass roledata and message to the template context
+    context = {
+        'roledata': roledata,
+        'message': message,
+    }
+    
+    return render(request, 'index copy.html', context=context)
 

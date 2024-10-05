@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\Erica\OneDrive\Desktop\School\CMSC128_2\BIMS\venv
+set VIRTUAL_ENV=C:\Users\Ethan\Desktop\BIMS 128.2\BIMS\venv
 
 if not defined PROMPT set PROMPT=$P$G
 
