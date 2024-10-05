@@ -242,8 +242,8 @@
         <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
 
         <!-- Display pending Biobank Manager -->
-        <h4>Biobank Manager ({{ pending_users|length }})</h4>
-        {% for user in pending_users %}
+        <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
+        {% for user in biobank_managers %}
         <div class="pending-user">
             <div class="pending-user-details">
                 <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -258,18 +258,18 @@
                     <input type="hidden" name="user_id" value="{{ user.id }}">
                     <button class="btn btn-success" type="submit">Approve</button>
                 </form>
-                <form method="post" action="{% url 'approve_users' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-danger" type="submit">Deny</button>
-                </form>
+                <form method="post" action="{% url 'delete_users' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ user.id }}">
+                  <button class="btn btn-danger" type="submit">Deny</button>
+              </form>
             </div>
         </div>
         {% endfor %}
         
         <!-- Display pending Researchers -->
-        <h4>Researcher ({{ pending_users|length }})</h4>
-        {% for user in pending_users %}
+        <h4>Researcher ({{ researchers|length }})</h4>
+        {% for user in researchers %}
         <div class="pending-user">
             <div class="pending-user-details">
                 <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -284,7 +284,7 @@
                     <input type="hidden" name="user_id" value="{{ user.id }}">
                     <button class="btn btn-success" type="submit">Approve</button>
                 </form>
-                <form method="post" action="{% url 'approve_users' %}">
+                <form method="post" action="{% url 'delete_users' %}">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ user.id }}">
                     <button class="btn btn-danger" type="submit">Deny</button>
@@ -326,7 +326,7 @@
 
         <!-- Researcher update form -->
         <h2>Update Your Information</h2>
-        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' %} -->
+        <form method="POST" action="">
           {% csrf_token %}
           <label for="uname">Username:</label>
           <input type="text" name="uname" value="{{ user.username }}" required><br>
@@ -351,7 +351,7 @@
 
           <button type="submit" class="btn btn-primary">Update</button>
         </form>
-
+        
         <!-- Request Deletion Section -->
         <div class="request-deletion">
           <h2>Account Deletion Request</h2>
@@ -371,7 +371,7 @@
         <!-- Biobank Manager update form -->
         <h2>Update Your Information</h2>
 
-        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' user.id %} -->
+        <form method="POST" action=""> 
           {% csrf_token %}
           <label for="uname">Username:</label>
           <input type="text" name="uname" value="{{ user.username }}" required><br>

@@ -334,8 +334,7 @@ footer a {
 
   <div class="container" id="container">
     <div class="form-container sign-in-container">
-
-      <form action="loginpage" method="post">
+      <form action="/accounts/loginpage/" method="post">
         {% csrf_token %}
         <h1 style="color: #674FA7;">Login</h1>
        
@@ -357,7 +356,6 @@ footer a {
     </div>
 	
 	
-     
     </div>
     <div class="overlay-container">
       <div class="overlay">
@@ -370,9 +368,22 @@ footer a {
 		
         <div class="overlay-panel overlay-right">
 		<h1><div class="d-flex p-2 bd-highlight">Welcome to BIMS!</div></h1>
-		<p style="margin-bottom: 0; font-size: smaller; opacity: 80%;">Log in as a <b>Researcher</b> or register by clicking the button below</p>
-		<a href="/accounts/createaccount/?role=Researcher" class="btn zoomOut" style="background-color: #FFFFFF; color: #644ca4; border-color: #FFFFFF; margin-top: 10px;" id="button1">Register</a>
-          
+		<p style="margin-bottom: 0; font-size: smaller; opacity: 80%;">
+			{% if role == "Researcher" %}
+				Log in as a <b>Researcher</b> or register by clicking the button below
+			{% elif role == "BiobankManager" %}
+			Log in as a <b>Biobank Manager</b> or register by clicking the button below
+			{% endif %}
+			
+		</p>
+		<a href="{% url 'create_account' %}?role={{ role }}" 
+			class="btn zoomOut" 
+			style="background-color: #FFFFFF; color: #644ca4; border-color: #FFFFFF; margin-top: 10px;" 
+			id="button1">
+			Register
+		</a>
+
+		 
         </div>
       </div>
     </div>

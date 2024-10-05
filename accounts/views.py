@@ -128,18 +128,25 @@ def create_sample(request):
     return render(request, 'create_sample.html')
 
 
-# @auth_middleware
-# def addResearcher(request):
-#     try:
-#         data={'roledata': 'Researcher' , 'message': "Create Researcher"}
-#         return  render(request, 'ragister.html', context= data )
-#     except:
-#         messages.add_message(request, messages.ERROR, "something went wrong!!")
-#         return render(request, 'index.html')
-
 def approve_users(request):
     pending_users = User.objects.filter(is_active=False)
-    
+
+    # Create empty lists for each role
+    biobank_managers = []
+    researchers = []
+
+    # Loop through pending users and separate them by role
+    for user in pending_users:
+        # Assuming UserRoleMap model relates User and Role
+        user_role_map = UserroleMap.objects.filter(user_id=user).first()
+        
+        if user_role_map:
+            role = user_role_map.role_id.role  # Adjust based on your actual model structure
+            if role == 'BiobankManager':
+                biobank_managers.append(user)
+            elif role == 'Researcher':
+                researchers.append(user)
+
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
 
@@ -150,7 +157,8 @@ def approve_users(request):
                 email = user.email
                 user.is_active = True
                 user.save()
-                # send email notification here
+                
+                # Send email notification here
                 try:
                     send_mail(
                         subject='Your Account Creation Has Been Approved!',
@@ -169,15 +177,34 @@ def approve_users(request):
                     )
                 except Exception as e:
                     print(e)
-                    return render(request, 'home.html',{'message':'Failed To Send Email'})
+                    return render(request, 'home.html', {'message': 'Failed To Send Email'})
                 finally:
-                    return render(request, 'home.html', {'pending_users': pending_users})
+                    return render(request, 'home.html', {'biobank_managers': biobank_managers, 'researchers': researchers})
+
             except User.DoesNotExist:
                 pass  
 
-    return render(request, 'home.html', {'pending_users': pending_users})
+    return render(request, 'home.html', {'biobank_managers': biobank_managers, 'researchers': researchers})
+
+def delete_users(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        user = UserProfile.objects.get(id=user_id)
+        # Perform the actual deletion of the user
+        user.delete()
+        messages.success(request, f"Account for {user.first_name} {user.last_name} has been deleted.")
+    return redirect('')  # Redirect to the admin page
 
 def login(request):
+    role = request.GET.get('role')
+
+    roledata_mapping = {
+       'BiobankManager': 'BiobankManager',
+       'Researcher': 'Researcher',
+    }
+
+    roledata = roledata_mapping.get(role)
+
     try:
         if request.method =='POST':
             email=request.POST.get('eml',None)
@@ -188,7 +215,7 @@ def login(request):
             if 'forgot_password' in request.POST:
                 if not email:
                     messages.error(request, "Please enter your username.")
-                    return redirect('loginpage')
+                    return redirect(request.path)
                 # Proceed with password reset logic
                 # Send the reset code to the email/username
                 # Generate a random verification code
@@ -215,7 +242,7 @@ def login(request):
             ubj= authenticate(request, username=email, password=pwd) 
             if ubj == None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
-                return redirect('/accounts/loginpage')
+                return redirect(request.path)
             q = User.objects.filter(username=email).filter(is_staff=True)
             table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
             userRole= Role.objects.filter(id=table1_data.role_id.id).first()
@@ -228,63 +255,11 @@ def login(request):
             else:
                 return redirect("")
         else:
-            return render(request, 'index.html')
+            return render(request, 'index.html', {'role': roledata})
     except Exception as e:
         print(e)
         messages.add_message(request, messages.ERROR, "Something Went Wrong!")
-        return render(request, 'index.html')
-    
-def login(request):
-    try:
-        if request.method =='POST':
-            email=request.POST.get('eml',None)
-            pwd=request.POST.get('pwd',None)
-            ubj= authenticate(request, username=email, password=pwd) 
-            if ubj == None:
-                messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
-                return redirect('/accounts/loginpage_researcher')
-
-            q = User.objects.filter(username=email).filter(is_staff=True)
-            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
-            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
-            request.session["role"]=userRole.role
-            if q and ubj:
-                messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                return redirect("")
-            else:
-                return redirect("")
-        else:
-            return render(request, 'index.html')
-    except Exception as e:
-        print(e)
-        messages.add_message(request, messages.ERROR, "Something Went Wrong!")
-        return render(request, 'index.html')
-    
-def login_manager(request):
-    try:
-        if request.method =='POST':
-            email=request.POST.get('eml',None)
-            pwd=request.POST.get('pwd',None)
-            ubj= authenticate(request, username=email, password=pwd) 
-            if ubj == None:
-                messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
-                return redirect('/accounts/loginpage_manager')
-
-            q = User.objects.filter(username=email).filter(is_staff=True)
-            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
-            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
-            request.session["role"]=userRole.role
-            if q and ubj:
-                messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                return redirect("")
-            else:
-                return redirect("")
-        else:
-            return render(request, 'index_manager.html')
-    except Exception as e:
-        print(e)
-        messages.add_message(request, messages.ERROR, "Something Went Wrong!")
-        return render(request, 'index_manager.html')
+        return render(request, 'index.html', {'role': roledata})
     
 def login_admin(request):
     try:
@@ -294,7 +269,7 @@ def login_admin(request):
             ubj= authenticate(request, username=email, password=pwd) 
             if ubj == None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
-                return redirect('/accounts/loginpage')
+                return redirect(request.path)
 
             q = User.objects.filter(username=email).filter(is_staff=True)
             table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
@@ -306,11 +281,11 @@ def login_admin(request):
             else:
                 return redirect("")
         else:
-            return render(request, 'index_admin.html')
+            return render(request, 'admin_login.html')
     except Exception as e:
         print(e)
         messages.add_message(request, messages.ERROR, "Something Went Wrong!")
-        return render(request, 'index_admin.html')
+        return render(request, 'admin_login.html')
 
 def logout(request):
     try:

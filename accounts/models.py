@@ -6,7 +6,7 @@ from django.conf import settings
 class UserProfile(AbstractUser):
     middle_name= models.CharField(max_length=150, verbose_name='midde name', blank=True)
     position = models.CharField(max_length=150, verbose_name='position', blank=True)
-    unit = models.CharField(max_length=20, verbose_name='unit', null=True, blank=True)
+    unit = models.CharField(max_length=150, verbose_name='unit', null=True, blank=True)
     mobile_number = models.CharField(max_length=30, verbose_name='mobile number', blank=True)
     deletion_requested = models.BooleanField(default=False, verbose_name='Deletion Requested')
     deletion_approved = models.BooleanField(default=False, verbose_name='Deletion Approved')
