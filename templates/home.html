@@ -292,36 +292,6 @@
             </div>
         </div>
         {% endfor %}
-        
-        <!-- Display pending Researchers -->
-        <h4>Researcher ({{ pending_users|length }})</h4>
-        {% for user in pending_users %}
-        <div class="pending-user">
-            <div class="pending-user-details">
-                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong>Position:</strong> {{ user.position }}</p>
-                <p><strong>Contact Information</strong></p>
-                <p>Email: {{ user.email }}</p>
-                <p>Mobile: {{ user.mobile_number }}</p>
-            </div>
-            <div class="pending-user-buttons">
-                <form method="post" action="{% url 'approve_users' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-success" type="submit">Approve</button>
-                </form>
-                <form method="post" action="{% url 'approve_users' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-danger" type="submit">Deny</button>
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-danger" type="submit">Deny</button>
-                </form>
-            </div>
-        </div>
-        {% endfor %}
-
       
         <!-- Display Account Deletion Requests -->
         <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
@@ -349,32 +319,6 @@
         </div>
         {% endfor %}
 
-      
-        <!-- Display Account Deletion Requests -->
-        <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
-
-        {% for user in deletion_requests %}
-        <div class="pending-user">
-          <div class="pending-user-details">
-            <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-            <p><strong>Position:</strong> {{ user.position }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Mobile:</strong> {{ user.mobile_number }}</p>
-          </div>
-          <div class="pending-user-buttons">
-            <form method="post" action="{% url 'approve_deletion' %}">
-              {% csrf_token %}
-              <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-success" type="submit">Approve Deletion</button>
-            </form>
-            <form method="post" action="{% url 'deny_deletion' %}">
-              {% csrf_token %}
-              <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-danger" type="submit">Deny Deletion</button>
-            </form>
-          </div>
-        </div>
-        {% endfor %}
 
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
