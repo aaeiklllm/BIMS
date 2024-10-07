@@ -5,6 +5,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
+    @media only screen and (max-width: 768px) {
+      .content-section {
+        max-width: 90%;
+      }
+
+      .features-section h3, .content-section h1 {
+        font-size: 24px;
+      }
+    }
     .info-msg,
     .success-msg,
     .warning-msg,
@@ -63,7 +72,6 @@
       height: 100%;
       background-image: url("{% static 'bg_image_1.jpg' %}");
     }
-
 
     .container-home {
       width: 100%;
@@ -144,16 +152,21 @@
     }
 
     .pending-user {
-      font-size: 18px;
-      color: #333;
-      border: 1px solid #644ca4;
+      background-color: #f9f9f9;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
-      border-radius: 5px;
-      background-color: #f9f9f9;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       display: flex;
+      flex-direction: row;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .pending-user p {
+      margin: 5px 0;
+      font-size: 16px;
     }
 
     .pending-user-details {
@@ -173,19 +186,6 @@
         width: 100px;
     }
 
-    .pending-user {
-      font-size: 18px;
-      color: #333;
-      border: 1px solid #644ca4;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
     .pending-user-details {
         flex-grow: 1;
     }
@@ -202,6 +202,96 @@
     .pending-user-buttons button {
         width: 100px;
     }
+
+    .btn-create-sample {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 20px;
+        font-family: Helvetica, sans-serif;
+        color: white;
+        background-color: #644ca4;
+        border: none;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        /* transition: background-color 0.3s; */
+        cursor: pointer;
+    }
+
+    .btn-create-sample:hover {
+        background-color: #523a8d; /* Darker shade on hover */
+    }
+
+    .profile-section, .actions-section {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    h1, h2 {
+      color: #644ca4;
+      text-align: center; /* Center-align the headers */
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    form input[type="text"],
+    form input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 0px 0px 10px 0px;
+
+    }
+
+    .btn-primary, .btn-create-sample, .btn-danger {
+      display: inline-block;
+      padding: 12px 40px;
+      font-size: 16px;
+      font-family: Helvetica, sans-serif;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: auto;
+    }
+
+    .actions-section a {
+      margin-right: 15px;
+    }
+
+    .grid-layout {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .grid-layout .item {
+      flex: 1 1 300px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .grid-layout {
+        flex-direction: column;
+      }
+    }
+
+    hr {
+      border: none; /* Remove the default border */
+      height: 2px; /* Set the height of the line */
+      background-color: #4b0082; /* Set the color of the line */
+      margin: 10px 0; /* Add margin above and below the line */
+    }
+
   </style>
 </head>
 
@@ -319,82 +409,64 @@
         </div>
         {% endfor %}
 
-
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
         <h1>Welcome, Researcher</h1>
 
+        <div class="profile-section">
         <!-- Researcher update form -->
-        <h2>Update Your Information</h2>
-        <form method="POST" action="">
-          {% csrf_token %}
-          <label for="uname">Username:</label>
-          <input type="text" name="uname" value="{{ user.username }}" required><br>
+          <h2>My Profile</h2> 
+          <hr>
+          <form method="POST" action="">
+            {% csrf_token %}
+            <label for="uname">Username:</label>
+            <input type="text" name="uname" value="{{ user.username }}" required><br>
 
-          <label for="email">Email:</label>
-          <input type="email" name="email" value="{{ user.email }}" required><br>
+            <label for="email">Email:</label>
+            <input type="email" name="email" value="{{ user.email }}" required><br>
 
-          <label for="first_name">First Name:</label>
-          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+            <label for="first_name">First Name:</label>
+            <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
 
-          <label for="middle_name">Middle Name:</label>
-          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
+            <label for="middle_name">Middle Name:</label>
+            <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
 
-          <label for="last_name">Last Name:</label>
-          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+            <label for="last_name">Last Name:</label>
+            <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
 
-          <label for="position">Position:</label>
-          <input type="text" name="position" value="{{ user.position }}" required><br>
+            <label for="position">Position:</label>
+            <input type="text" name="position" value="{{ user.position }}" required><br>
 
-          <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+            <label for="mobile_number">Mobile Number:</label>
+            <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
 
-          <button type="submit" class="btn btn-primary">Update</button>
-        </form>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+        </div>  
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <h2>Actions</h2>
+          <hr>
+          <p>Select an app from the options below to get started.</p>
+
+          <div class="grid-layout">
+            <div class="item">
+              <h3>Request Sample</h3>
+              <a href="/home/requestsample" class="btn-create-sample">Request Sample</a>
+            </div>
+
+            <div class="item">
+              <h3>My Request</h3>
+              <a href="/home/myrequest" class="btn-primary">My Request</a>
+            </div>
+          </div>
+        </div>
         
         <!-- Request Deletion Section -->
-        <div class="request-deletion">
+        <div class="profile-section">
           <h2>Account Deletion Request</h2>
-          <p>If you wish to delete your account, please click the button below.</p>
-          <form method="POST" action="{% url 'request_deletion' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Request Account Deletion</button>
-          </form>
-        </div>
-
-        <h1>Welcome, Researcher</h1>
-
-        <!-- Researcher update form -->
-        <h2>Update Your Information</h2>
-        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' %} -->
-          {% csrf_token %}
-          <label for="uname">Username:</label>
-          <input type="text" name="uname" value="{{ user.username }}" required><br>
-
-          <label for="email">Email:</label>
-          <input type="email" name="email" value="{{ user.email }}" required><br>
-
-          <label for="first_name">First Name:</label>
-          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
-
-          <label for="middle_name">Middle Name:</label>
-          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
-
-          <label for="last_name">Last Name:</label>
-          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
-
-          <label for="position">Position:</label>
-          <input type="text" name="position" value="{{ user.position }}" required><br>
-
-          <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
-
-          <button type="submit" class="btn btn-primary">Update</button>
-        </form>
-
-        <!-- Request Deletion Section -->
-        <div class="request-deletion">
-          <h2>Account Deletion Request</h2>
+          <hr>
           <p>If you wish to delete your account, please click the button below.</p>
           <form method="POST" action="{% url 'request_deletion' %}">
             {% csrf_token %}
@@ -405,44 +477,77 @@
       {% elif request.session.role == 'BiobankManager' %}
         <!-- Biobank Manager content -->
         <h1>Welcome, Biobank Manager</h1>
-        <li class="nav-item">
-          <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Create Sample</a>
-        </li>
-        <!-- Biobank Manager update form -->
-        <h2>Update Your Information</h2>
+        
+        <div class="profile-section">
+          <!-- Biobank Manager update form -->
+          <h2>My Profile</h2>
+          <hr>
+          <p>Review and update your profile information using the form below.</p>
 
-        <form method="POST" action=""> 
-          {% csrf_token %}
-          <label for="uname">Username:</label>
-          <input type="text" name="uname" value="{{ user.username }}" required><br>
+          <form method="POST" action=""> 
+            {% csrf_token %}
+            <label for="uname">Username:</label>
+            <input type="text" name="uname" value="{{ user.username }}" required><br>
 
-          <label for="email">Email:</label>
-          <input type="email" name="email" value="{{ user.email }}" required><br>
+            <label for="email">Email:</label>
+            <input type="email" name="email" value="{{ user.email }}" required><br>
 
-          <label for="first_name">First Name:</label>
-          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+            <label for="first_name">First Name:</label>
+            <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
 
-          <label for="middle_name">Middle Name:</label>
-          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
+            <label for="middle_name">Middle Name:</label>
+            <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
 
-          <label for="last_name">Last Name:</label>
-          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+            <label for="last_name">Last Name:</label>
+            <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
 
-          <label for="position">Position:</label>
-          <input type="text" name="position" value="{{ user.position }}" required><br>
+            <label for="position">Position:</label>
+            <input type="text" name="position" value="{{ user.position }}" required><br>
 
-          <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+            <label for="mobile_number">Mobile Number:</label>
+            <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
 
-          <button type="submit" class="btn btn-primary">Update</button>
-        </form>
-        <!-- Request Deletion Section -->
-        <div class="request-deletion">
+            <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <h2>Actions</h2>
+          <hr>
+          <p>Select an app from the options below to get started.</p>
+
+          <div class="grid-layout">
+            <div class="item">
+              <h3>Create Sample</h3>
+              <a href="/home/createsample" class="btn-create-sample">Create Sample</a>
+            </div>
+
+            <div class="item">
+              <h3>View Sample</h3>
+              <a href="/home/viewsample" class="btn-primary">View Sample</a>
+            </div>
+
+            <div class="item">
+              <h3>Sample Requests</h3>
+              <a href="/home/samplerequest" class="btn-primary">View Requests</a>
+            </div>
+
+            <div class="item">
+              <h3>Generate Reports</h3>
+              <a href="/home/generatereports" class="btn-primary">Generate Reports</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Deletion Section -->
+        <div class="profile-section">
           <h2>Account Deletion Request</h2>
+          <hr>
           <p>If you wish to delete your account, please click the button below.</p>
           <form method="POST" action="{% url 'request_deletion' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Request Account Deletion</button>
+            <button type="submit" class="btn-danger">Request Account Deletion</button>
           </form>
         </div>
 
