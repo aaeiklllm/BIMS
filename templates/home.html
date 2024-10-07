@@ -292,41 +292,12 @@
             </div>
         </div>
         {% endfor %}
-        
-        <!-- Display pending Researchers -->
-        <h4>Researcher ({{ pending_users|length }})</h4>
-        {% for user in pending_users %}
-        <div class="pending-user">
-            <div class="pending-user-details">
-                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong>Position:</strong> {{ user.position }}</p>
-                <p><strong>Contact Information</strong></p>
-                <p>Email: {{ user.email }}</p>
-                <p>Mobile: {{ user.mobile_number }}</p>
-            </div>
-            <div class="pending-user-buttons">
-                <form method="post" action="{% url 'approve_users' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-success" type="submit">Approve</button>
-                </form>
-                <form method="post" action="{% url 'approve_users' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-danger" type="submit">Deny</button>
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-danger" type="submit">Deny</button>
-                </form>
-            </div>
-        </div>
-        {% endfor %}
-
       
         <!-- Display Account Deletion Requests -->
         <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
 
-        {% for user in deletion_requests %}
+        <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
+        {% for user in biobank_managers2 %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -349,11 +320,8 @@
         </div>
         {% endfor %}
 
-      
-        <!-- Display Account Deletion Requests -->
-        <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
-
-        {% for user in deletion_requests %}
+        <h4>Researcher ({{ researchers|length }})</h4>
+        {% for user in researchers2 %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -379,50 +347,13 @@
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
         <h1>Welcome, Researcher</h1>
+        <li class="nav-item">
+          <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Create Sample</a>
+        </li>
 
         <!-- Researcher update form -->
-        <h2>Update Your Information</h2>
-        <form method="POST" action="">
-          {% csrf_token %}
-          <label for="uname">Username:</label>
-          <input type="text" name="uname" value="{{ user.username }}" required><br>
-
-          <label for="email">Email:</label>
-          <input type="email" name="email" value="{{ user.email }}" required><br>
-
-          <label for="first_name">First Name:</label>
-          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
-
-          <label for="middle_name">Middle Name:</label>
-          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
-
-          <label for="last_name">Last Name:</label>
-          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
-
-          <label for="position">Position:</label>
-          <input type="text" name="position" value="{{ user.position }}" required><br>
-
-          <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
-
-          <button type="submit" class="btn btn-primary">Update</button>
-        </form>
-        
-        <!-- Request Deletion Section -->
-        <div class="request-deletion">
-          <h2>Account Deletion Request</h2>
-          <p>If you wish to delete your account, please click the button below.</p>
-          <form method="POST" action="{% url 'request_deletion' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Request Account Deletion</button>
-          </form>
-        </div>
-
-        <h1>Welcome, Researcher</h1>
-
-        <!-- Researcher update form -->
-        <h2>Update Your Information</h2>
-        <form method="POST" action="{% url 'update_user' user.id %}"> <!-- {% url 'update_user' %} -->
+         
+        <form method="POST" action=""> 
           {% csrf_token %}
           <label for="uname">Username:</label>
           <input type="text" name="uname" value="{{ user.username }}" required><br>

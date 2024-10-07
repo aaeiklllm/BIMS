@@ -123,11 +123,6 @@ def create_account(request):
     
     return render(request, 'ragister.html', context=context)
 
-# def create_sample(request):
-
-#     return render(request, 'create_sample.html')
-
-
 def approve_users(request):
     pending_users = User.objects.filter(is_active=False)
 
@@ -185,6 +180,45 @@ def approve_users(request):
                 pass  
 
     return render(request, 'home.html', {'biobank_managers': biobank_managers, 'researchers': researchers})
+
+def request_deletion(request):
+    user_id = request.session.get('id')  # Assuming you set 'id' in the session upon login
+    
+    # Handle deletion request
+    if user_id:  # Check if the user is logged in
+        user = UserProfile.objects.get(id=user_id)  # Get the user profile based on session id
+        user.deletion_requested = True  # Set the flag for deletion request
+        user.save()
+        messages.success(request, "Deletion request has been made.")
+    else:
+        messages.error(request, "You need to be logged in to request deletion.")
+        return redirect('/accounts/loginpage/')  # Redirect to the login page
+    
+    # Get all users who requested deletion (for admin to see)
+    deletion_requests = UserProfile.objects.filter(deletion_requested=True)
+
+    biobank_managers2 = []
+    researchers2 = []
+
+    # Loop through pending users and separate them by role
+    for user in deletion_requests:
+        # Assuming UserRoleMap model relates User and Role
+        user_role_map2 = UserroleMap.objects.filter(user_id=user).first()
+        
+        if user_role_map2:
+            role = user_role_map2.role_id.role  # Adjust based on your actual model structure
+            if role == 'BiobankManager':
+                biobank_managers2.append(user)
+            elif role == 'Researcher':
+                researchers2.append(user)
+    
+    # Pass the user to the template as well
+    return render(request, 'home.html', {
+        'biobank_managers': biobank_managers2, 
+        'researchers': researchers2,
+        'user': user,  # Pass the logged-in user to the template
+    })
+
 
 def delete_users(request):
     if request.method == 'POST':
@@ -294,24 +328,24 @@ def logout(request):
     except:
         return HttpResponse('<h3 style="text-align:center"> Somthing went wrong !!!!!</h3>')
     
-def test(request):
-    role = request.GET.get('role')
+# def test(request):
+#     role = request.GET.get('role')
 
-    roledata_mapping = {
-        'BiobankManager': 'BiobankManager',
-        'Researcher': 'Researcher',
-    }
+#     roledata_mapping = {
+#         'BiobankManager': 'BiobankManager',
+#         'Researcher': 'Researcher',
+#     }
 
-    roledata = roledata_mapping.get(role)
-    message = f"Create {roledata}"
+#     roledata = roledata_mapping.get(role)
+#     message = f"Create {roledata}"
     
-    # Pass roledata and message to the template context
-    context = {
-        'roledata': roledata,
-        'message': message,
-    }
+#     # Pass roledata and message to the template context
+#     context = {
+#         'roledata': roledata,
+#         'message': message,
+#     }
     
-    return render(request, 'index copy.html', context=context)
+#     return render(request, 'index copy.html', context=context)
 
 def update_user(request, user_id):
     user = User.objects.get(id=user_id)
@@ -339,33 +373,6 @@ def update_user(request, user_id):
         'user': user
     }
     return render(request, 'home.html', context)
-
-
-def request_deletion(request):
-    user_id = request.session.get('id')  # Assuming you set 'id' in the session upon login
-    
-    # Handle deletion request
-    if user_id:  # Check if the user is logged in
-        user = UserProfile.objects.get(id=user_id)  # Get the user profile based on session id
-        user.deletion_requested = True  # Set the flag for deletion request
-        user.save()
-        messages.success(request, "Deletion request has been made.")
-    else:
-        messages.error(request, "You need to be logged in to request deletion.")
-        return redirect('/accounts/loginpage/')  # Redirect to the login page
-    
-    # Get all users who requested deletion (for admin to see)
-    # if request.session.get('role') == 'Admin':
-    deletion_requests = UserProfile.objects.filter(deletion_requested=True)
-    # else:
-    #     deletion_requests = []
-
-    
-    # Pass the user to the template as well
-    return render(request, 'home.html', {
-        'deletion_requests': deletion_requests,  # Pass deletion requests to the template for admin
-        'user': user,  # Pass the logged-in user to the template
-    })
 
 def approve_deletion(request):
     if request.method == 'POST':

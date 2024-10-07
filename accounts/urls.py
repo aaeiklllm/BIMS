@@ -15,5 +15,5 @@ urlpatterns = [
     path('deny-deletion/', views.deny_deletion, name='deny_deletion'),
     path('reset_password', views.reset_password, name='reset_password'),
     path('adminlogin/', views.login_admin),
-    path('test/', views.test),
+    # path('test/', views.test),
 ]
