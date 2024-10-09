@@ -10,29 +10,36 @@ from accounts.models import UserroleMap  # Adjust if necessary
 def homePage(request):
     try:
         user_id = request.session.get('id')
+        print(f"User ID from homePage: {user_id}")
         if user_id:
             user = User.objects.get(id=user_id)
         else:
             return render(request, 'home.html') 
 
+        print(f"User from homePage1: {user}")
         # Get pending users and deletion requests
         pending_users = User.objects.filter(is_active=False)
         deletion_requests = User.objects.filter(deletion_requested=True)
 
+        print(f"pending_users from homePage1: {pending_users}")
         # Separate pending users by role
         biobank_managers = []
         researchers = []
 
-        for user in pending_users:
-            user_role_map = UserroleMap.objects.filter(user_id=user).first()  # Assuming you have this model
+        # users = User.objects.get(id=user_id)
+        for users in pending_users:
+            user_role_map = UserroleMap.objects.filter(user_id=users).first()  # Assuming you have this model
+            print(f"user_role_map from homePage1: {user_role_map}")
             
             if user_role_map:
                 role = user_role_map.role_id.role  # Adjust based on your actual model structure
+                print(role)
                 if role == 'BiobankManager':
-                    biobank_managers.append(user)
+                    biobank_managers.append(users)
                 elif role == 'Researcher':
-                    researchers.append(user)
+                    researchers.append(users)
 
+        print(f"User from homePage: {user}")
         return render(request, 'home.html', {
             'user': user,
             'pending_users': pending_users,
@@ -49,7 +56,8 @@ def aboutUs(request):
         return render(request, 'about.html', {})
     except Exception as e:
         print(e)
-        return HttpResponse("<h1>something went wrong!!!</h1>")       
+        return HttpResponse("<h1>something went wrong!!!</h1>") 
+
 
 from .models import Samples, Comorbidities, Lab_Test, Aliquot, Storage
 
@@ -78,7 +86,6 @@ from .models import Samples, Comorbidities, Lab_Test, Aliquot, Storage
 #         storage_instance.save()
 
 #         return redirect('success_url')  # Redirect as needed
-
 
 def create_sample(request):
     if request.method == 'POST':
