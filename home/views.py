@@ -13,11 +13,13 @@ from accounts.models import UserroleMap
 def homePage(request):
     try:
         user_id = request.session.get('id')
+        print(f"User ID from homePage: {user_id}")
         if user_id:
             user = User.objects.get(id=user_id)
         else:
             return render(request, 'home.html') 
 
+        print(f"User from homePage1: {user}")
         # Get pending users and deletion requests
         pending_users = User.objects.filter(is_active=False)
         deletion_requests = User.objects.filter(deletion_requested=True)
@@ -30,15 +32,22 @@ def homePage(request):
         biobank_managers2 = []
         researchers2 = []
 
-        for user in pending_users:
-            user_role_map = UserroleMap.objects.filter(user_id=user).first()  # Assuming you have this model
+        #For deletion
+        biobank_managers2 = []
+        researchers2 = []
+
+        # users = User.objects.get(id=user_id)
+        for users in pending_users:
+            user_role_map = UserroleMap.objects.filter(user_id=users).first()  # Assuming you have this model
+            print(f"user_role_map from homePage1: {user_role_map}")
             
             if user_role_map:
                 role = user_role_map.role_id.role  # Adjust based on your actual model structure
+                print(role)
                 if role == 'BiobankManager':
-                    biobank_managers.append(user)
+                    biobank_managers.append(users)
                 elif role == 'Researcher':
-                    researchers.append(user)
+                    researchers.append(users)
 
         for user in deletion_requests:
             user_role_map2 = UserroleMap.objects.filter(user_id=user).first()
@@ -68,9 +77,36 @@ def aboutUs(request):
         return render(request, 'about.html', {})
     except Exception as e:
         print(e)
-        return HttpResponse("<h1>something went wrong!!!</h1>")       
+        return HttpResponse("<h1>something went wrong!!!</h1>") 
+
 
 from .models import Samples, Comorbidities, Lab_Test, Aliquot, Storage
+
+# def create_storage(request):
+#     if request.method == 'POST':
+#         sample_id = request.POST.get('sample_id')  # Get the sample ID
+#         # Retrieve the sample instance if needed
+#         sample = get_object_or_404(Samples, id=sample_id)
+
+#         # Collect other storage data
+#         freezer_num = request.POST.get('freezer_num')
+#         shelf_num = request.POST.get('shelf_num')
+#         rack_num = request.POST.get('rack_num')
+#         box_num = request.POST.get('box_num')
+#         container = request.POST.get('container')
+
+#         # Create and save storage instance
+#         storage_instance = Storage(
+#             sample=sample,  # Reference the sample instance directly
+#             freezer_num=freezer_num,
+#             shelf_num=shelf_num,
+#             rack_num=rack_num,
+#             box_num=box_num,
+#             container=container
+#         )
+#         storage_instance.save()
+
+#         return redirect('success_url')  # Redirect as needed
 
 def create_sample(request):
     if request.method == 'POST':

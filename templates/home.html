@@ -4,6 +4,9 @@
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   <style>
     .info-msg,
     .success-msg,
@@ -201,11 +204,24 @@
     .pending-user-buttons button {
         width: 100px;
     }
+
+  /* .toast-error {
+    background-color: #d9534f !important; 
+    color: #fff !important;  
+  } */
+
+  /* .toast-top-right {
+    top: 100px; 
+    right: 12px;
+  } */
   </style>
 </head>
 
+
+
 <section class="page-hero bg-image">
   <div class="content-section">
+    {% if not request.session.role|default:'' %}
     <!-- Main Title -->
     <h1 style="font-size: 45px; text-align: center; margin-top: 10px;"><b>Biobank Information Management System (BIMS) for a Genetic Research Institution</b></h1>
     
@@ -234,14 +250,17 @@
         <p><strong>Automated Email Notifications</strong>: Receive timely email alerts for sample requests and updates on the status of sample requests.</p>
       </div>
     </div>
+    {% endif %}
 
     <!-- Content based on the role -->
     {% if request.session.role %}
-      {% if request.session.role == 'Admin' %}
-        <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
+      <!-- {% if request.session.role == 'Admin' %} -->
+      {% if pending_users %}
+      <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
 
         <!-- Display pending Biobank Manager -->
         <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
+        {% if biobank_managers %}
         {% for user in biobank_managers %}
         <div class="pending-user">
             <div class="pending-user-details">
@@ -265,9 +284,14 @@
             </div>
         </div>
         {% endfor %}
+        {% else %}
+          <p>No Biobank Manager creation requests</p>
+        {% endif %}
+
         
         <!-- Display pending Researchers -->
         <h4>Researcher ({{ researchers|length }})</h4>
+        {% if researchers %}
         {% for user in researchers %}
         <div class="pending-user">
             <div class="pending-user-details">
@@ -281,68 +305,89 @@
                 <form method="post" action="{% url 'approve_users' %}">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-success" type="submit">Approve</button>
+                    <button class="btn btn-success" type="submit">Approve Creation</button>
                 </form>
                 <form method="post" action="{% url 'delete_users' %}">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <button class="btn btn-danger" type="submit">Deny</button>
+                    <button class="btn btn-danger" type="submit">Deny Creation</button>
                 </form>
             </div>
         </div>
         {% endfor %}
-      
-        <!-- Display Account Deletion Requests -->
-        <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
+        {% else %}
+          <p>No Researcher creation requests</p>
+        {% endif %}
+        {% endif %}
 
-        <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
+      
+        {% if deletion_requests %}
+      <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
+
+      <!-- Display pending Biobank Manager Deletion Requests -->
+      <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
+      {% if biobank_managers %}
         {% for user in biobank_managers2 %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
             <p><strong>Position:</strong> {{ user.position }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Mobile:</strong> {{ user.mobile_number }}</p>
+            <p><strong>Contact Information</strong></p>
+            <p>Email: {{ user.email }}</p>
+            <p>Mobile: {{ user.mobile_number }}</p>
           </div>
           <div class="pending-user-buttons">
             <form method="post" action="{% url 'approve_deletion' %}">
               {% csrf_token %}
               <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-success" type="submit">Approve Deletion</button>
+              <button class="btn btn-success" type="submit">Approve</button>
             </form>
             <form method="post" action="{% url 'deny_deletion' %}">
               {% csrf_token %}
               <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-danger" type="submit">Deny Deletion</button>
+              <button class="btn btn-danger" type="submit">Deny</button>
             </form>
           </div>
         </div>
         {% endfor %}
+      {% else %}
+        <p>No Biobank Manager deletion requests</p>
+      {% endif %}
 
-        <h4>Researcher ({{ researchers|length }})</h4>
+      <!-- Display pending Researcher Deletion Requests -->
+      <h4>Researcher ({{ researchers|length }})</h4>
+      {% if researchers %}
         {% for user in researchers2 %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
             <p><strong>Position:</strong> {{ user.position }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Mobile:</strong> {{ user.mobile_number }}</p>
+            <p><strong>Contact Information</strong></p>
+            <p>Email: {{ user.email }}</p>
+            <p>Mobile: {{ user.mobile_number }}</p>
           </div>
           <div class="pending-user-buttons">
             <form method="post" action="{% url 'approve_deletion' %}">
               {% csrf_token %}
               <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-success" type="submit">Approve Deletion</button>
+              <button class="btn btn-success" type="submit">Approve</button>
             </form>
             <form method="post" action="{% url 'deny_deletion' %}">
               {% csrf_token %}
               <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-danger" type="submit">Deny Deletion</button>
+              <button class="btn btn-danger" type="submit">Deny</button>
             </form>
           </div>
         </div>
         {% endfor %}
+      {% else %}
+        <p>No Researcher deletion requests</p>
+      {% endif %}
 
+    {% endif %}
+
+      
+        
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
         <h1>Welcome, Researcher</h1>
@@ -350,6 +395,7 @@
           <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Create Sample</a>
         </li>
 
+        <h2>Update Your Information</h2>
         <!-- Researcher update form -->
          
         <form method="POST" action=""> 
@@ -373,7 +419,7 @@
           <input type="text" name="position" value="{{ user.position }}" required><br>
 
           <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" pattern="\+63[0-9]{10}" title="Mobile number must start with +63 and be followed by 10 digits" required><br>
 
           <button type="submit" class="btn btn-primary">Update</button>
         </form>
@@ -397,7 +443,7 @@
         <!-- Biobank Manager update form -->
         <h2>Update Your Information</h2>
 
-        <form method="POST" action=""> 
+        <form method="POST" action="{% url 'update_user' %}"> 
           {% csrf_token %}
           <label for="uname">Username:</label>
           <input type="text" name="uname" value="{{ user.username }}" required><br>
@@ -418,7 +464,7 @@
           <input type="text" name="position" value="{{ user.position }}" required><br>
 
           <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" pattern="\+63[0-9]{10}" title="Mobile number must start with +63 and be followed by 10 digits" required><br>
 
           <button type="submit" class="btn btn-primary">Update</button>
         </form>
@@ -442,4 +488,40 @@
     {% endif %}
   </div>
 </section>
+
+<!-- <script>
+  toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+  };
+
+  {% if messages %}
+      {% for message in messages %}
+          var toastrType = "";
+          if ("{{ message.tags }}" === "alert-success") {
+              toastrType = "success";
+          } else if ("{{ message.tags }}" === "alert-info") {
+              toastrType = "info";
+          } else if ("{{ message.tags }}" === "alert-warning") {
+              toastrType = "warning";
+          } else if ("{{ message.tags }}" === "alert-danger") {
+              toastrType = "error";
+          }
+          toastr[toastrType]("{{ message|escapejs }}");
+      {% endfor %}
+  {% endif %}
+</script> -->
 {% endblock %}

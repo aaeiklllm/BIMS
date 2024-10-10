@@ -2,6 +2,8 @@ from django.core.checks import messages
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, response
 from django.contrib.auth.models import User
+from .models import UserroleMap
+from .models import Role
 import uuid
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -43,10 +45,10 @@ def register_user(request, roledata):
             pwd=request.POST.get('pwd',None)
 
             if User.objects.filter(username=uname).exists():
-                messages.add_message(request, messages.ERROR, "User Already Exists")
+                messages.add_message(request, messages.ERROR, "Username already exists. Please choose another one.")
                 return redirect('')
             elif User.objects.filter(email=email).exists():
-                messages.add_message(request, messages.ERROR, "User Already Exists")
+                messages.add_message(request, messages.ERROR, "Email already used for an account. Please choose another one.")
                 return redirect('')
             else:
                 user_obj=User.objects.create(username=uname,first_name=first_name, middle_name=middle_name,last_name=last_name, position=position,unit=unit, mobile_number=mobile_number, password=pwd,email=email, is_active=False, is_superuser=False)
@@ -57,7 +59,7 @@ def register_user(request, roledata):
                     
                     userRole= UserroleMap.objects.create(user_id=user_obj, role_id=role_name)
                     userRole.save()
-                    messages.add_message(request, messages.SUCCESS, "Biobank Manager pending approval")
+                    messages.add_message(request, messages.SUCCESS, "Biobank manager account pending approval. Please check your email inbox.")
                     try:
                         send_mail(
                             subject='Thank you for creating an account with us!',
@@ -79,7 +81,7 @@ def register_user(request, roledata):
             
                     userRole= UserroleMap.objects.create(user_id=user_obj, role_id=role_name)
                     userRole.save()
-                    messages.add_message(request, messages.SUCCESS, "Researcher pending approval")
+                    messages.add_message(request, messages.SUCCESS, "Researcher account pending approval.  Please check your email inbox")
                     try:
                         send_mail(
                             subject='Thank you for creating an account with us!',
@@ -123,6 +125,63 @@ def create_account(request):
     
     return render(request, 'ragister.html', context=context)
 
+def create_sample(request):
+    messages.add_message(request, messages.SUCCESS, "Sample has been created.")
+    return render(request, 'create_sample.html')
+
+def creation_requests(request):
+    pending_users = User.objects.filter(is_active=False, deletion_requested=False)  # Filter for creation requests only
+
+    biobank_managers = []  # Initialize empty lists to avoid errors
+    researchers = []
+
+    for user in pending_users:
+        user_role_map = UserroleMap.objects.filter(user_id=user).first()
+        if user_role_map:
+            role = user_role_map.role_id.role
+            if role == 'BiobankManager':
+                biobank_managers.append(user)
+            elif role == 'Researcher':
+                researchers.append(user)
+
+    deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
+
+    # Pass both creation and deletion requests in the context
+    return render(request, 'home.html', {
+        'pending_users': pending_users,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers': biobank_managers,
+        'researchers': researchers
+    })
+
+def deletion_requests(request):
+    deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
+
+    biobank_managers = []  # Initialize empty lists
+    researchers = []
+
+    for user in deletion_requests:
+        user_role_map = UserroleMap.objects.filter(user_id=user).first()
+        if user_role_map:
+            role = user_role_map.role_id.role
+            if role == 'BiobankManager':
+                biobank_managers.append(user)
+            elif role == 'Researcher':
+                researchers.append(user)
+
+    pending_users = User.objects.filter(is_active=False, deletion_requested=False)  # Filter for creation requests
+
+    # Pass both creation and deletion requests in the context
+    return render(request, 'home.html', {
+        'deletion_requests': deletion_requests,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers': biobank_managers,
+        'researchers': researchers
+    })
+
+
 def approve_users(request):
     pending_users = User.objects.filter(is_active=False)
 
@@ -152,6 +211,7 @@ def approve_users(request):
                 email = user.email
                 user.is_active = True
                 user.save()
+                messages.add_message(request, messages.SUCCESS,  f"Account for {user.first_name} {user.last_name} has been approved.")
                 
                 # Send email notification here
                 try:
@@ -226,10 +286,13 @@ def delete_users(request):
         user = UserProfile.objects.get(id=user_id)
         # Perform the actual deletion of the user
         user.delete()
-        messages.success(request, f"Account for {user.first_name} {user.last_name} has been deleted.")
+        messages.add_message(request, messages.SUCCESS,  f"Account for {user.first_name} {user.last_name} has been deleted.")
     return redirect('')  # Redirect to the admin page
 
 def login(request):
+    print(f"Request path: {request.path}")
+    print(f"GET parameters: {request.GET}")
+
     role = request.GET.get('role')
 
     roledata_mapping = {
@@ -247,8 +310,8 @@ def login(request):
             # print(request.POST)
             user = User.objects.get(username=email)
             if 'forgot_password' in request.POST:
-                if not email:
-                    messages.error(request, "Please enter your username.")
+                if not email:                
+                    messages.add_message(request, messages.ERROR, "Please enter your username.")
                     return redirect(request.path)
                 # Proceed with password reset logic
                 # Send the reset code to the email/username
@@ -270,7 +333,7 @@ def login(request):
                 except Exception as e:
                     print(e)
                     return render(request, 'index.html',{'message':'Failed To Send Email'})
-                messages.success(request, "Password reset code sent to your email.")
+                messages.add_message(request, messages.SUCCESS,  f"Password reset code sent to your email.")
                 return render(request, 'reset.html')
 
             ubj= authenticate(request, username=email, password=pwd) 
@@ -278,16 +341,30 @@ def login(request):
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 return redirect(request.path)
             q = User.objects.filter(username=email).filter(is_staff=True)
-            table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
-            userRole= Role.objects.filter(id=table1_data.role_id.id).first()
-            user = User.objects.get(id=ubj.id)
-            request.session["role"]=userRole.role
-            request.session["id"]=user.id
-            if q and ubj:
-                messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                return redirect("")
+            table1_data = UserroleMap.objects.filter(user_id=ubj.id).first()
+            if table1_data:
+                userRole = Role.objects.filter(id=table1_data.role_id.id).first()
+                print(userRole.role)
+                print(role)
+                # if userRole.role != role:  # Check if the user's role matches the selected role
+                #     messages.error(request, "Please select the correct role to log in.")
+                #     return redirect(request.path)
+
+                user = User.objects.get(id=ubj.id)
+                request.session["role"]=userRole.role
+                request.session["id"]=user.id
+                print(f"User ID from session: {request.session.get('id')}")
+                print(f"User ID from user: {user.id}")
+                if q and ubj:
+                    messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                    return redirect("")
+                else:
+                    messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                    return redirect("")
+
             else:
-                return redirect("")
+                messages.add_message(request, messages.ERROR, "User role not found.")
+                return redirect(request.path)
         else:
             return render(request, 'index.html', {'role': roledata})
     except Exception as e:
@@ -311,9 +388,9 @@ def login_admin(request):
             request.session["role"]=userRole.role
             if q and ubj:
                 messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                return redirect("")
+                return redirect('creation_requests')
             else:
-                return redirect("")
+                return redirect('creation_requests')
         else:
             return render(request, 'admin_login.html')
     except Exception as e:
@@ -324,6 +401,7 @@ def login_admin(request):
 def logout(request):
     try:
         del request.session['role']
+        messages.add_message(request, messages.SUCCESS, f"Log out successful.")
         return redirect('')
     except:
         return HttpResponse('<h3 style="text-align:center"> Somthing went wrong !!!!!</h3>')
@@ -347,7 +425,10 @@ def logout(request):
     
 #     return render(request, 'index copy.html', context=context)
 
-def update_user(request, user_id):
+def update_user(request):
+    # Get the user ID from the session
+    user_id = request.session.get("id")
+    print(f"User ID from Update_user: {user.id}")
     user = User.objects.get(id=user_id)
 
     if request.method == 'POST':
@@ -363,16 +444,43 @@ def update_user(request, user_id):
         try:
             # Attempt to save user
             user.save()
-            messages.success(request, "User details updated successfully")
+            messages.add_message(request, messages.SUCCESS, f"User details updated successfully.")
             return redirect('')
         except Exception as e:
             print(f"Error saving user: {e}")  # Log the error
-            messages.error(request, f"Error updating user: {e}")
+            messages.add_message(request, messages.ERROR, f"Error updating user: {e}")
 
     context = {
         'user': user
     }
     return render(request, 'home.html', context)
+
+
+def request_deletion(request):
+    user_id = request.session.get('id')  # Assuming you set 'id' in the session upon login
+    
+    # Handle deletion request
+    if user_id:  # Check if the user is logged in
+        user = UserProfile.objects.get(id=user_id)  # Get the user profile based on session id
+        user.deletion_requested = True  # Set the flag for deletion request
+        user.save()
+        messages.add_message(request, messages.SUCCESS, f"Deletion request has been made.")
+    else:
+        messages.add_message(request, messages.ERROR, "You need to be logged in to request deletion.")
+        return redirect('/accounts/loginpage/')  # Redirect to the login page
+    
+    # Get all users who requested deletion (for admin to see)
+    # if request.session.get('role') == 'Admin':
+    deletion_requests = UserProfile.objects.filter(deletion_requested=True)
+    # else:
+    #     deletion_requests = []
+
+    
+    # Pass the user to the template as well
+    return render(request, 'home.html', {
+        'deletion_requests': deletion_requests,  # Pass deletion requests to the template for admin
+        'user': user,  # Pass the logged-in user to the template
+    })
 
 def approve_deletion(request):
     if request.method == 'POST':
@@ -380,7 +488,7 @@ def approve_deletion(request):
         user = UserProfile.objects.get(id=user_id)
         # Perform the actual deletion of the user
         user.delete()
-        messages.success(request, f"Account for {user.first_name} {user.last_name} has been deleted.")
+        messages.add_message(request, messages.SUCCESS, f"Account for {user.first_name} {user.last_name} has been deleted.")
     return redirect('')  # Redirect to the admin page
 
 def deny_deletion(request):
@@ -390,7 +498,7 @@ def deny_deletion(request):
         # Simply reset the deletion_requested flag
         user.deletion_requested = False
         user.save()
-        messages.success(request, f"Account deletion request for {user.first_name} {user.last_name} has been denied.")
+        messages.add_message(request, messages.SUCCESS, f"Account deletion request for {user.first_name} {user.last_name} has been denied.")
     return redirect('')  # Redirect to the admin page
 
 
@@ -416,10 +524,10 @@ def reset_password(request):
             reset_code_obj.save()
 
             # return JsonResponse({'success': True, 'message': 'Password updated successfully'})
-            messages.success(request, 'Password updated successfully')
+            messages.add_message(request, messages.SUCCESS, f"Password updated successfully.")
             return render(request, 'index.html')
         except PasswordResetCode.DoesNotExist:
-            messages.error(request, "Invalid code")
+            messages.add_message(request, messages.ERROR, "Invalid code entered.")
             return render(request, 'reset.html')
             # return JsonResponse({'success': False, 'message': 'Invalid code'})
 

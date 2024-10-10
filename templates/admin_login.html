@@ -391,7 +391,7 @@ footer a {
 
 
 
-	<div class="col-md-12">
+	<!-- <div class="col-md-12 ">
 
 		{% if messages %}
  {% for message in messages %} 
@@ -403,21 +403,25 @@ footer a {
 			{{message}}
 		  </div>
 		  {% endfor %} 
-		{% endif %}	
+		{% endif %}	 -->
 	
 
 
   <div class="container" id="container">
-    <div class="form-container sign-in-container">
-      <form action="/accounts/loginpage/" method="post">
-        {% csrf_token %}
-        <h1 style="color: #674FA7;">Login</h1>
-       
-        <input type='text' placeholder="Username" name='eml' id="username" required>
-        <input type="password" placeholder="Password" name='pwd' />
-        <button type="submit" class="btn btn-primary">LOGIN</button>
-      </form>
-      {% csrf_token %}
+    <div class="form-container sign-up-container">
+
+        <form action="/accounts/adminlogin/" method="post">
+            {% csrf_token %}
+            <h1 style="color: #674FA7;">Login</h1>
+           
+            <input type='text' placeholder="Username" name='eml' required>
+            <input type="password" placeholder="Password" name='pwd' />
+            <button class="btn btn-primary">LOGIN</button>
+			<u>
+                <button type="submit" name="forgot_password" value="1" style="background: none; border: none; color: blue; cursor: pointer;">Forgot Password?</button>
+            </u>
+          </form>
+          {% csrf_token %}
 
     </div>
     <div class="form-container sign-up-container">
