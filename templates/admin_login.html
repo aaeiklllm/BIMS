@@ -2,12 +2,14 @@
 {% load static %}
 {% block content %}
 <title>Sign In</title>
+
 <head>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <style>
  @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+ 
  
  .info-msg,
     .success-msg,
@@ -71,6 +73,72 @@
       width: 100%;
       text-align: center;
     }
+    .success-msg,
+    .warning-msg,
+    .error-msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 3px 3px 3px 3px;
+    }
+
+    .success-msg {
+      color: #270;
+      background-color: #DFF2BF;
+    }
+
+    .error-msg {
+      color: #D8000C;
+      background-color: #FFBABA;
+    }
+
+    .zoomOut {
+      transition: transform .2s;
+    }
+
+    .zoomOut:hover {
+      transform: scale(1.2);
+    }
+
+    .circle-shape {
+      flex-shrink: 0;
+      padding: 0;
+      width: 85px;
+      height: 85px;
+      line-height: 64px;
+      border-radius: 50%;
+      text-align: center;
+      font-size: 32px;
+    }
+
+    .bg-accent {
+      background-color: #16a085 !important;
+    }
+
+    #one {
+      margin-top: -3rem !important;
+    }
+
+    #button1 {
+      background-color: #16a085;
+      border-color: #16a085;
+    }
+
+    .page-hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 75vh;
+    }
+
+    .container-home {
+      width: 100%;
+      text-align: center;
+    }
+
+	.grid-container {
+		display: grid;
+		grid-template-columns: 50% 50%;
+	}
 
 html, body {
       margin: 0;
@@ -78,13 +146,27 @@ html, body {
       height: 100%;
       width: 100%;
       color: #644ca4;
+	  background-color: #fcfcfc;
+    }
+html, body {
+      /* margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      color: #644ca4; */
     }
 
 .btn-primary {
 	background-color: #674FA7 !important;
 	border-color: #674FA7 !important;
+	background-color: #674FA7 !important;
+	border-color: #674FA7 !important;
 	color: #FFFFFF;
 	transition: transform 80ms ease-in;
+}
+
+.btn-login {
+	margin: 10px;
 }
 
 button:active {
@@ -101,6 +183,7 @@ button.ghost {
 }
 
 form {
+	background-color: #eeeeee;
 	background-color: #eeeeee;
 	display: flex;
 	align-items: center;
@@ -127,25 +210,36 @@ input {
 	width: 768px;
 	max-width: 100%;
 	min-height: 480px;
+	box-shadow: 8px 12px 28px rgba(0,0,0,0.25), 
+			8px 8px 10px rgba(0,0,0,0.22);
+	margin-top: 100px;
 }
 
 .form-container {
 	position: absolute;
 	top: 0;
 	height: 100%;
-	transition: all 0.6s ease-in-out;
-	background-color: #F8DD8C !important;
+	width: 100%;
+	/* transition: all 0.6s ease-in-out; */
+	background-color: #644ca4 !important;
 }
+
 
 .sign-in-container {
 	left: 0;
-	width: 50%;
+	width: 60%;
 	z-index: 2;
-	background-color: #F8DD8C !important;
+	background-color: #644ca4 !important;
+}
+
+.splash-container {
+	background-color: #ffffff;
+	width: 100%;
+	height: 100%;
 }
 
 .container.right-panel-active .sign-in-container {
-	transform: translateX(100%);
+	/* transform: translateX(100%); */
 }
 
 .sign-up-container {
@@ -154,10 +248,11 @@ input {
 	opacity: 0;
 	z-index: 1;
 	background-color: #F2EDFC !important;
+	background-color: #F2EDFC !important;
 }
 
 .container.right-panel-active .sign-up-container {
-	transform: translateX(100%);
+	/* transform: translateX(100%); */
 	opacity: 1;
 	z-index: 5;
 	animation: show 0.6s;
@@ -178,8 +273,8 @@ input {
 .overlay-container {
 	position: absolute;
 	top: 0;
-	left: 50%;
-	width: 50%;
+	left: 60%;
+	width: 40%;
 	height: 100%;
 	overflow: hidden;
 	transition: transform 0.6s ease-in-out;
@@ -187,27 +282,27 @@ input {
 }
 
 .container.right-panel-active .overlay-container{
-	transform: translateX(-100%);
+	/* transform: translateX(-100%); */
 }
 
 .overlay {
 	background: #F8DD8C;
-	background: -webkit-linear-gradient(to right, #F8DD8C, #F8DD8C);
-	background: linear-gradient(to right, #F8DD8C, #F8DD8C);
+	background: -webkit-linear-gradient(to right, #755cb9, #644ca4);
+	background: linear-gradient(to right, #755cb9, #644ca4);
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: 0 0;
-	color: #674FA7;
+	color: #ffffff;
 	position: relative;
 	left: -100%;
 	height: 100%;
 	width: 200%;
-  	transform: translateX(0);
-	transition: transform 0.6s ease-in-out;
+  	/* transform: translateX(50);
+	transition: transform 0.6s ease-in-out; */
 }
 
 .container.right-panel-active .overlay {
-  	transform: translateX(50%);
+  	/* transform: translateX(50%); */
 }
 
 .overlay-panel {
@@ -221,25 +316,25 @@ input {
 	top: 0;
 	height: 100%;
 	width: 50%;
-	transform: translateX(0);
-	transition: transform 0.6s ease-in-out;
+	/* transform: translateX(0);
+	transition: transform 0.6s ease-in-out; */
 }
 
 .overlay-left {
-	transform: translateX(-20%);
+	transform: translateX(-60%);
 }
 
 .container.right-panel-active .overlay-left {
-	transform: translateX(0);
+	/* transform: translateX(30); */
 }
 
 .overlay-right {
 	right: 0;
-	transform: translateX(0);
+	/* transform: translateX(0); */
 }
 
 .container.right-panel-active .overlay-right {
-	transform: translateX(20%);
+	/* transform: translateX(20%); */
 }
 
 .social-container {
@@ -248,6 +343,7 @@ input {
 
 
 .social-container a {
+	border: 1px solid #F2EDFC;
 	border: 1px solid #F2EDFC;
 	border-radius: 50%;
 	display: inline-flex;
@@ -288,6 +384,7 @@ footer a {
   height: auto; /* Ensure the height adjusts proportionally to the width */
 }
 
+
  </style>   
 </head>
 <body>
@@ -327,13 +424,14 @@ footer a {
           {% csrf_token %}
 
     </div>
-    <div class="form-container sign-in-container">
-      <div class="newclass">
-      <img src="{% static 'logIn.png' %}" class="img-responsive">
+    <div class="form-container sign-up-container">
+		<div class="splash-container">
+
+		</div>
+      	<div class="newclass">
     </div>
 	
 	
-     
     </div>
     <div class="overlay-container">
       <div class="overlay">
@@ -346,8 +444,9 @@ footer a {
 		
         <div class="overlay-panel overlay-right">
 		<h1><div class="d-flex p-2 bd-highlight">Welcome to BIMS!</div></h1>
-
-          <button class="btn btn-primary" id="signUp">Sign in</button>
+		<p style="margin-bottom: 0; font-size: smaller; opacity: 80%;">
+				Log in as an <b>Admin</b>.
+		</p>
         </div>
       </div>
     </div>
@@ -358,15 +457,30 @@ footer a {
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
 const container = document.getElementById('container');
+var username = document.getElementById('username');
+
+function containsUppercase(str) {
+  return /[A-Z]/.test(str);
+}
+
+function validateUsername(){
+	if(containsUppercase(username.value)) {
+	username.setCustomValidity("Field cannot have uppercase letters.");
+	} else {
+	username.setCustomValidity('');
+	}
+}
+
+username.onchange = validateUsername;
+username.onkeyup = validateUsername;
 
 signUpButton.addEventListener('click', () => {
-	container.classList.add("right-panel-active");
+	// container.classList.add("right-panel-active");
 });
 
 signInButton.addEventListener('click', () => {
-	container.classList.remove("right-panel-active");
+	// container.classList.remove("right-panel-active");
 });
-
 
 
 

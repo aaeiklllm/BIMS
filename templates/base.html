@@ -32,15 +32,43 @@
         
       }
 
-      html{
-      height: 100%;
+    html{
+
     }
 
     body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
       margin: 0;
       padding: 0;
-      min-height: 100%;
       color: #644ca4;
+      
+    }
+
+    footer {
+      font-family: Helvetica, sans-serif;
+      color: white;
+      background-color: #644ca4;
+      z-index: 999;
+      display: flex;
+      flex-wrap: auto;
+      margin-top: auto;
+      
+    }
+
+    footer p {
+      margin: 10px 0;
+    }
+
+    footer i {
+        color: red;
+    }
+
+    footer a {
+        color: #3c97bf;
+        text-decoration: none;
     }
 
     .btn-primary {
@@ -64,39 +92,12 @@
           color: white !important;
         }
 
-        #page-footer{
-            position: relative;
-            display: block;
-            padding-top: 80px;
-            padding-bottom: 17px;
-            background-color: white;
-            color: #fff;
-            font-size: 18px;
-            
-           
+        .row {
+          display: flex;  
+          width: 100%;
+
         }
-        #page-footer a{
-          text-decoration: none;
-          background-color: none;
-          transition: transform .2s; /* Animation */
-          
-        }
-        #page-footer a:hover{
-          transform: scale(1.2); 
-        }
-        
-        .footer-menu a{
-            display: inline-block;
-            padding-top: 6px;
-            padding-bottom: 6px;
-            color: white;
-            transition: all .2s ease;
-        }
-       
-        #page-footer ul{
-          list-style: none;
-        }
-        
+
     .container-fluid {
       max-height: 10%;
     }      
@@ -180,12 +181,11 @@
                 {% endif %}
 
               </ul>
-            </div>
+             </div>
           </div>
         </nav>
       </div>
     </header>
-
     <script>
   toastr.options = {
     "closeButton": false,
@@ -278,7 +278,12 @@
           <p id="copyright" style="text-align: center;">Copyright &copy; 2024 Mend. All right reserved</p>
         </div>
 
-      </footer> -->
-    
+      </footer> 
 </body>
+  <footer class="page-footer" id="page-footer">
+    <div class="row">
+      <p id="copyright">Copyright &copy; 2024 BIMS. All right reserved</p>
+      <p>bims@test.com</p>
+    </div>
+  </footer>
 </html>

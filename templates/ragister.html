@@ -49,11 +49,11 @@
 		   }
 	   
 	   html, body {
-			 margin: 0;
+			 /* margin: 0;
 			 padding: 0;
 			 height: 100%;
 			 width: 100%;
-			 color: #644ca4;
+			 color: #644ca4; */
 		   }
 	   
 	   .btn-primary {
@@ -139,8 +139,8 @@
 		   position: relative;
 		   overflow: hidden;
 		   max-width: 63%;
-		   min-height: 78%;
-		   margin-top: 2.8%;
+		   min-height: 650px;
+		   margin-top: 1.8%;
 		   box-shadow: 8px 12px 28px rgba(0,0,0,0.25), 8px 8px 10px rgba(0,0,0,0.22);
 	   }
 	   
@@ -152,6 +152,13 @@
 		   font-size: 14px;
 		   font-weight: 550;
 		   color: #644ca4;
+	   }
+
+	   
+	   .required::after {
+			content: " *";
+			color: rgb(185, 24, 24);
+			font-size: 14px;
 	   }
 	   
 	   .form-container {
@@ -305,32 +312,7 @@
 		   height: 40px;
 		   width: 40px;
 	   }
-	   
-	   footer {
-		   background-color: #222;
-		   color: #fff;
-		   font-size: 14px;
-		   bottom: 0;
-		   position: fixed;
-		   left: 0;
-		   right: 0;
-		   text-align: center;
-		   z-index: 999;
-	   }
-	   
-	   footer p {
-		   margin: 10px 0;
-	   }
-	   
-	   footer i {
-		   color: red;
-	   }
-	   
-	   footer a {
-		   color: #3c97bf;
-		   text-decoration: none;
-	   }
-	   
+
 	   .newclass img {
 		 max-width: 100%; /* Set the maximum width of the image to 100% of its container */
 		 height: auto; /* Ensure the height adjusts proportionally to the width */
