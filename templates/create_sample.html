@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+<!-- {% extends "base.html" %} -->
 {% load static %}
 {% block content %}
 <head>
@@ -190,27 +190,28 @@
 <body>
     <div class="container mt-5">
         <h2 class="text-primary">Create Sample</h2>
-        <form method="post" enctype="multipart/form-data" action="{% url 'createsample' %}">
+
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="create_sample" id="create_new" value="new" checked>
+            <label class="form-check-label" for="create_new">
+                Create New Sample
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="create_sample" id="create_aliquot" value="aliquot">
+            <label class="form-check-label" for="create_aliquot">
+                Create sample as an aliquot from a previous sample entry
+            </label>
+        </div>
+        <input type="text" id="aliquot_placeholder" class="form-control mt-2" placeholder="Enter previous sample ID" style="display: none;">
+
+        <form method="post" enctype="multipart/form-data" action="{% url 'createsample' %}" id="create-sample-form">
             {% csrf_token %}
-            
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="create_sample" id="create_new" value="new" checked>
-                <label class="form-check-label" for="create_new">
-                    Create New Sample
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="create_sample" id="create_aliquot" value="aliquot">
-                <label class="form-check-label" for="create_aliquot">
-                    Create sample as an aliquot from a previous sample entry
-                </label>
-            </div>
-            <input type="text" id="aliquot_placeholder" class="form-control mt-2" placeholder="Enter previous sample ID" style="display: none;">
 
             <div class="mb-3">
                 <label for="sample_id" class="form-label">Sample ID:</label>
-                <input type="text" class="form-control" id="sample_id" value="000001" readonly>
-            </div>
+                <input type="text" class="form-control" id="sample_id" name="sample_id" value="000001" readonly>
+            </div>      
 
             <div class="dropdown">
                 <label for="type" class="form-label">Type:</label>
@@ -373,13 +374,15 @@
                         <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
                         <option value="Others">Other (specify)</option>
                     </select>
-                    
-                    
+                    <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
                     <button type="button" class="btn btn-primary" id="add_comorbidity">Add</button>
                 </div>
-                <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
                 <div id="added_comorbidities" class="mt-2"></div>
             </div>
+
+            <!-- Comorbidities -->
+            <div id="added_comorbidities" class="mt-2"></div>
+            <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
 
             <div class="mb-3">
                 <label for="lab_tests" class="form-label">Lab Tests:</label>
@@ -391,12 +394,15 @@
                         <option value="MRI">MRI</option>
                         <option value="Others">Other (specify)</option>
                     </select>
-                    
+                    <input type="text" class="form-control free-text-input" id="lab_test_other" placeholder="Specify other">
                     <button type="button" class="btn btn-primary" id="add_lab_test">Add</button>
                 </div>
-                <input type="text" class="form-control free-text-input" id="lab_test_other" placeholder="Specify other">
                 <div id="added_lab_tests" class="mt-2"></div>
             </div>
+
+            <!-- Lab Tests -->
+            <div id="added_lab_tests" class="mt-2"></div>
+            <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
 
             <div class="row">
                 <div class="col-md-6">
@@ -417,17 +423,7 @@
                 <label for="date_collected" class="form-label">Date Collected:</label>
                 <input type="date" class="form-control" id="date_collected" name="date_collected">
             </div>
-
-            <div class="mb-3">
-                <label for="storage" class="form-label">Storage:</label>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#storageModal" data-sample-id="{{ sample.id }}">
-                    Select Storage
-                </button>
-                <input type="text" id="selectedStorage" class="form-control mt-2" readonly>
-            </div>
             
-                <!-- <input type="hidden" id="modal-sample-id" name="sample_id" value=""> -->
-
                 <div class="mb-3">
                     <label for="freezer" class="form-label">Under-counter ULT Freezer:</label>
                     <select class="form-select" id="freezer" name="freezer_num">
@@ -454,10 +450,9 @@
                     <select class="form-select" id="box" name="box_num">
                         <option value="1">Box No. 1</option>
                         <option value="2">Box No. 2</option>
-                        <option value="15">Box No. 15</option>
                     </select>
                 </div>
-
+               
                 <!-- Container Selection (10x10 Grid) -->
                 <label class="form-label">Container No.:</label>
                 <input type="hidden" id="container-input" name="container" value="">
@@ -465,6 +460,11 @@
                     <div id="container-grid" class="grid-container">
                         <!-- JavaScript will dynamically populate the grid with buttons -->
                     </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="selectedStorage" class="form-label">Storage:</label>
+                    <input type="text" id="selectedStorage" class="form-control mt-2" readonly>
                 </div>
 
 
@@ -475,97 +475,164 @@
 
             <button type="submit" class="btn btn-success">Submit</button>
         </form>
+        <form method="post" enctype="multipart/form-data" action="{% url 'createaliquot' %}" id="create-aliquot-form" style="display: none;">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="previous_sample_id" class="form-label">Select Existing Sample ID:</label>
+                <select id="previous_sample_id" class="form-control mt-2" name="previous_sample_id" required>
+                    <option value="">Select a Sample ID</option>
+                </select>
+            </div>
+    
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="amount2" class="form-label">Amount:</label>
+                    <input type="number" class="form-control" id="amount2" name="amount2" step="0.01">
+                </div>
+                <div class="col-md-6">
+                    <label for="unit2" class="form-label">Unit:</label>
+                    <input type="text" id="unit2" name="unit2" class="form-control" readonly>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="freezer2" class="form-label">Under-counter ULT Freezer:</label>
+                <select class="form-select" id="freezer2" name="freezer_num2">
+                    <option value="1">Freezer 1</option>
+                    <option value="2">Freezer 2</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="shelf2" class="form-label">Shelf No.:</label>
+                <select class="form-select" id="shelf2" name="shelf_num2">
+                    <option value="1">Shelf No. 1</option>
+                    <option value="2">Shelf No. 2</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="rack2" class="form-label">Rack No.:</label>
+                <select class="form-select" id="rack2" name="rack_num2">
+                    <option value="1">Rack No. 1</option>
+                    <option value="2">Rack No. 2</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="box2" class="form-label">Box No.:</label>
+                <select class="form-select" id="box2" name="box_num2">
+                    <option value="1">Box No. 1</option>
+                    <option value="2">Box No. 2</option>
+                </select>
+            </div>
+            
+            <!-- Container Selection (10x10 Grid) -->
+            <label class="form-label">Container No.:</label>
+            <input type="hidden" id="container-input2" name="container2" value="">
+            <div class="container-grid2">
+                <div id="container-grid2" class="grid-container2">
+                    <!-- JavaScript will dynamically populate the grid with buttons -->
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="selectedStorage2" class="form-label">Storage:</label>
+                <input type="text" id="selectedStorage2" class="form-control mt-2" readonly>
+            </div>
+    
+            <button type="submit" class="btn btn-primary">Save Aliquot Sample</button>
+        </form>
     </div>
 
     <script>
        
-        // Dynamically generate 10x10 grid for container selection
-        document.addEventListener('DOMContentLoaded', function () {
-            const containerGrid = document.getElementById('container-grid');
-            const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+    // Dynamically generate 10x10 grid for container selection
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fetch the latest sample ID from the server
+        fetch('{% url "latest_sample_id" %}')
+            .then(response => response.json())
+            .then(data => {
+                // Set the sample_id input value
+                document.getElementById('sample_id').value = data.sample_id;
+            })
+            .catch(error => {
+                console.error('Error fetching the latest sample ID:', error);
+            });
 
-            for (let i = 0; i < rows.length; i++) {
-                for (let j = 1; j <= 10; j++) {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'btn btn-outline-primary container-btn';
-                    button.textContent = `${rows[i]}${j}`;
-                    button.onclick = function() {
-                        selectContainer(button.textContent);
-                    };
-                    containerGrid.appendChild(button);
-                }
+        const createNewRadio = document.getElementById('create_new');
+        const createAliquotRadio = document.getElementById('create_aliquot');
+        const createSampleForm = document.getElementById('create-sample-form');
+        const createAliquotForm = document.getElementById('create-aliquot-form');
+        const previousSampleSelect = document.getElementById('previous_sample_id');
+
+        createNewRadio.addEventListener('change', function () {
+            createSampleForm.style.display = 'block';
+            createAliquotForm.style.display = 'none';
+        });
+
+        createAliquotRadio.addEventListener('change', function () {
+            createSampleForm.style.display = 'none';
+            createAliquotForm.style.display = 'block';
+
+            // Fetch sample IDs via AJAX
+            fetch('{% url "get_sample_ids" %}')
+                .then(response => response.json())
+                .then(data => {
+                    previousSampleSelect.innerHTML = '<option value="">Select a Sample ID</option>'; // Reset options
+                    data.sample_ids.forEach(sample_id => {
+                        previousSampleSelect.innerHTML += `<option value="${sample_id}">${sample_id}</option>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching sample IDs:', error);
+                });
+        });
+
+        const unitField = document.getElementById('unit2');
+        previousSampleSelect.addEventListener('change', function () {
+            const selectedSampleId = this.value; // Get the selected sample ID
+
+            if (selectedSampleId) {
+                // Fetch the unit for the selected sample ID
+                fetch(`{% url "get_sample_unit" %}?sample_id=${selectedSampleId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.unit) {
+                            unitField.value = data.unit; // Set the unit field to the retrieved unit
+                            unitField.readOnly = true; // Make the unit field read-only
+                        } else {
+                            unitField.value = ''; // Clear the field if no unit is found
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching sample unit:', error);
+                    });
+            } else {
+                unitField.value = ''; // Clear the unit field if no sample is selected
             }
+        });
 
-            const clinicalDiagnosis = document.getElementById('clinical_diagnosis');
-            const otherDiagnosisInput = document.getElementById('other_diagnosis');
+        const containerGrid = document.getElementById('container-grid');
+        const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-            // Listen for changes in the dropdown selection
-            clinicalDiagnosis.addEventListener('change', function() {
-                const selectedValue = clinicalDiagnosis.value;
+        for (let i = 0; i < rows.length; i++) {
+            for (let j = 1; j <= 10; j++) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-outline-primary container-btn';
+                button.textContent = `${rows[i]}${j}`;
+                button.onclick = function () {
+                    selectContainer(button.textContent);
+                };
+                containerGrid.appendChild(button);
+            }
+        }
 
-                // Show or hide the text input based on the selected option
-                if (selectedValue === 'Others') {
-                    otherDiagnosisInput.style.display = 'block';
-                } else {
-                    otherDiagnosisInput.style.display = 'none';
-                }
-            });
+        const clinicalDiagnosis = document.getElementById('clinical_diagnosis');
+        const otherDiagnosisInput = document.getElementById('other_diagnosis');
 
-            const comorbiditySelect = document.getElementById('comorbidity_select');
-            const comorbidityOtherInput = document.getElementById('comorbidity_other');
-            const addComorbidityButton = document.getElementById('add_comorbidity');
-            const addedComorbiditiesDiv = document.getElementById('added_comorbidities');
-
-            // Show or hide the free text input when "Others" is selected
-            comorbiditySelect.addEventListener('change', function() {
-                if (comorbiditySelect.value === 'Others') {
-                    comorbidityOtherInput.style.display = 'block';
-                } else {
-                    comorbidityOtherInput.style.display = 'none';
-                }
-            });
-
-            // Handle adding comorbidities to the list
-            addComorbidityButton.addEventListener('click', function() {
-                let selectedComorbidity = comorbiditySelect.value;
-                
-                if (selectedComorbidity === "") {
-                    alert("Please select a comorbidity.");
-                    return;
-                }
-
-                // If 'Others' is selected, use the value from the input field
-                if (selectedComorbidity === 'Others') {
-                    selectedComorbidity = comorbidityOtherInput.value.trim();
-                    if (selectedComorbidity === "") {
-                        alert("Please specify the comorbidity.");
-                        return;
-                    }
-                }
-
-                // let otherValue = document.getElementById('comorbidity_other').value;
-
-                // if (selectedComorbidity === 'Others' && otherValue) {
-                //     selectedComorbidity = otherValue;
-                // }
-
-                // if (selectedComorbidity) {
-                //     const newItem = document.createElement('div');
-                //     newItem.classList.add('added-item');
-                //     newItem.innerHTML = `<span>${selectedComorbidity}</span><span class="remove-btn">X</span>`;
-                //     addedComorbidities.appendChild(newItem);
-
-                //     comorbiditySelect.value = '';
-                //     document.getElementById('comorbidity_other').value = '';
-                //     toggleFreeTextInput(comorbiditySelect, document.getElementById('comorbidity_other'));
-                // }
-
-                // // Clear the selection and hide the 'Other' input field
-                // comorbiditySelect.value = "";
-                // comorbidityOtherInput.style.display = 'none';
-                // comorbidityOtherInput.value = "";
-            });
+        // Show or hide the text input based on clinical diagnosis selection
+        clinicalDiagnosis.addEventListener('change', function () {
+            otherDiagnosisInput.style.display = clinicalDiagnosis.value === 'Others' ? 'block' : 'none';
         });
 
         // Function to select container
@@ -575,210 +642,182 @@
             selectedContainer = containerNo;
             document.getElementById("container-input").value = selectedContainer; // Set hidden input value
             alert('Selected Container: ' + selectedContainer); // Visual feedback
-        }
-
-
-
-        // Save storage selection
-        document.getElementById('saveStorage').addEventListener('click', function () {
             const freezer = document.getElementById('freezer').value;
             const shelf = document.getElementById('shelf').value;
             const rack = document.getElementById('rack').value;
             const box = document.getElementById('box').value;
 
             // Combine storage details
-            const storageDetails = `${freezer} / ${shelf} / ${rack} / ${box} / Container: ${selectedContainer}`;
-
-            // Update the readonly input with selected storage
+            const storageDetails = `Freezer No: ${freezer} / Shelf No: ${shelf} / Rack No: ${rack} / Box No: ${box} / Container: ${selectedContainer}`;
             document.getElementById('selectedStorage').value = storageDetails;
-
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('storageModal'));
-            modal.hide();
-        });
-
-        function toggleDropdown() {
-            const dropdown = document.getElementById("type-dropdown");
-            dropdown.classList.toggle("show"); // Toggle show class
         }
 
-        // Function to select an option and update units dynamically
-        function selectOption(option, category) {
-            document.getElementById("selectedOption").value = option;
-            document.getElementById('typeValue').value = option; 
-            updateUnitOptions(category, option);
-            document.getElementById("type-dropdown").classList.remove("show");
-        }
+        // Storage for Aliquots
+        const containerGrid2 = document.getElementById('container-grid2');
+        const rows2 = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-
-        // Capture the input in the "Other" field and update the display
-        function captureOtherInput(type) {
-            const otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
-            const selectedType = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize the first letter of the type
-            if (otherValue) {
-                // Combine the type and the specified other value
-                document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
-                document.getElementById("typeValue").value = selectedType + " - " + otherValue; // Set the hidden input value as well
+        for (let i = 0; i < rows2.length; i++) {
+            for (let j = 1; j <= 10; j++) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-outline-primary container-btn2';
+                button.textContent = `${rows2[i]}${j}`;
+                button.onclick = function () {
+                    selectContainer2(button.textContent);
+                };
+                containerGrid2.appendChild(button);
             }
         }
 
+        // Function to select container
+        let selectedContainer2 = '';
 
-        // Function to show the "Other" input field
-        function showOtherInput(type) {
-            const otherInputId = type + '-other';
+        function selectContainer2(containerNo2) {
+            selectedContainer2 = containerNo2;
+            document.getElementById("container-input2").value = selectedContainer2; // Set hidden input value
+            alert('Selected Container: ' + selectedContainer2); // Visual feedback
+            const freezer2 = document.getElementById('freezer2').value;
+            const shelf2= document.getElementById('shelf2').value;
+            const rack2 = document.getElementById('rack2').value;
+            const box2 = document.getElementById('box2').value;
+
+            // Combine storage details
+            const storageDetails2 = `Freezer No: ${freezer2} / Shelf No: ${shelf2} / Rack No: ${rack2} / Box No: ${box2} / Container: ${selectedContainer2}`;
+            document.getElementById('selectedStorage2').value = storageDetails2;
+        }
+
+        const addedComorbidities = new Set(); // Set to track added comorbidities
+        const addedLabTests = new Set(); // Set to track added lab tests
+
+        function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
+            const select = document.getElementById(selectId);
             const otherInput = document.getElementById(otherInputId);
-            otherInput.classList.remove("hidden");
-            document.getElementById("type-dropdown").classList.remove("show");
-        }
+            const addedItemsContainer = document.getElementById(addedItemsContainerId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const selectedValue = select.value;
+            const otherValue = otherInput.value.trim();
 
-        // Update unit options based on category and selected option
-        function updateUnitOptions(category, option) {
-            const amountUnitSelect = document.getElementById('unit');
-            amountUnitSelect.innerHTML = ''; // Clear existing options
-
-            if (category === 'molecular') {
-                amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
-            } else if (category === 'blood') {
-                if (option === 'Whole Blood') {
-                    amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
-                } else {
-                    amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
-                    amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
-                }
-            } else if (category === 'tissue') {
-                amountUnitSelect.innerHTML += '<option value="slides">Slides</option>';
-                amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
-            }
-        }
-
-
-        // Close dropdown if clicked outside
-        window.onclick = function(event) {
-            const dropdown = document.getElementById("type-dropdown");
-            if (!event.target.matches('.dropdown-input') && !event.target.closest('.dropdown')) {
-                dropdown.classList.remove("show");
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const createAliquotRadio = document.getElementById('create_aliquot');
-            const aliquotInput = document.getElementById('aliquot_placeholder');
-            const comorbiditySelect = document.getElementById('comorbidity_select');
-            const labTestSelect = document.getElementById('lab_test_select');
-            const addedComorbidities = document.getElementById('added_comorbidities');
-            const addedLabTests = document.getElementById('added_lab_tests');
-            const addComorbidityButton = document.getElementById('add_comorbidity');
-            const addLabTestButton = document.getElementById('add_lab_test');
-
-            createAliquotRadio.addEventListener('change', function() {
-                aliquotInput.style.display = 'block';
-            });
-
-            document.getElementById('create_new').addEventListener('change', function() {
-                aliquotInput.style.display = 'none';
-            });
-
-            // Handle adding comorbidities
-            addComorbidityButton.addEventListener('click', function() {
-                let selectedValue = comorbiditySelect.value;
-                let otherValue = document.getElementById('comorbidity_other').value;
-
-                if (selectedValue === 'Others' && otherValue !== 'Others') {
-                    selectedValue = otherValue;
-                }
-
-                if (selectedValue) {
-                    const newItem = document.createElement('div');
-                    newItem.classList.add('added-item');
-                    newItem.innerHTML = `<span>${selectedValue}</span><span class="remove-btn">X</span>`;
-                    addedComorbidities.appendChild(newItem);
-
-                    comorbiditySelect.value = '';
-                    document.getElementById('comorbidity_other').value = '';
-                    toggleFreeTextInput(comorbiditySelect, document.getElementById('comorbidity_other'));
-                }
-            });
-
-            // Handle adding lab tests
-            addLabTestButton.addEventListener('click', function() {
-                let selectedValue = labTestSelect.value;
-                let otherValue = document.getElementById('lab_test_other').value;
-
-                if (selectedValue === "") {
-                    alert("Please select a lab test.");
-                    return;
-                }
-
-                if (selectedValue === 'Others' && otherValue !== 'Others') {
-                    selectedValue = otherValue;
-                } else {
-                    // If 'Others' is selected, use the value from the input field
-                    alert("Please specify the lab test.");
-                    return;
-                }
-
-                if (selectedValue) {
-                    const newItem = document.createElement('div');
-                    newItem.classList.add('added-item');
-                    newItem.innerHTML = `<span>${selectedValue}</span><span class="remove-btn">X</span>`;
-                    addedLabTests.appendChild(newItem);
-
-                    labTestSelect.value = '';
-                    document.getElementById('lab_test_other').value = '';
-                    toggleFreeTextInput(labTestSelect, document.getElementById('lab_test_other'));
-                }
-            });
-
-            // Remove items on X button click
-            addedComorbidities.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-btn')) {
-                    e.target.parentElement.remove();
-                }
-            });
-
-            addedLabTests.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-btn')) {
-                    e.target.parentElement.remove();
-                }
-            });
-
-            // Show or hide the free text input based on the selection
-            function toggleFreeTextInput(selectElement, textInput) {
-                if (selectElement.value === 'Others') {
-                    textInput.style.display = 'inline';
-                } else {
-                    textInput.style.display = 'none';
-                }
+            if (selectedValue === "") {
+                alert("Please select an item.");
+                return;
             }
 
-            comorbiditySelect.addEventListener('change', function() {
-                toggleFreeTextInput(comorbiditySelect, document.getElementById('comorbidity_other'));
-            });
+            let valueToAdd = selectedValue === 'Others' ? (otherValue === "" ? null : otherValue) : selectedValue;
 
-            labTestSelect.addEventListener('change', function() {
-                toggleFreeTextInput(labTestSelect, document.getElementById('lab_test_other'));
-            });
+            if (!valueToAdd) {
+                alert("Please specify the item.");
+                return;
+            }
 
-            // Nested dropdown display for Types
-            const typeSelect = document.getElementById('type');
-            const molecularOptions = document.getElementById('molecular-options');
-            const bloodOptions = document.getElementById('blood-options');
-            const tissueOptions = document.getElementById('tissue-options');
+            // Check if the item already exists
+            const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
+            if (existingValues.includes(valueToAdd)) {
+                alert("This item has already been added.");
+                return;
+            }
 
-            typeSelect.addEventListener('change', function() {
-                molecularOptions.style.display = 'none';
-                bloodOptions.style.display = 'none';
-                tissueOptions.style.display = 'none';
+            // Add the item to the list
+            const newItem = document.createElement('div');
+            newItem.classList.add('added-item');
+            newItem.innerHTML = `<span>${valueToAdd}</span><span class="remove-btn">X</span>`;
+            addedItemsContainer.appendChild(newItem);
 
-                if (this.value === 'Molecular') {
-                    molecularOptions.style.display = 'block';
-                } else if (this.value === 'Blood') {
-                    bloodOptions.style.display = 'block';
-                } else if (this.value === 'Tissue') {
-                    tissueOptions.style.display = 'block';
-                }
-            });
+            // Update hidden input field
+            existingValues.push(valueToAdd);
+            hiddenInput.value = existingValues.join(',');
+
+            // Reset fields
+            select.value = '';
+            otherInput.value = '';
+        }
+
+        document.getElementById('add_comorbidity').addEventListener('click', function() {
+            addItem('comorbidity_select', 'comorbidity_other', 'added_comorbidities', 'comorbidities_input');
         });
+
+        document.getElementById('add_lab_test').addEventListener('click', function() {
+            addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
+        });
+
+
+        // Remove item functionality
+        function removeItem(event) {
+            if (event.target.classList.contains('remove-btn')) {
+                const item = event.target.parentElement;
+                item.remove();
+
+                // Update the hidden input values
+                const hiddenInput = document.getElementById(item.dataset.hiddenInputId);
+                const items = Array.from(document.querySelectorAll('.added-item')).map(i => i.textContent.trim());
+                hiddenInput.value = items.join(',');
+            }
+        }
+
+        document.getElementById('added_comorbidities').addEventListener('click', removeItem);
+        document.getElementById('added_lab_tests').addEventListener('click', removeItem);
+    });
+
+    function toggleDropdown() {
+        const dropdown = document.getElementById("type-dropdown");
+        dropdown.classList.toggle("show"); // Toggle show class
+    }
+
+    // Function to select an option and update units dynamically
+    function selectOption(option, category) {
+        document.getElementById("selectedOption").value = option;
+        document.getElementById('typeValue').value = option; 
+        updateUnitOptions(category, option);
+        document.getElementById("type-dropdown").classList.remove("show");
+    }
+
+
+    // Capture the input in the "Other" field and update the display
+    function captureOtherInput(type) {
+        const otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
+        const selectedType = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize the first letter of the type
+        if (otherValue) {
+            // Combine the type and the specified other value
+            document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
+            document.getElementById("typeValue").value = selectedType + " - " + otherValue; // Set the hidden input value as well
+        }
+    }
+
+    // Function to show the "Other" input field
+    function showOtherInput(type) {
+        const otherInputId = type + '-other';
+        const otherInput = document.getElementById(otherInputId);
+        otherInput.classList.remove("hidden");
+        document.getElementById("type-dropdown").classList.remove("show");
+    }
+
+    // Update unit options based on category and selected option
+    function updateUnitOptions(category, option) {
+        const amountUnitSelect = document.getElementById('unit');
+        amountUnitSelect.innerHTML = ''; // Clear existing options
+
+        if (category === 'molecular') {
+            amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
+        } else if (category === 'blood') {
+            if (option === 'Whole Blood') {
+                amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
+            } else {
+                amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
+                amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
+            }
+        } else if (category === 'tissue') {
+            amountUnitSelect.innerHTML += '<option value="slides">Slides</option>';
+            amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
+        }
+    }
+
+    // Close dropdown if clicked outside
+    window.onclick = function(event) {
+        const dropdown = document.getElementById("type-dropdown");
+        if (!event.target.matches('.dropdown-input') && !event.target.closest('.dropdown')) {
+            dropdown.classList.remove("show");
+        }
+    }
+
     </script>
 </body>
 {% endblock %}

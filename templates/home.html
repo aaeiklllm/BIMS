@@ -328,7 +328,7 @@
       <!-- Display pending Biobank Manager Deletion Requests -->
       <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
       {% if biobank_managers %}
-        {% for user in biobank_managers %}
+        {% for user in biobank_managers2 %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -358,7 +358,7 @@
       <!-- Display pending Researcher Deletion Requests -->
       <h4>Researcher ({{ researchers|length }})</h4>
       {% if researchers %}
-        {% for user in researchers %}
+        {% for user in researchers2 %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -391,12 +391,15 @@
         
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
-      
         <h1>Welcome, Researcher</h1>
+        <li class="nav-item">
+          <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Create Sample</a>
+        </li>
 
-        <!-- Researcher update form -->
         <h2>Update Your Information</h2>
-        <form method="POST" action="{% url 'update_user' %}"> <!-- {% url 'update_user' %} -->
+        <!-- Researcher update form -->
+         
+        <form method="POST" action=""> 
           {% csrf_token %}
           <label for="uname">Username:</label>
           <input type="text" name="uname" value="{{ user.username }}" required><br>
