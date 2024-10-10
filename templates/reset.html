@@ -3,11 +3,11 @@
 {% block content %}
 <title>Sign In</title>
 <head>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- <style>
- @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
  
  .info-msg,
     .success-msg,
@@ -77,7 +77,9 @@ html, body {
       padding: 0;
       height: 100%;
       width: 100%;
-      color: #644ca4;
+      background-color: #f8f9fa; /* Light background color */
+	  color: #644ca4; /* Text color */
+	  font-family: 'Montserrat', sans-serif;
     }
 
 .btn-primary {
@@ -85,6 +87,26 @@ html, body {
 	border-color: #674FA7 !important;
 	color: #FFFFFF;
 	transition: transform 80ms ease-in;
+}
+
+button {
+    background-color: #644ca4; /* Green background */
+    color: white; /* White text color */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Padding around the text */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Align the button inline */
+    font-size: 16px; /* Increase font size */
+    margin: 4px 2px; /* Spacing between buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, transform 0.2s; /* Transition for smooth effect */
+}
+
+button:hover {
+    background-color: #5c459b; /* Darker green on hover */
+    transform: scale(1.05); /* Slightly increase size */
 }
 
 button:active {
@@ -100,17 +122,6 @@ button.ghost {
 	border-color: #FFFFFF;
 }
 
-form {
-	background-color: #eeeeee;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	padding: 0 50px;
-	height: 100%;
-	text-align: center;
-}
-
 input {
 	background-color: #ffffff;
 	border: none;
@@ -120,14 +131,35 @@ input {
 }
 
 .container {
-	background-color: #fff;
-	border-radius: 10px;
-	position: relative;
-	overflow: hidden;
-	width: 768px;
-	max-width: 100%;
-	min-height: 480px;
+    background-color: #eeeeee;
+    border-radius: 10px;
+	top: 20px;
+    position: relative;
+    overflow: hidden;
+    width: 680px;
+    max-width: 100%;
+    min-height: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Add shadow */
+    display: flex; /* Use flexbox to center content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
+
+form {
+    background-color: #eeeeee; /* Background color of form */
+    border-radius: 10px;
+	position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 400px;
+    padding: 20px 50px; /* Adjust padding for a better look */
+    width: 700px; /* Full width of the container */
+    max-width: 100%; /* Limit the form width */
+}
+
 
 .form-container {
 	position: absolute;
@@ -291,40 +323,44 @@ footer a {
  </style>   
 </head>
 <body>
+    <div class="col-md-12 ">
+        {% if messages %}
+            {% for message in messages %} 
+                {% if message.tags %}
+                    <div class="{{message.tags}}-msg" style="text-align: center;">		  
+                {% endif %}
+                    <i class="fa fa-times-circle"></i>
+                    {{message}}
+                </div>
+            {% endfor %} 
+        {% endif %}	
 
-
-
-	<!-- <div class="col-md-12 ">
-
-		{% if messages %}
- {% for message in messages %} 
- {% if message.tags %}
-		<div class="{{message.tags}}-msg" style="  text-align: center;">		  {% endif %}
-		  
-
-	<i class="fa fa-times-circle"></i>
-			{{message}}
-		  </div>
-		  {% endfor %} 
-		{% endif %}	 -->
-	
-
-
-  <div class="container" id="container">
-    <form action="reset_password" method="post">
-      {% csrf_token %}
-      <label for="code">Enter Code</label>
-      <input type="text" name="code" id="code">
-      
-      <label for="new_password">New Password</label>
-      <input type="password" name="new_password" id="new_password">
-      
-      <button type="submit">Submit</button>
-  </form>
-  
-  </div> 
-     
+    <div class="container" id="container">
+        <form action="{% url 'reset_password' %}" method="post" id="reset-form" required>
+            {% csrf_token %}
+            <label for="code">Enter Code</label>
+            <input type="text" name="code" id="code" required>
+			
+            <label for="new_password">New Password</label>
+            <input id="new_password" type="password" name="new_password" 
+                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+                   title="Must contain at least one number, one uppercase and lowercase letter, and at least 8 or more characters" 
+                   required>
+		
+            <label for="confirm_password">Confirm Password</label>
+            <input id="confirm_password" type="password" name="confirm_password"  
+                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+                   title="Must contain at least one number, one uppercase and lowercase letter, and at least 8 or more characters" 
+                   required>
+		
+            <div id="password-error" style="color:red; display:none;">Passwords don't match!</div>
+		
+            <button type="submit">Submit</button>
+        </form>		
+    </div> 
 </body>
+
+
 <script>
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
@@ -366,6 +402,9 @@ document.getElementById('forgot-password').addEventListener('click', function(ev
     })
     .catch(error => console.error('Error:', error));
 });
+
+
+const form = document.getElementById('reset-form');
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

@@ -71,11 +71,10 @@ def register_user(request, roledata):
                             from_email=settings.EMAIL_HOST_USER,
                             recipient_list=[email]
                         )
+                        return render(request, 'thank_you.html') 
                     except Exception as e:
                         print(e)
                         return render(request, 'ragister.html',{'message':'Failed To Send Email'})
-                    finally:
-                        return redirect('')
                 else:
                     role_name = Role.objects.filter(role='Researcher').first()
             
@@ -93,11 +92,10 @@ def register_user(request, roledata):
                             from_email=settings.EMAIL_HOST_USER,
                             recipient_list=[email]
                         )
+                        return render(request, 'thank_you.html')
                     except Exception as e:
                         print(e)
                         return render(request, 'ragister.html',{'message':'Failed To Send Email'})
-                    finally:
-                        return redirect('')
         messages.add_message(request, messages.ERROR, "Please Add Valid Details !")
         return render(request, 'ragister.html')    
     except Exception as e:
@@ -128,6 +126,10 @@ def create_account(request):
 def create_sample(request):
     messages.add_message(request, messages.SUCCESS, "Sample has been created.")
     return render(request, 'create_sample.html')
+def home(request):
+    return render(request, 'home.html')  # Make sure to have 'index.html' in your templates folder
+
+# def create_sample(request):
 
 def creation_requests(request):
     pending_users = User.objects.filter(is_active=False, deletion_requested=False)  # Filter for creation requests only
@@ -501,22 +503,29 @@ def deny_deletion(request):
         messages.add_message(request, messages.SUCCESS, f"Account deletion request for {user.first_name} {user.last_name} has been denied.")
     return redirect('')  # Redirect to the admin page
 
-
 def reset_password(request):
     if request.method == 'POST':
         code = request.POST.get('code')
         new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')  # Get the confirm password
+
+        # Check if the new password and confirm password match
+        if new_password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'reset.html')
 
         try:
+            # Look for the reset code that matches and is not used
             reset_code_obj = PasswordResetCode.objects.get(code=code, is_used=False)
 
-            # Check if code is still valid (e.g., within 24 hours)
+            # Check if the code is still valid (e.g., within 24 hours)
             if timezone.now() - reset_code_obj.created_at > timedelta(hours=24):
-                return JsonResponse({'success': False, 'message': 'Code expired'})
+                messages.error(request, "Reset code has expired.")
+                return render(request, 'reset.html')
 
-            # Update the user password
+            # Update the user's password
             user = reset_code_obj.user
-            user.password = make_password(new_password)
+            user.password = make_password(new_password)  # Hash the new password
             user.save()
 
             # Mark the reset code as used
@@ -526,10 +535,10 @@ def reset_password(request):
             # return JsonResponse({'success': True, 'message': 'Password updated successfully'})
             messages.add_message(request, messages.SUCCESS, f"Password updated successfully.")
             return render(request, 'index.html')
+
         except PasswordResetCode.DoesNotExist:
             messages.add_message(request, messages.ERROR, "Invalid code entered.")
             return render(request, 'reset.html')
-            # return JsonResponse({'success': False, 'message': 'Invalid code'})
 
+    # If not POST, render the reset page
     return render(request, 'reset.html')
-

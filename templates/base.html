@@ -129,39 +129,70 @@
           </a>         
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style="margin-right: 0%;">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-1">
-                {% if request.session.role != 'Admin' %}
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Home</a> <!--#644ca4-->
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">FAQs</a>
-                </li>
-                {% endif %}
+                
+                  
+                  {% if request.session.role == 'BiobankManager' %}
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+                  </li> 
 
-                {% if request.session.role %}
-                  {% if request.session.role == 'Admin' %}
-                  <!-- <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'creation_requests' %}" ><button type="button" class="btn btn-sm-2" id="accountCreationButton" style="background-color: #ffffff !important; border-color: #767C80 !important; ">Account Creation Requests</button>
-                      <span class="badge bg-danger">{{ creation_request_count }}</span></a>
+                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                  
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Create Sample</a>
+                  </li>
+
+                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Sample</button></a>
+                  </li>
+
+                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Request</button></a>
+                  </li>
+
+                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Generate Reports</button></a>
+                  </li>       
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important;">Logout</button></a>
+                  </li>       
+
+
+                  {% elif request.session.role == 'Researcher' %}
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+                  </li> 
+
+                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                  
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Request</a>
+                  </li>
+
+                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Sample</button></a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'deletion_requests' %}" ><button type="button" class="btn btn-sm-2" id="accountDeletionButton" style="background-color: #ffffff !important; border-color: #767C80 !important; ">Account Deletion Requests</button>
-                      <span class="badge bg-danger">{{ deletion_request_count }}</span></a>
-                  </li> -->
+                    <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important; ">Logout</button></a>
+                  </li>
+
+                  {% else %}
                   <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'creation_requests' %}" style="position: relative;">
-                        <button type="button" class="btn btn-sm-2 {% if request.path == '/creation_requests/' %}active{% endif %}" style="background-color: #ffffff !important; border-color: #767C80 !important; position: relative;">
-                            Account Creation Requests</button>
-                        <span class="badge bg-danger" style="position: absolute; top: 1px; right: -2px;">{{ creation_request_count }}</span>
-                    </a>
-                </li>
-                
+                    <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Home</a> <!--#644ca4-->
+                  </li>
                   <li class="nav-item">
-                      <a class="nav-link active" href="{% url 'deletion_requests' %}" style="position: relative;">
-                          <button type="button" class="btn btn-sm-2 {% if request.path == '/deletion_requests/' %}active{% endif %}" style="background-color: #ffffff !important; border-color: #767C80 !important; position: relative;">
-                            Account Deletion Requests</button>
-                          <span class="badge bg-danger" style="position: absolute; top: 1px; right: -2px;">{{ deletion_request_count }}</span>
-                      </a>
+                    <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">FAQs</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" href="/accounts/loginpage/?role=Researcher"><button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Researcher</button></a>
                   </li>
                   {% endif %}
                   <li class="nav-item">

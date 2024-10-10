@@ -8,6 +8,15 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   <style>
+    @media only screen and (max-width: 768px) {
+      .content-section {
+        max-width: 90%;
+      }
+
+      .features-section h3, .content-section h1 {
+        font-size: 24px;
+      }
+    }
     .info-msg,
     .success-msg,
     .warning-msg,
@@ -65,7 +74,6 @@
       align-items: center;
       background-image: url("{% static 'bg_image_1.jpg' %}");
     }
-
 
     .container-home {
       width: 100%;
@@ -146,16 +154,21 @@
     }
 
     .pending-user {
-      font-size: 18px;
-      color: #333;
-      border: 1px solid #644ca4;
+      background-color: #f9f9f9;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
-      border-radius: 5px;
-      background-color: #f9f9f9;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       display: flex;
+      flex-direction: row;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .pending-user p {
+      margin: 5px 0;
+      font-size: 16px;
     }
 
     .pending-user-details {
@@ -175,19 +188,6 @@
         width: 100px;
     }
 
-    .pending-user {
-      font-size: 18px;
-      color: #333;
-      border: 1px solid #644ca4;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
     .pending-user-details {
         flex-grow: 1;
     }
@@ -205,15 +205,120 @@
         width: 100px;
     }
 
-  /* .toast-error {
-    background-color: #d9534f !important; 
-    color: #fff !important;  
-  } */
+    .btn-create-sample {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 20px;
+        font-family: Helvetica, sans-serif;
+        color: white;
+        background-color: #644ca4;
+        border: none;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        /* transition: background-color 0.3s; */
+        cursor: pointer;
+    }
 
-  /* .toast-top-right {
-    top: 100px; 
-    right: 12px;
-  } */
+    .btn-create-sample:hover {
+        background-color: #523a8d; /* Darker shade on hover */
+    }
+
+    .profile-section, .actions-section {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .aligning {
+      justify-content: center;
+      margin: 0 150px 0 150px;      
+    }
+
+    h1, h2 {
+      color: #644ca4;
+      text-align: center; /* Center-align the headers */
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    form input[type="text"],
+    form input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 0px 0px 10px 0px;
+    }
+
+    .btn-primary, .btn-create-sample, .btn-danger {
+      /* display: inline-block; */
+      padding: 12px 40px;
+      font-size: 16px;
+      font-family: Helvetica, sans-serif;
+      color: white;
+      text-align: center;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: auto;
+    }
+
+    .actions-section a {
+      margin-right: 15px;
+    }
+
+    .grid-layout {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .grid-layout .item {
+      flex: 1 1 300px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .grid-layout {
+        flex-direction: column;
+      }
+    }
+
+    hr {
+      border: none; /* Remove the default border */
+      height: 2px; /* Set the height of the line */
+      background-color: #4b0082; /* Set the color of the line */
+      margin: 10px 0; /* Add margin above and below the line */
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Main content area */
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+    }
+
+    /* Hide sections initially */
+    .section {
+      display: none;
+    }
+
+    /* Show section when active */
+    .section.active {
+      display: block;
+    }
+
   </style>
 </head>
 
@@ -221,42 +326,14 @@
 
 <section class="page-hero bg-image">
   <div class="content-section">
-    {% if not request.session.role|default:'' %}
-    <!-- Main Title -->
-    <h1 style="font-size: 45px; text-align: center; margin-top: 10px;"><b>Biobank Information Management System (BIMS) for a Genetic Research Institution</b></h1>
-    
-    <!-- Description text -->
-    <p class="description">
-      The Biobank Information Management System (BIMS) is designed to optimize the management of biospecimens in a genetic research institution. BIMS allows biobank managers to efficiently oversee sample organization and inventory management, while providing researchers with a streamlined process for requesting and accessing samples. This integrated approach enhances workflow efficiency and supports cutting-edge research.
-    </p>
-
-    <!-- Features Section -->
-    <div class="features-section">
-      <h3>Features</h3>
-      <div class="feature-item">
-        <i class="fas fa-boxes"></i>
-        <p><strong>Streamlined Sample Management</strong>: Efficiently store and retrieve samples with real-time tracking and reporting.</p>
-      </div>
-      <div class="feature-item">
-        <i class="fas fa-chart-bar"></i>
-        <p><strong>Comprehensive Reporting</strong>: Generate detailed reports on sample usage, status, and inventory.</p>
-      </div>
-      <div class="feature-item">
-        <i class="fas fa-file-alt"></i>
-        <p><strong>Integrated Consent Management</strong>: Track and manage informed consent documents to ensure compliance with ethical standards.</p>
-      </div>
-      <div class="feature-item">
-        <i class="fas fa-envelope"></i>
-        <p><strong>Automated Email Notifications</strong>: Receive timely email alerts for sample requests and updates on the status of sample requests.</p>
-      </div>
-    </div>
-    {% endif %}
 
     <!-- Content based on the role -->
     {% if request.session.role %}
-      <!-- {% if request.session.role == 'Admin' %} -->
-      {% if pending_users %}
-      <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
+
+<!-- ################################################################################################################################################### -->
+
+      {% if request.session.role == 'Admin' %}
+        <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
 
         <!-- Display pending Biobank Manager -->
         <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
@@ -340,12 +417,12 @@
             <form method="post" action="{% url 'approve_deletion' %}">
               {% csrf_token %}
               <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-success" type="submit">Approve</button>
+              <button class="btn btn-success" type="submit">Approve Deletion</button>
             </form>
             <form method="post" action="{% url 'deny_deletion' %}">
               {% csrf_token %}
               <input type="hidden" name="user_id" value="{{ user.id }}">
-              <button class="btn btn-danger" type="submit">Deny</button>
+              <button class="btn btn-danger" type="submit">Deny Deletion</button>
             </form>
           </div>
         </div>
@@ -386,8 +463,7 @@
 
     {% endif %}
 
-      
-        
+    
       {% elif request.session.role == 'Researcher' %}
         <!-- Researcher content -->
         <h1>Welcome, Researcher</h1>
@@ -403,80 +479,169 @@
           <label for="uname">Username:</label>
           <input type="text" name="uname" value="{{ user.username }}" required><br>
 
-          <label for="email">Email:</label>
-          <input type="email" name="email" value="{{ user.email }}" required><br>
+<!-- ################################################################################################################################################### -->
 
-          <label for="first_name">First Name:</label>
-          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+      {% elif request.session.role == 'Researcher' %}
+        <!-- Researcher content -->
+        <h1><strong>Researcher</strong></h1>
 
-          <label for="middle_name">Middle Name:</label>
-          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
 
-          <label for="last_name">Last Name:</label>
-          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
+      <div class="content">
+        <div id="profile" class="section active">
+        <div class="profile-section">
+          <div class ="aligning">
 
-          <label for="position">Position:</label>
-          <input type="text" name="position" value="{{ user.position }}" required><br>
+            <!-- Researcher update form -->
+            <h2>Profile Information</h2> 
+            <hr>
+            <p>Review and update your profile information using the form below.</p>
 
-          <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" pattern="\+63[0-9]{10}" title="Mobile number must start with +63 and be followed by 10 digits" required><br>
+            <form method="POST" action="{% url 'update_user' user.id %} ">
+              {% csrf_token %}
 
-          <button type="submit" class="btn btn-primary">Update</button>
-        </form>
+              <!-- Username and Email side by side -->
+              <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                  <label for="uname">Username:</label>
+                  <input type="text" name="uname" value="{{ user.username }}" required>
+                </div>
+                <div style="flex: 1;">
+                  <label for="email">Email:</label>
+                  <input type="email" name="email" value="{{ user.email }}" required>
+                </div>
+              </div>
+              <br>
+              
+              <!-- First Name, Middle Name, and Last Name side by side -->
+              <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                  <label for="first_name">First Name:</label>
+                  <input type="text" name="first_name" value="{{ user.first_name }}" required>
+                </div>
+                <div style="flex: 1;">
+                  <label for="middle_name">Middle Name:</label>
+                  <input type="text" name="middle_name" value="{{ user.middle_name }}">
+                </div>
+                <div style="flex: 1;">
+                  <label for="last_name">Last Name:</label>
+                  <input type="text" name="last_name" value="{{ user.last_name }}" required>
+                </div>
+              </div>
+              <br>
+
+              <!-- Unit and Position side by side -->
+              <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                  <label for="unit">Unit:</label>
+                  <input type="text" name="unit" value="{{ user.unit }}" required>
+                </div>
+                <div style="flex: 1;">
+                  <label for="position">Position:</label>
+                  <input type="text" name="position" value="{{ user.position }}" required>
+                </div>
+              </div>
+              <br>
+
+              <label for="mobile_number">Mobile Number:</label>
+              <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
+
+              <button type="submit" class="btn btn-primary" style="display: block; margin: 0 auto; width: 660px;">Update</button>
+            </form>
+
+          </div>
+        </div>  
 
         <!-- Request Deletion Section -->
-        <div class="request-deletion">
+        <div class="profile-section">
           <h2>Account Deletion Request</h2>
-          <p>If you wish to delete your account, please click the button below.</p>
+          <hr>
+          <p style="margin-left: 170px;">If you wish to delete your account, please click the button below.</p>
           <form method="POST" action="{% url 'request_deletion' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Request Account Deletion</button>
+            <button type="submit" class="btn btn-danger" style="display: block; margin: 0 auto; width: 660px;">Request Account Deletion</button>
           </form>
         </div>
+
+        </div>        
+        
+
+<!-- ################################################################################################################################################### -->
+
 
       {% elif request.session.role == 'BiobankManager' %}
         <!-- Biobank Manager content -->
-        <h1>Welcome, Biobank Manager</h1>
-        <li class="nav-item">
-          <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Create Sample</a>
-        </li>
-        <!-- Biobank Manager update form -->
-        <h2>Update Your Information</h2>
+        <h1><strong>Biobank Manager</strong></h1>
 
-        <form method="POST" action="{% url 'update_user' %}"> 
-          {% csrf_token %}
-          <label for="uname">Username:</label>
-          <input type="text" name="uname" value="{{ user.username }}" required><br>
+      <div class="content">
+        <div id="profile" class="section active">
+        <div class="profile-section">
+          <div class ="aligning">
+            <!-- Biobank Manager update form -->
+            <h2>Profile Information</h2>
+            <hr>
+            <p>Review and update your profile information using the form below.</p>
 
-          <label for="email">Email:</label>
-          <input type="email" name="email" value="{{ user.email }}" required><br>
+            <form method="POST" action="{% url 'update_user' user.id %}"> 
+              {% csrf_token %}
+              
+              <!-- Username and Email side by side -->
+              <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                  <label for="uname">Username:</label>
+                  <input type="text" name="uname" value="{{ user.username }}" required>
+                </div>
+                <div style="flex: 1;">
+                  <label for="email">Email:</label>
+                  <input type="email" name="email" value="{{ user.email }}" required>
+                </div>
+              </div>
+              <br>
+              
+              <!-- First Name, Middle Name, and Last Name side by side -->
+              <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                  <label for="first_name">First Name:</label>
+                  <input type="text" name="first_name" value="{{ user.first_name }}" required>
+                </div>
+                <div style="flex: 1;">
+                  <label for="middle_name">Middle Name:</label>
+                  <input type="text" name="middle_name" value="{{ user.middle_name }}">
+                </div>
+                <div style="flex: 1;">
+                  <label for="last_name">Last Name:</label>
+                  <input type="text" name="last_name" value="{{ user.last_name }}" required>
+                </div>
+              </div>
+              <br>
+              
+              <!-- Position and Mobile Number (next row, not side by side) -->
+              <label for="position">Position:</label>
+              <input type="text" name="position" value="{{ user.position }}" required><br>
 
-          <label for="first_name">First Name:</label>
-          <input type="text" name="first_name" value="{{ user.first_name }}" required><br>
+              <label for="mobile_number">Mobile Number:</label>
+              <input type="text" name="mobile_number" value="{{ user.mobile_number }}" required><br>
 
-          <label for="middle_name">Middle Name:</label>
-          <input type="text" name="middle_name" value="{{ user.middle_name }}"><br>
+              <button type="submit" class="btn btn-primary" style="display: block; margin: 0 auto; width: 660px;">Update</button>
+            </form>
+            
+          </div>
+        </div>
 
-          <label for="last_name">Last Name:</label>
-          <input type="text" name="last_name" value="{{ user.last_name }}" required><br>
-
-          <label for="position">Position:</label>
-          <input type="text" name="position" value="{{ user.position }}" required><br>
-
-          <label for="mobile_number">Mobile Number:</label>
-          <input type="text" name="mobile_number" value="{{ user.mobile_number }}" pattern="\+63[0-9]{10}" title="Mobile number must start with +63 and be followed by 10 digits" required><br>
-
-          <button type="submit" class="btn btn-primary">Update</button>
-        </form>
-        <!-- Request Deletion Section -->
-        <div class="request-deletion">
+        <!-- Account Deletion Section -->
+        <div class="profile-section">
           <h2>Account Deletion Request</h2>
-          <p>If you wish to delete your account, please click the button below.</p>
+          <hr>
+          <p style="margin-left: 170px;">If you wish to delete your account, please click the button below.</p>
           <form method="POST" action="{% url 'request_deletion' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Request Account Deletion</button>
+            <button type="submit" class="btn-danger" style="display: block; margin: 0 auto; width: 660px;">Request Account Deletion</button>
           </form>
         </div>
+
+        </div>
+
+      <!-- content end div -->
+      </div>
 
 
       {% endif %}
@@ -486,6 +651,22 @@
         <a href="/accounts/createaccount/?role=Researcher" class="btn btn-primary btn-lg zoomOut" id="button1">Create Researcher</a> -->
       </div>
     {% endif %}
+
+    <script>
+      // Function to show the selected section and hide the others
+      function showSection(sectionId) {
+        // Hide all sections
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(section => {
+          section.classList.remove('active');
+        });
+
+        // Show the selected section
+        const selectedSection = document.getElementById(sectionId);
+        selectedSection.classList.add('active');
+      }
+    </script>
+
   </div>
 </section>
 
