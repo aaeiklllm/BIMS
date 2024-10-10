@@ -30,15 +30,43 @@
         
       }
 
-      html{
-      height: 100%;
+    html{
+
     }
 
     body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
       margin: 0;
       padding: 0;
-      min-height: 100%;
       color: #644ca4;
+      
+    }
+
+    footer {
+      font-family: Helvetica, sans-serif;
+      color: white;
+      background-color: #644ca4;
+      z-index: 999;
+      display: flex;
+      flex-wrap: auto;
+      margin-top: auto;
+      
+    }
+
+    footer p {
+      margin: 10px 0;
+    }
+
+    footer i {
+        color: red;
+    }
+
+    footer a {
+        color: #3c97bf;
+        text-decoration: none;
     }
 
     .btn-primary {
@@ -62,42 +90,13 @@
           color: white !important;
         }
 
-        #page-footer{
-            position: relative;
-            display: block;
-            padding-top: 80px;
-            padding-bottom: 17px;
-            background-color: white;
-            color: #fff;
-            font-size: 18px;
-            
-           
+        .row {
+          display: flex;  
+          width: 100%;
+
         }
-        #page-footer a{
-          text-decoration: none;
-          background-color: none;
-          transition: transform .2s; /* Animation */
-          
-        }
-        #page-footer a:hover{
-          transform: scale(1.2); 
-        }
+
         
-        .footer-menu a{
-            display: inline-block;
-            padding-top: 6px;
-            padding-bottom: 6px;
-            color: white;
-            transition: all .2s ease;
-        }
-       
-        #page-footer ul{
-          list-style: none;
-        }
-        
-    .container-fluid {
-      max-height: 10%;
-    }
        
         
         
@@ -142,66 +141,18 @@
                   </li>
                 {% endif %}
               </ul>
-            </div>
+             </div>
           </div>
         </nav>
       </div>
     </header>
     {% block content %} {% endblock %}
-    <!-- <footer class="page-footer" id="page-footer">
-        <div class="container">
-          <div class="row px-md-3">
-            <div class="col-sm-6 col-lg-3 py-3">
-              
-              <ul class="footer-menu" id="footer-menu">
-                <h3>Company</h3>
-                <li><a href="/aboutUs">About Us</a></li>
-                <li><a href="#">Career</a></li>
-                <li><a href="#">Editorial Team</a></li>
-                <li><a href="#">Protection</a></li>
-              </ul>
-            </div>
-            <div class="col-sm-6 col-lg-3 py-3">
-              <ul class="footer-menu">
-                <h3>More</h3>
-                <li><a href="#">Terms & Condition</a></li>
-                <li><a href="#">Privacy</a></li>
-                <li><a href="#">Advertise</a></li>
-                <li><a href="#">Join as Doctors</a></li>
-              </ul>
-            </div>
-            <div class="col-sm-6 col-lg-3 py-3">
-             <ul class="footer-menu" style="text-decoration: none;">
-                <h3>Our partner</h3>
-                <li><a href="#">One-Fitness</a></li>
-                <li><a href="#">One-Drugs</a></li>
-                <li><a href="#">One-Live</a></li>
-              </ul>
-            </div>
-            <div class="col-sm-6 col-lg-3 py-3">
-              <h3>Contact</h3>
-              <p class="footer-link mt-3">351 Willow Street Franklin, MA 02038</p>
-              <p>701-573-7582</p>
-              <p>healthcare@temporary.net</p>
-    
-              <div class="social mt-2 mb-3 socialCustom">
-                 <h5>Social Media
-                  <i class="fa fa-facebook-official fa-lg zoomOut"></i>
-                  <i class="fa fa-instagram fa-lg zoomOut"></i>
-                  <i class="fa fa-twitter fa-lg zoomOut"></i> 
-                  <i class="fa fa-linkedin-square fa-lg zoomOut"></i>
-                 </h5>
-                  
-                 
-            </div>
-          </div>
-    
-          <hr>
-          <p id="copyright" style="text-align: center;">Copyright &copy; 2024 Mend. All right reserved</p>
-        </div>
 
-      </footer> -->
-        
-    
 </body>
+  <footer class="page-footer" id="page-footer">
+    <div class="row">
+      <p id="copyright">Copyright &copy; 2024 BIMS. All right reserved</p>
+      <p>bims@test.com</p>
+    </div>
+  </footer>
 </html>
