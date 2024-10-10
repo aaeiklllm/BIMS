@@ -141,19 +141,12 @@
 	}
 
 html, body {
-      margin: 0;
+      /* margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
       color: #644ca4;
-	  background-color: #fcfcfc;
-    }
-html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      color: #644ca4;
+	  background-color: #fcfcfc; */
     }
 
 .btn-primary {
@@ -212,7 +205,7 @@ input {
 	min-height: 480px;
 	box-shadow: 8px 12px 28px rgba(0,0,0,0.25), 
 			8px 8px 10px rgba(0,0,0,0.22);
-	margin-top: 100px;
+	margin-top: 15vh;
 }
 
 .form-container {
@@ -354,31 +347,6 @@ input {
 	width: 40px;
 }
 
-footer {
-    background-color: #222;
-    color: #fff;
-    font-size: 14px;
-    bottom: 0;
-    position: fixed;
-    left: 0;
-    right: 0;
-    text-align: center;
-    z-index: 999;
-}
-
-footer p {
-    margin: 10px 0;
-}
-
-footer i {
-    color: red;
-}
-
-footer a {
-    color: #3c97bf;
-    text-decoration: none;
-}
-
 .newclass img {
   max-width: 100%; /* Set the maximum width of the image to 100% of its container */
   height: auto; /* Ensure the height adjusts proportionally to the width */
@@ -413,12 +381,12 @@ footer a {
         {% csrf_token %}
         <h1 style="color: #674FA7;">Login</h1>
        
-        <input type='text' placeholder="Username" name='eml' required>
+        <input type='text' placeholder="Username" name='eml' id="username" required>
         <input type="password" placeholder="Password" name='pwd' />
         <u>
-			<button type="submit" name="forgot_password" value="1" style="background: none; border: none; color: blue; cursor: pointer;">Forgot Password?</button>
+			<button name="forgot_password" value="1" style="background: none; border: none; color: blue; cursor: pointer;">Forgot Password?</button>
 		</u>
-        <button class="btn btn-primary">LOGIN</button>
+        <button type="submit" class="btn btn-primary">LOGIN</button>
       </form>
       {% csrf_token %}
 
@@ -469,6 +437,22 @@ footer a {
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
 const container = document.getElementById('container');
+var username = document.getElementById('username');
+
+function containsUppercase(str) {
+  return /[A-Z]/.test(str);
+}
+
+function validateUsername(){
+	if(containsUppercase(username.value)) {
+	username.setCustomValidity("Field cannot have uppercase letters.");
+	} else {
+	username.setCustomValidity('');
+	}
+}
+
+username.onchange = validateUsername;
+username.onkeyup = validateUsername;
 
 signUpButton.addEventListener('click', () => {
 	// container.classList.add("right-panel-active");
@@ -477,6 +461,7 @@ signUpButton.addEventListener('click', () => {
 signInButton.addEventListener('click', () => {
 	// container.classList.remove("right-panel-active");
 });
+
 
 
 
