@@ -407,30 +407,8 @@ def logout(request):
         return redirect('')
     except:
         return HttpResponse('<h3 style="text-align:center"> Somthing went wrong !!!!!</h3>')
-    
-# def test(request):
-#     role = request.GET.get('role')
 
-#     roledata_mapping = {
-#         'BiobankManager': 'BiobankManager',
-#         'Researcher': 'Researcher',
-#     }
-
-#     roledata = roledata_mapping.get(role)
-#     message = f"Create {roledata}"
-    
-#     # Pass roledata and message to the template context
-#     context = {
-#         'roledata': roledata,
-#         'message': message,
-#     }
-    
-#     return render(request, 'index copy.html', context=context)
-
-def update_user(request):
-    # Get the user ID from the session
-    user_id = request.session.get("id")
-    print(f"User ID from Update_user: {user.id}")
+def update_user(request, user_id):
     user = User.objects.get(id=user_id)
 
     if request.method == 'POST':
@@ -446,17 +424,16 @@ def update_user(request):
         try:
             # Attempt to save user
             user.save()
-            messages.add_message(request, messages.SUCCESS, f"User details updated successfully.")
+            messages.success(request, "User details updated successfully")
             return redirect('')
         except Exception as e:
             print(f"Error saving user: {e}")  # Log the error
-            messages.add_message(request, messages.ERROR, f"Error updating user: {e}")
+            messages.error(request, f"Error updating user: {e}")
 
     context = {
         'user': user
     }
     return render(request, 'home.html', context)
-
 
 def request_deletion(request):
     user_id = request.session.get('id')  # Assuming you set 'id' in the session upon login

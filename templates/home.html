@@ -234,7 +234,7 @@
 
     .aligning {
       justify-content: center;
-      margin: 0 150px 0 150px;      
+      margin: 0 0px 0 0px;      
     }
 
     h1, h2 {
@@ -323,7 +323,6 @@
 </head>
 
 
-
 <section class="page-hero bg-image">
   <div class="content-section">
 
@@ -333,7 +332,7 @@
 <!-- ################################################################################################################################################### -->
 
       {% if request.session.role == 'Admin' %}
-        <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
+      <h3><b>Account Creation Requests ({{ pending_users|length }})</b></h3>
 
         <!-- Display pending Biobank Manager -->
         <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
@@ -461,24 +460,6 @@
         <p>No Researcher deletion requests</p>
       {% endif %}
 
-    {% endif %}
-
-    
-      {% elif request.session.role == 'Researcher' %}
-        <!-- Researcher content -->
-        <h1>Welcome, Researcher</h1>
-        <li class="nav-item">
-          <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #644ca4;">Create Sample</a>
-        </li>
-
-        <h2>Update Your Information</h2>
-        <!-- Researcher update form -->
-         
-        <form method="POST" action=""> 
-          {% csrf_token %}
-          <label for="uname">Username:</label>
-          <input type="text" name="uname" value="{{ user.username }}" required><br>
-
 <!-- ################################################################################################################################################### -->
 
       {% elif request.session.role == 'Researcher' %}
@@ -496,7 +477,7 @@
             <hr>
             <p>Review and update your profile information using the form below.</p>
 
-            <form method="POST" action="{% url 'update_user' user.id %} ">
+            <form method="POST" action="{% url 'update_user' user.id %}">
               {% csrf_token %}
 
               <!-- Username and Email side by side -->
@@ -581,7 +562,7 @@
             <hr>
             <p>Review and update your profile information using the form below.</p>
 
-            <form method="POST" action="{% url 'update_user' user.id %}"> 
+            <form method="POST" action="{% url 'update_user' user.id %}">
               {% csrf_token %}
               
               <!-- Username and Email side by side -->
@@ -646,10 +627,34 @@
 
       {% endif %}
     {% else %}
-      <div style="text-align: center; margin: 30px;">
-        <!-- <a href="/accounts/createaccount/?role=BiobankManager" class="btn btn-primary btn-lg zoomOut" id="button1">Create Biobank Manager</a>
-        <a href="/accounts/createaccount/?role=Researcher" class="btn btn-primary btn-lg zoomOut" id="button1">Create Researcher</a> -->
+     <!-- Main Title -->
+    <h1 style="font-size: 45px; text-align: center; margin-top: 10px;"><b>Biobank Information Management System (BIMS) for a Genetic Research Institution</b></h1>
+    
+    <!-- Description text -->
+    <p class="description">
+      The Biobank Information Management System (BIMS) is designed to optimize the management of biospecimens in a genetic research institution. BIMS allows biobank managers to efficiently oversee sample organization and inventory management, while providing researchers with a streamlined process for requesting and accessing samples. This integrated approach enhances workflow efficiency and supports cutting-edge research.
+    </p>
+
+    <!-- Features Section -->
+    <div class="features-section">
+      <h3>Features</h3>
+      <div class="feature-item">
+        <i class="fas fa-boxes"></i>
+        <p><strong>Streamlined Sample Management</strong>: Efficiently store and retrieve samples with real-time tracking and reporting.</p>
       </div>
+      <div class="feature-item">
+        <i class="fas fa-chart-bar"></i>
+        <p><strong>Comprehensive Reporting</strong>: Generate detailed reports on sample usage, status, and inventory.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-file-alt"></i>
+        <p><strong>Integrated Consent Management</strong>: Track and manage informed consent documents to ensure compliance with ethical standards.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-envelope"></i>
+        <p><strong>Automated Email Notifications</strong>: Receive timely email alerts for sample requests and updates on the status of sample requests.</p>
+      </div>
+    </div>
     {% endif %}
 
     <script>
@@ -669,40 +674,4 @@
 
   </div>
 </section>
-
-<!-- <script>
-  toastr.options = {
-    "closeButton": false,
-    "debug": false,
-    "newestOnTop": false,
-    "progressBar": true,
-    "positionClass": "toast-top-right",
-    "preventDuplicates": false,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-  };
-
-  {% if messages %}
-      {% for message in messages %}
-          var toastrType = "";
-          if ("{{ message.tags }}" === "alert-success") {
-              toastrType = "success";
-          } else if ("{{ message.tags }}" === "alert-info") {
-              toastrType = "info";
-          } else if ("{{ message.tags }}" === "alert-warning") {
-              toastrType = "warning";
-          } else if ("{{ message.tags }}" === "alert-danger") {
-              toastrType = "error";
-          }
-          toastr[toastrType]("{{ message|escapejs }}");
-      {% endfor %}
-  {% endif %}
-</script> -->
 {% endblock %}

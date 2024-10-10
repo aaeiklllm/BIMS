@@ -114,109 +114,96 @@
     </style>
 </head>
 <body>
-    <header>
-      <div id="navBar">
-        <nav class="navbar navbar-expand-lg navbar-light" id="navbar-custom">
-          <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;BIMS </span></a> -->
-            <a class="navbar-brand" href="/" style="font-size: 22px; font-family: Helvetica, sans-serif;">
-              <span style="color: white;">
-                  <img src="{% static 'BIMS_transparent_new.png' %}" alt="Logo" style="height: 60px; vertical-align: middle; padding-left: 20%;">&nbsp;
-              </span>
-          </a>         
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style="margin-right: 0%;">
-              <ul class="navbar-nav ms-auto mb-2 mb-lg-1">
+  <header>
+    <div id="navBar">
+      <nav class="navbar navbar-expand-lg navbar-light" id="navbar-custom">
+        <div class="container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <!-- <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;BIMS </span></a> -->
+          <a class="navbar-brand" href="/" style="font-size: 22px; font-family: Helvetica, sans-serif;">
+            <span style="color: white;">
+                <img src="{% static 'BIMS_transparent_new.png' %}" alt="Logo" style="height: 60px; vertical-align: middle; padding-left: 20%;">&nbsp;
+            </span>
+        </a>         
+          <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style="margin-right: 0%;">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-1">
+              
                 
-                  
-                  {% if request.session.role == 'BiobankManager' %}
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
-                  </li> 
+                {% if request.session.role == 'BiobankManager' %}
+                <li class="nav-item">
+                  <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+                </li> 
 
-                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
-                  
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Create Sample</a>
-                  </li>
+                <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                
+                <li class="nav-item">
+                  <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Create Sample</a>
+                </li>
 
-                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
 
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Sample</button></a>
-                  </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Sample</button></a>
+                </li>
 
-                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
 
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Request</button></a>
-                  </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Request</button></a>
+                </li>
 
-                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
 
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Generate Reports</button></a>
-                  </li>       
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important;">Logout</button></a>
-                  </li>       
+                <li class="nav-item">
+                  <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Generate Reports</button></a>
+                </li>       
+                <li class="nav-item">
+                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important;">Logout</button></a>
+                </li>       
 
 
-                  {% elif request.session.role == 'Researcher' %}
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
-                  </li> 
+                {% elif request.session.role == 'Researcher' %}
+                <li class="nav-item">
+                  <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+                </li> 
 
-                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
-                  
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Request</a>
-                  </li>
+                <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                
+                <li class="nav-item">
+                  <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Request</a>
+                </li>
 
-                  <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+                <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
 
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Sample</button></a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important; ">Logout</button></a>
-                  </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Sample</button></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important; ">Logout</button></a>
+                </li>
 
-                  {% else %}
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Home</a> <!--#644ca4-->
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">FAQs</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/accounts/loginpage/?role=Researcher"><button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Researcher</button></a>
-                  </li>
-                  {% endif %}
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #ffffff !important; border-color: #767C80 !important; ">Log Out</button></a>
-                  </li>
                 {% else %}
-                  <li class="nav-item">
-                    <a class="nav-link active" href="/accounts/loginpage/?role=Researcher">
-                        <button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Researcher</button>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link active" href="/accounts/loginpage/?role=BiobankManager">
-                          <button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Manager</button>
-                      </a>
-                  </li>                
-                {% endif %}
-
-              </ul>
-             </div>
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Home</a> <!--#644ca4-->
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/aboutUs" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">FAQs</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/accounts/loginpage/?role=Researcher"><button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Researcher</button></a>
+                </li>
+                <li class="nav-item"></li>
+                  <a class="nav-link active" href="/accounts/loginpage/?role=BiobankManager"><button type="button" class="btn btn-sm-2" style="background-color: #ffffff" id="loginButton">Login as Manager</button></a>
+                </li>
+              {% endif %}
+            </ul>
           </div>
-        </nav>
-      </div>
-    </header>
+        </div>
+      </nav>
+    </div>
+  </header>
     <script>
   toastr.options = {
     "closeButton": false,

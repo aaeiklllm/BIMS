@@ -79,7 +79,7 @@ html, body {
       width: 100%;
       background-color: #f8f9fa; /* Light background color */
 	  color: #644ca4; /* Text color */
-	  font-family: 'Montserrat', sans-serif;
+	  font-family: Helvetica, sans-serif;
     }
 
 .btn-primary {
@@ -324,7 +324,7 @@ footer a {
 </head>
 <body>
     <div class="col-md-12 ">
-        {% if messages %}
+        <!-- {% if messages %}
             {% for message in messages %} 
                 {% if message.tags %}
                     <div class="{{message.tags}}-msg" style="text-align: center;">		  
@@ -333,7 +333,7 @@ footer a {
                     {{message}}
                 </div>
             {% endfor %} 
-        {% endif %}	
+        {% endif %}	 -->
 
     <div class="container" id="container">
         <form action="{% url 'reset_password' %}" method="post" id="reset-form" required>

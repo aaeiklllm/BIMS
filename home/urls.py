@@ -10,5 +10,6 @@ urlpatterns = [
     path('latest-sample-id/', views.get_latest_sample_id, name='latest_sample_id'),
     path('get-sample-ids/', views.get_sample_ids, name='get_sample_ids'),
     path('get_sample_unit/', views.get_sample_unit, name='get_sample_unit'), 
+    path('viewsample', views.view_sample, name='viewsample'),
 
 ]

@@ -82,32 +82,6 @@ def aboutUs(request):
 
 from .models import Samples, Comorbidities, Lab_Test, Aliquot, Storage
 
-# def create_storage(request):
-#     if request.method == 'POST':
-#         sample_id = request.POST.get('sample_id')  # Get the sample ID
-#         # Retrieve the sample instance if needed
-#         sample = get_object_or_404(Samples, id=sample_id)
-
-#         # Collect other storage data
-#         freezer_num = request.POST.get('freezer_num')
-#         shelf_num = request.POST.get('shelf_num')
-#         rack_num = request.POST.get('rack_num')
-#         box_num = request.POST.get('box_num')
-#         container = request.POST.get('container')
-
-#         # Create and save storage instance
-#         storage_instance = Storage(
-#             sample=sample,  # Reference the sample instance directly
-#             freezer_num=freezer_num,
-#             shelf_num=shelf_num,
-#             rack_num=rack_num,
-#             box_num=box_num,
-#             container=container
-#         )
-#         storage_instance.save()
-
-#         return redirect('success_url')  # Redirect as needed
-
 def create_sample(request):
     if request.method == 'POST':
         # Collect Sample data
