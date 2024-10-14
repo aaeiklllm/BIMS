@@ -1,0 +1,77 @@
+<div>
+    <strong>Sample ID:</strong> {{ sample.id|default:"000000"|slice:"-6:" }}<br>
+    <strong>Type:</strong> {{ sample.type }}<br>
+
+    <!-- Storage Information -->
+    <strong>Storage:</strong>
+    <h1>{{ first_storage_info.container }}</h1>
+    {% if first_storage_info %}
+        Freezer No. {{ first_storage_info.freezer_num }}, Shelf No. {{ first_storage_info.shelf_num }}, Rack No. {{ first_storage_info.rack_num }}, Box No. {{ first_storage_info.box_num }}<br>
+    {% else %}
+        No storage information available.
+    {% endif %}
+    <br>
+
+    <!-- Stored Amount -->
+    <strong>Stored Amount:</strong> {{ sample.amount }} {{ sample.unit }}<br>
+    <strong>Current Available Amount:</strong><br>
+
+
+    <hr><br>
+
+    <strong>Aliquots</strong><br>
+    <strong>Total Number of Aliquots:</strong> {{ total_aliquots }}<br>
+    <strong>Aliquots:</strong>
+    {% if aliquots %}
+        {% for aliquot in aliquots %}
+            <div>
+                <strong>Amount:</strong> {{ aliquot.amount }} {{ aliquot.unit }}<br>
+                <strong>Storage:</strong>
+                {% for storage in aliquot.storage_set.all %}
+                    Freezer No. {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}<br>
+                {% endfor %}
+            </div><br>
+        
+        {% endfor %}
+    {% else %}
+        <em>No aliquots available.</em><br>
+    {% endif %}
+
+    <hr>
+    <strong>Source</strong><br>
+    <strong>Date Collected:</strong> {{ sample.date_collected }}<br>
+    <strong>Sex:</strong> {{ sample.sex }}<br>
+    <strong>Age:</strong> {{ sample.age }}<br>
+    <strong>Clinical Diagnosis:</strong> {{ sample.clinical_diagnosis }}<br>
+
+    <!-- Comorbidities -->
+    <strong>Comorbidities:</strong>
+    {% if sample.comorbidities_set.all %}
+        {% for comorbidity in sample.comorbidities_set.all %}
+            {{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        None
+    {% endif %}
+    <br>
+
+    <!-- Lab Tests -->
+    <strong>Lab Tests:</strong>
+    {% if sample.lab_test_set.all %}
+        {% for lab_test in sample.lab_test_set.all %}
+            {{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        None
+    {% endif %}
+    <br>
+
+    <!-- Informed Consent Form -->
+    <strong>Informed Consent Form:</strong>
+    {% if sample.consent_form %}
+        <a href="{{ sample.consent_form.url }}">Download Consent Form</a>
+    {% else %}
+        Not Available
+    {% endif %}
+    <br>
+</div>

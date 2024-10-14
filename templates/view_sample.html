@@ -1,0 +1,64 @@
+{% for sample in samples %}
+<div>
+    <!-- Sample basic details -->
+    <a href="{% url 'sample_detail' sample.id %}">Sample ID {{ sample.id|default:"000000"|slice:"-6:" }}</a><br>
+    Type: {{ sample.type }}<br>
+    Sex: {{ sample.sex }}<br>
+    Age: {{ sample.age }}<br>
+    Clinical Diagnosis: {{ sample.clinical_diagnosis }}<br>
+
+    <!-- Display Comorbidities -->
+    Comorbidities:
+    {% if sample.comorbidities_set.all %}
+        {% for comorbidity in sample.comorbidities_set.all %}
+            {{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        None
+    {% endif %}
+    <br>
+
+    <!-- Display Lab Tests -->
+    Lab Tests:
+    {% if sample.lab_test_set.all %}
+        {% for lab_test in sample.lab_test_set.all %}
+            {{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        None
+    {% endif %}
+    <br>
+
+    Stored Amount: {{ sample.amount }} {{ sample.unit }}<br>
+    Date Collected: {{ sample.date_collected }}<br>
+
+    <!-- Display Storage Details -->
+    Storage: 
+    {% if sample.storage_set.all %}
+        {% for storage in sample.storage_set.all %}
+            {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}<br>
+        {% endfor %}
+    {% else %}
+        No storage information available.<br>
+    {% endif %}
+    
+    <!-- Display Aliquot Details -->
+    Aliquots:
+    {% if sample.aliquot_set.all %}
+        {% for aliquot in sample.aliquot_set.all %}
+            Amount: {{ aliquot.amount }} {{ aliquot.unit }}<br>
+            <!-- Aliquot Storage -->
+            Storage:
+            {% for storage in aliquot.storage_set.all %}
+                {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}<br>
+            {% endfor %}
+        {% endfor %}
+    {% else %}
+        <em>No aliquots available.</em><br>
+    {% endif %}
+    
+    <!-- Display Research Projects -->
+    Research Project(s) used in: <br>
+</div>
+<hr>
+{% endfor %}

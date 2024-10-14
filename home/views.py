@@ -209,3 +209,27 @@ def get_sample_unit(request):
                 return JsonResponse({'error': 'Sample not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def view_sample(request):
+    samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
+    return render(request, 'view_sample.html', {'samples': samples})
+
+def sample_detail(request, sample_id):
+    # Fetch the specific sample, prefetching related comorbidities, lab tests, aliquots, and storage
+    sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
+
+    # Get all related storage details
+    first_storage_info = sample.storage_set.first()
+    
+    # Get total number of aliquots for the sample
+    total_aliquots = sample.aliquot_set.count()
+    
+    # Get individual aliquots and their associated storage
+    aliquots = sample.aliquot_set.prefetch_related('storage_set').all()
+
+    return render(request, 'sample_detail.html', {
+        'sample': sample,
+        'first_storage_info': first_storage_info,
+        'total_aliquots': total_aliquots,
+        'aliquots': aliquots,
+    })
