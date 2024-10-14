@@ -80,15 +80,14 @@
       text-align: center;
     }
 
-    html{
-
-    }
-
-    body {
-      /* margin: 0;
-      padding: 0;
+    body, html{
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       min-height: 100%;
-      color: #644ca4; */
+      margin: 0;
+      padding: 0;
+      color: #644ca4;
     }
 
     .hero-section {
@@ -106,7 +105,7 @@
 
     .content-section {
       max-width: 70%;
-      min-height: 625px;
+      min-height: 400px;
       margin: 5vh;
       padding: 2vh;
       text-align: left;
@@ -117,7 +116,7 @@
 
     .description {
       margin-top: 20px;
-      font-size: 18px;
+      font-size: 16px;
       color: #767C80;
       text-align: justify;
     }
@@ -129,16 +128,16 @@
 
     /* Styles for the Features Section */
     .features-section {
-      margin-top: 40px;
+      margin-top: 20px;
     }
 
     .features-section h3 {
       font-size: 28px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .feature-item {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .feature-item i {
@@ -325,6 +324,36 @@
 
 <section class="page-hero bg-image">
   <div class="content-section">
+    {% if not request.session.role|default:'' %}
+    <!-- Main Title -->
+    <h1 style="font-size: 40px; text-align: center; margin-top: 10px;"><b>Biobank Information Management System (BIMS) for a Genetic Research Institution</b></h1>
+    
+    <!-- Description text -->
+    <p class="description">
+      The Biobank Information Management System (BIMS) is designed to optimize the management of biospecimens in a genetic research institution. BIMS allows biobank managers to efficiently oversee sample organization and inventory management, while providing researchers with a streamlined process for requesting and accessing samples. This integrated approach enhances workflow efficiency and supports cutting-edge research.
+    </p>
+
+    <!-- Features Section -->
+    <div class="features-section">
+      <h3>Features</h3>
+      <div class="feature-item">
+        <i class="fas fa-boxes"></i>
+        <p><strong>Streamlined Sample Management</strong>: Efficiently store and retrieve samples with real-time tracking and reporting.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-chart-bar"></i>
+        <p><strong>Comprehensive Reporting</strong>: Generate detailed reports on sample usage, status, and inventory.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-file-alt"></i>
+        <p><strong>Integrated Consent Management</strong>: Track and manage informed consent documents to ensure compliance with ethical standards.</p>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-envelope"></i>
+        <p><strong>Automated Email Notifications</strong>: Receive timely email alerts for sample requests and updates on the status of sample requests.</p>
+      </div>
+    </div>
+    {% endif %}
 
     <!-- Content based on the role -->
     {% if request.session.role %}
@@ -403,7 +432,7 @@
       <!-- Display pending Biobank Manager Deletion Requests -->
       <h4>Biobank Manager ({{ biobank_managers|length }})</h4>
       {% if biobank_managers %}
-        {% for user in biobank_managers2 %}
+        {% for user in biobank_managers %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
@@ -433,7 +462,7 @@
       <!-- Display pending Researcher Deletion Requests -->
       <h4>Researcher ({{ researchers|length }})</h4>
       {% if researchers %}
-        {% for user in researchers2 %}
+        {% for user in researchers %}
         <div class="pending-user">
           <div class="pending-user-details">
             <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>

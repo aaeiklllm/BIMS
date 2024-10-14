@@ -98,6 +98,39 @@
 
         }
 
+        /* #page-footer{
+            position: relative;
+            display: block;
+            padding-top: 80px;
+            padding-bottom: 17px;
+            background-color: white;
+            color: #fff;
+            font-size: 18px;
+            
+           
+        }
+        #page-footer a{
+          text-decoration: none;
+          background-color: none;
+          transition: transform .2s; /* Animation */
+        }*/
+
+      /* #page-footer a:hover{
+        transform: scale(1.2); 
+      }
+      
+      .footer-menu a{
+          display: inline-block;
+          padding-top: 6px;
+          padding-bottom: 6px;
+          color: white;
+          transition: all .2s ease;
+      }
+      
+      #page-footer ul{
+        list-style: none;
+      } */
+        
     .container-fluid {
       max-height: 10%;
     }      
@@ -111,6 +144,20 @@
     top: 100px; 
     right: 12px;
   }
+
+  footer {
+  background-color: #644ca4; /* Updated background color */
+  width: 100%;
+  color: white;
+  text-align: center;
+  padding: 5px 0; /* Smaller padding for a compact footer */
+  font-size: 12px; /* Reduced font size */
+  margin: 0
+}
+
+footer .footer p {
+  margin: 0; /* Removes extra margin for a more compact appearance */
+}
     </style>
 </head>
 <body>
@@ -244,6 +291,13 @@
   
     {% block content %}
     {% endblock %}
+
+    <footer class="text-center mt-auto">
+      <div class="footer">
+        <p>&copy; 2024 BIMS. All Rights Reserved. | techassist.bims@gmail.com</p>
+      </div>
+    </footer>
+    
     <!-- <footer class="page-footer" id="page-footer">
         <div class="container">
           <div class="row px-md-3">
