@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Sample - Step 4</title>
+    <style>
+
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .radio-buttons label {
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .form-group label {
+            flex: 1;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .form-group input, .form-group select {
+            flex: 2;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .date-pickers {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-pickers input {
+            width: 150px;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn-next {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .date-picker-wrapper {
+            margin-bottom: 15px; /* Adds space between each input */
+        }
+
+        .form-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-left: 5px;
+            display: block; /* Forces small text to appear on its own line */
+        }
+    </style>
+   
+</head>
+<body>
+
+    <div class="container">
+        <h1>Request Sample</h1>
+        <h4><b>Step 4:</b> Do you need multiple samples from the same source/participant with multiple time points?</h4>
+        
+        <div class="radio-buttons">
+            <label>
+                <input type="radio" name="multiple_samples" value="yes" id="yesOption"> Yes
+            </label>
+            <label>
+                <input type="radio" name="multiple_samples" value="no" id="noOption"> No
+            </label>
+        </div>
+    
+        <div id="timePointsSection" style="display:none;">
+            <div class="form-group">
+                <label># of time points:</label>
+                <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number">
+            </div>
+    
+            <div class="form-group">
+                <label>Time point interval:</label>
+                <input type="number" class="form-control" name="interval" min="1" placeholder="Interval">
+                <select class="form-control" name="interval_unit">
+                    <option value="days">Days</option>
+                    <option value="weeks">Weeks</option>
+                    <option value="months">Months</option>
+                    <option value="years">Years</option>
+                </select>
+            </div>
+    
+            <div class="form-group">
+                <label>Is there a specific start date? (optional):</label>
+                
+                <!-- Full date picker -->
+                <div class="date-picker-wrapper">
+                    <input type="date" class="form-control" name="start_date_ddmmyyyy" placeholder="dd-mm-yyyy">
+                    <small class="form-text text-muted">if day, month, and year</small>
+                </div>
+
+                <!-- Month and year picker -->
+                <div class="date-picker-wrapper">
+                    <input type="month" class="form-control" name="start_date_mmyyyy" placeholder="mm-yyyy">
+                    <small class="form-text text-muted">if month and year only</small>
+                </div>
+
+                <!-- Year only picker -->
+                <div class="date-picker-wrapper">
+                    <input type="number" class="form-control" name="start_date_yyyy" placeholder="yyyy" min="1900" max="2100">
+                    <small class="form-text text-muted">if year only</small>
+                </div>
+            </div>
+
+            
+        </div>
+    
+        <div class="form-buttons">
+            <a href="{% url 'request_sample_step3' %}">
+                <button class="btn btn-back" type="button">Back</button>
+            </a>
+            <a href="{% url 'request_sample_step5' %}">
+                <button class="btn btn-next" type="button" id="nextButton" disabled>Next</button>
+            </a>
+        </div>
+    </div>
+    
+
+</body>
+
+<script>
+    const yesOption = document.getElementById('yesOption');
+    const noOption = document.getElementById('noOption');
+    const timePointsSection = document.getElementById('timePointsSection');
+    const nextButton = document.getElementById('nextButton');
+
+    yesOption.addEventListener('change', function() {
+        timePointsSection.style.display = 'block';
+        nextButton.disabled = false;
+    });
+
+    noOption.addEventListener('change', function() {
+        timePointsSection.style.display = 'none';
+        nextButton.disabled = false;
+    });
+
+</script>
+</html>
+
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Sample - Step 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .option {
+            margin-top: 20px;
+        }
+        .projects-container {
+            margin-left: 30px;
+        }
+        .projects-container label {
+            display: block;
+        }
+        .project-details, .new-project {
+            display: none;
+            margin-left: 40px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .project-details p {
+            margin: 5px 0;
+        }
+        .underline-link {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        input[type="text"], textarea, input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+        }
+        .btn {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-reset {
+            background-color: transparent;
+            color: #007BFF;
+            cursor: pointer;
+        }
+        .btn-next {
+            float: right;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function toggleProjectDetails() {
+            document.getElementById('project-details').style.display = 'block';
+        }
+
+        function toggleSelection(option) {
+            if (option === 'existing') {
+                document.getElementById('new-project-form').style.display = 'none';
+                document.getElementById('existing-project').style.display = 'block';
+            } else {
+                document.getElementById('existing-project').style.display = 'none';
+                document.getElementById('new-project-form').style.display = 'block';
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Request Sample</h1>
+    <h4><b>Step 2: </b>Upload Research Ethics Boards Approval (ERB) (.pdf)</h4>
+
+    <div class="mb-3">
+        <!-- File input for uploading the file -->
+        <input type="file" class="form-control" id="erb_approval" name="erb_approval" accept=".pdf" onchange="handleFileChange()">
+            
+        <!-- Area to display the selected file name and action buttons -->
+        <div id="file-info" class="mt-2" style="display: none;">
+            <span id="file-name"></span>
+            <button type="button" class="btn btn-link" onclick="removeFile()">Remove</button>
+        </div>            
+    </div>
+
+    <a href="{% url 'request_sample_step3' %}">
+        <button class="btn btn-next" type="button">Next</button>
+    </a>
+</div>
+
+<script>
+        function handleFileChange() {
+        const fileInput = document.getElementById('erb_approval');
+        const fileInfo = document.getElementById('file-info');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            fileNameDisplay.textContent = fileName; // Display selected file name
+            fileInfo.style.display = 'block'; // Show the file info section
+        }
+    }
+
+       // Function to remove the selected file
+       function removeFile() {
+        const fileInput = document.getElementById('erb_approval');
+        const fileInfo = document.getElementById('file-info');
+        
+        fileInput.value = ''; // Clear the file input
+        fileInfo.style.display = 'none'; // Hide the file info section
+        document.getElementById('file-name').textContent = ''; // Clear the file name
+    }
+</script>
+
+</body>
+</html>
+
+
+{% endblock %}

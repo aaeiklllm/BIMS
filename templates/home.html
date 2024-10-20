@@ -423,8 +423,6 @@
         {% else %}
           <p>No Researcher creation requests</p>
         {% endif %}
-        {% endif %}
-
       
         {% if deletion_requests %}
       <h3><b>Account Deletion Requests ({{ deletion_requests|length }})</b></h3>
@@ -487,6 +485,7 @@
         {% endfor %}
       {% else %}
         <p>No Researcher deletion requests</p>
+      {% endif %}
       {% endif %}
 
 <!-- ################################################################################################################################################### -->

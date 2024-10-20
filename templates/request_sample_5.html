@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Sample - Step 5</title>
+    <style>
+
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .radio-buttons label {
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .form-group label {
+            flex: 1;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .form-group input, .form-group select {
+            flex: 2;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .date-pickers {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-pickers input {
+            width: 150px;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn-next {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .date-picker-wrapper {
+            margin-bottom: 15px; 
+        }
+
+        .form-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-left: 5px;
+            display: block; 
+        }
+    </style>
+   
+</head>
+<body>
+
+    <div class="container">
+        <h1>Request Sample</h1>
+        <h4><b>Step 5: </b>Do you need the same sample request from different sources/participants?</h4>   
+        <div class="radio-buttons">
+            <label>
+                <input type="radio" name="different_sources" value="yes"> Yes
+            </label>
+            <label>
+                <input type="radio" name="different_sources" value="no"> No
+            </label>
+        </div>
+    
+        <!-- If Yes is selected: # of sources/participants -->
+        <div id="num_sources" style="display:none;">
+            <label for="num_participants"># of sources/participants:</label>
+            <input type="number" class="form-control" name="num_participants" min="1" placeholder="Enter number of participants">
+    
+            <!-- Indented section for multiple time points per source -->
+            <div class="form-group" style="margin-left: 30px;">
+                <label>Do you need multiple samples with multiple time points from each source/participant?</label>
+                <div class="radio-buttons">
+                    <label>
+                        <input type="radio" name="multiple_timepoints_each" value="yes"> Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="multiple_timepoints_each" value="no"> No
+                    </label>
+                </div>
+    
+                <!-- If No is selected: Indented section for single sample collection date -->
+                <div id="single_sample_collection" style="display:none;">
+                    <label>Is there a specific collection date from the single sample request from the same source? (optional):</label>
+    
+                    <div class="date-pickers">
+                        <!-- Date picker section like in Step 4 -->
+                        <div class="date-picker-wrapper">
+                            <input type="date" class="form-control" name="collection_date_ddmmyyyy" placeholder="dd-mm-yyyy">
+                        </div>
+    
+                        <div class="date-picker-wrapper">
+                            <input type="month" class="form-control" name="collection_date_mmyyyy" placeholder="mm-yyyy">
+                            <small class="form-text text-muted">if month and year only</small>
+                        </div>
+    
+                        <div class="date-picker-wrapper">
+                            <input type="number" class="form-control" name="collection_date_yyyy" placeholder="yyyy" min="1900" max="2100">
+                            <small class="form-text text-muted">if year only</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="form-buttons">
+            <a href="{% url 'request_sample_step4' %}">
+                <button class="btn btn-back" type="button">Back</button>
+            </a>
+            <a href="{% url 'request_sample_step6' %}">
+                <button class="btn btn-next" type="button" id="nextButton" disabled>Next</button>
+            </a>
+        </div>
+    </div>    
+</body>
+
+<script>
+document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const numSources = document.getElementById('num_sources');
+        numSources.style.display = this.value === 'yes' ? 'block' : 'none';
+    });
+});
+
+document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const singleSampleCollection = document.getElementById('single_sample_collection');
+        singleSampleCollection.style.display = this.value === 'no' ? 'block' : 'none';
+    });
+});
+
+</script>
+</html>
+
+{% endblock %}

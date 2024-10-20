@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Sample - Success</title>
+    <style>
+
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .radio-buttons label {
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .form-group label {
+            flex: 1;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .form-group input, .form-group select {
+            flex: 2;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .btn {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+    </style>
+   
+</head>
+<body>
+    
+
+        <div class="container">
+            <h2>Your request has been submitted for approval.</h2>
+            <p>You may check the status of your request in <strong>‘My Requests’</strong>.</p>
+            <p>You will also receive an Acknowledgement Receipt if approved.</p>
+
+            <div class="form-buttons">
+                <a href="{% url 'requestsample' %}">
+                    <button class="btn btn-back" type="button">Submit Another Request</button>
+                </a>
+                <a href="{% url '' %}">
+                    <button class="btn btn-next" type="button">Back Home</button>
+                </a>
+            </div>
+        </div>
+
+    </div>
+    
+</body>
+</html>
+
+{% endblock %}

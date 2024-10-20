@@ -17,4 +17,12 @@ urlpatterns = [
     path('viewsample', views.view_sample, name='viewsample'),
     path('sample_detail/<int:sample_id>/', views.sample_detail, name='sample_detail'),
 
+    path('requestsample', views.request_sample, name='requestsample'),
+    path('requestsample/step2', views.request_sample_step2, name='request_sample_step2'),
+    path('requestsample/step3', views.request_sample_step3, name='request_sample_step3'),
+    path('requestsample/step4', views.request_sample_step4, name='request_sample_step4'),
+    path('requestsample/step5', views.request_sample_step5, name='request_sample_step5'),
+    path('requestsample/step6', views.request_sample_step6, name='request_sample_step6'),
+    path('requestsample/step7', views.request_sample_step7, name='request_sample_step7'),
+    path('requestsample/ty', views.request_sample_ty, name='request_sample_ty'),
 ]

@@ -233,3 +233,27 @@ def sample_detail(request, sample_id):
         'total_aliquots': total_aliquots,
         'aliquots': aliquots,
     })
+
+def request_sample(request):
+    return render(request, 'request_sample.html')
+
+def request_sample_step2(request):
+    return render(request, 'request_sample_2.html')
+
+def request_sample_step3(request):
+    return render(request, 'request_sample_3.html')
+
+def request_sample_step4(request):
+    return render(request, 'request_sample_4.html')
+
+def request_sample_step5(request):
+    return render(request, 'request_sample_5.html')
+
+def request_sample_step6(request):
+    return render(request, 'request_sample_6.html')
+
+def request_sample_step7(request):
+    return render(request, 'request_sample_7.html')
+
+def request_sample_ty(request):
+    return render(request, 'request_sample_ty.html')

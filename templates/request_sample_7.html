@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Sample - Step 7</title>
+    <style>
+
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .radio-buttons label {
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .form-group label {
+            flex: 1;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .form-group input, .form-group select {
+            flex: 2;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .date-pickers {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-pickers input {
+            width: 150px;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn-next {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .date-picker-wrapper {
+            margin-bottom: 15px; /* Adds space between each input */
+        }
+
+        .form-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-left: 5px;
+            display: block; /* Forces small text to appear on its own line */
+        }
+    </style>
+   
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Request Sample</h1>
+        <h4>Step 7: Is the information below correct?</h4>
+    
+        <div class="form-group">
+            <div class="request-summary">
+                <p><strong>Research Project:</strong> Asthma Susceptibility and Genetic Markers in Filipino Children (Research Project ID 000002)</p>
+                <p><strong>Research Ethics Boards Approval (ERB):</strong> UPMREB-2024-0721</p>
+                <p><strong>Sample Information:</strong></p>
+                <ul>
+                    <li>Type: DNA</li>
+                    <li>Source
+                        <ul>
+                            <li>Sex: Either</li>
+                            <li>Age: 5-17</li>
+                            <li>Clinical Diagnosis: Asthma</li>
+                            <li>Comorbidities: None</li>
+                            <li>Lab Tests: None</li>
+                        </ul>
+                    </li>
+                    <li style="margin-left: 20px;">Quantity Volume: 100 μL</li>
+                </ul>
+    
+                <p><strong>Multiple samples from the same source/participant with multiple time points:</strong> NO</p>
+                
+                <p><strong>Same sample request from different sources/participants:</strong> YES - 5 sources/participants</p>
+                <ul style="margin-left: 20px;">
+                    <li>Multiple samples with multiple time points from each source/participant: YES - 3 time points - 6 months interval</li>
+                </ul>
+    
+                <p><strong>Desired Start Date:</strong> 01-11-2024</p>
+                <p><strong>Total number of sample requests:</strong> 15</p>
+            </div>
+        </div>
+    
+    
+        <div class="form-buttons">
+            <a href="{% url 'request_sample_step6' %}">
+                <button class="btn btn-back" type="button">Back</button>
+            </a>
+            <a href="{% url 'request_sample_ty' %}">
+                <button class="btn btn-next" type="submit">Submit Request</button>
+            </a>
+        </div>
+    </div>
+    
+</body>
+</html>
+
+{% endblock %}

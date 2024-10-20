@@ -242,13 +242,11 @@ input {
 	/* transform: translateX(100%); */
 }
 
-.sign-up-container {
+.sign-in-container {
 	left: 0;
-	width: 50%;
-	opacity: 0;
-	z-index: 1;
-	background-color: #F2EDFC !important;
-	background-color: #F2EDFC !important;
+	width: 60%;
+	z-index: 2;
+	background-color: #644ca4 !important;
 }
 
 .container.right-panel-active .sign-up-container {
@@ -337,47 +335,6 @@ input {
 	/* transform: translateX(20%); */
 }
 
-/* .social-container {
-	margin: 20px 0;
-}
-
-
-.social-container a {
-	border: 1px solid #F2EDFC;
-	border: 1px solid #F2EDFC;
-	border-radius: 50%;
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	margin: 0 5px;
-	height: 40px;
-	width: 40px;
-} */
-
-/* footer {
-    background-color: #222;
-    color: #fff;
-    font-size: 14px;
-    bottom: 0;
-    position: fixed;
-    left: 0;
-    right: 0;
-    text-align: center;
-    z-index: 999;
-}
-
-footer p {
-    margin: 10px 0;
-}
-
-footer i {
-    color: red;
-}
-
-footer a {
-    color: #3c97bf;
-    text-decoration: none;
-} */
 
 .newclass img {
   max-width: 100%; /* Set the maximum width of the image to 100% of its container */
@@ -389,27 +346,9 @@ footer a {
 </head>
 <body>
 
-
-
-	<!-- <div class="col-md-12 ">
-
-		{% if messages %}
- {% for message in messages %} 
- {% if message.tags %}
-		<div class="{{message.tags}}-msg" style="  text-align: center;">		  {% endif %}
-		  
-
-	<i class="fa fa-times-circle"></i>
-			{{message}}
-		  </div>
-		  {% endfor %} 
-		{% endif %}	 -->
-	
-
-
   <div class="container" id="container">
-    <div class="form-container sign-up-container">
-
+    <div class="form-container sign-in-container">
+      <p>test</p>
         <form action="/accounts/adminlogin/" method="post">
             {% csrf_token %}
             <h1 style="color: #674FA7;">Login</h1>
