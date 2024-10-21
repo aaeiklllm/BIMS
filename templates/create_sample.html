@@ -203,7 +203,7 @@
 
             <div class="mb-3">
                 <label for="sample_id" class="form-label">Sample ID:</label>
-                <input type="text" class="form-control" id="sample_id" name="sample_id" value="000001" readonly>
+                <input type="text" class="form-control" id="sample_id" name="sample_id" readonly>
             </div>      
 
             <div class="dropdown mb-2">
@@ -314,6 +314,8 @@
                 <input type="text" id="other_diagnosis" name="other_diagnosis" class="form-control mt-2" placeholder="Specify if Others" style="display:none;">
             </div>
 
+             <!-- Comorbidities -->
+
             <div class="mb-3">
                 <label for="comorbidities" class="form-label">Comorbidities:</label>
                 <div class="d-flex align-items-center">
@@ -372,29 +374,34 @@
                 <div id="added_comorbidities" class="mt-2"></div>
             </div>
 
-            <!-- Comorbidities -->
             <div id="added_comorbidities" class="mt-2"></div>
             <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
 
-            <div class="mb-3">
+            <!-- Lab Test -->
+            <div class="dropdown mb-2">
                 <label for="lab_tests" class="form-label">Lab Tests:</label>
-                <div class="d-flex align-items-center">
-                    <select class="form-select me-2" id="lab_test_select">
-                        <option value="">Select Lab Test</option>
-                        <option value="Blood Test">Blood Test</option>
-                        <option value="CT Scan">CT Scan</option>
-                        <option value="MRI">MRI</option>
-                        <option value="Others">Other (specify)</option>
-                    </select>
-                    <input type="text" class="form-control free-text-input" id="lab_test_other" placeholder="Specify other">
-                    <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
+                <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+                
+                <div id="lab-tests-dropdown" class="dropdown-content">
+                    <div class="nested-dropdown">
+                        <a href="#">Blood Tests (specify):</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('Blood Test')">Blood Test</a>
+                            <a href="#" onclick="selectLabTest('CT Scan')">CT Scan</a>
+                            <a href="#" onclick="selectLabTest('MRI')">MRI</a>
+                            <a href="#" onclick="showOtherInput()">Other (specify)</a>
+                            <input type="text" id="lab_test_other" class="hidden" placeholder="Specify other" onchange="captureOtherInput()">
+                        </div>
+                    </div>
+                    <!-- Add more nested dropdowns for other test categories if needed -->
                 </div>
-                <div id="added_lab_tests" class="mt-2"></div>
             </div>
-
-            <!-- Lab Tests -->
+            <br>
+            
             <div id="added_lab_tests" class="mt-2"></div>
             <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
+            
+            
 
             <div class="row">
                 <div class="col-md-6">
@@ -473,9 +480,7 @@
             </div>
 
             <button type="submit" class="btn btn-success">Save Sample</button>
-            <span> or                
-            <button type="button" class="btn btn-link" style="color: #007bff; cursor: pointer; border: none; background: none; padding: 0;" onclick="resetForm()">
-            Reset</button></span>
+            
         </form>
         <form method="post" enctype="multipart/form-data" action="{% url 'createaliquot' %}" id="create-aliquot-form" style="display: none;">
             {% csrf_token %}
@@ -689,8 +694,9 @@
         }
 
         const addedComorbidities = new Set(); // Set to track added comorbidities
-        const addedLabTests = new Set(); // Set to track added lab tests
+        // const addedLabTests = new Set(); // Set to track added lab tests
 
+        // Commorbidities
         function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
             const select = document.getElementById(selectId);
             const otherInput = document.getElementById(otherInputId);
@@ -700,21 +706,21 @@
             const otherValue = otherInput.value.trim();
 
             if (selectedValue === "") {
-                alert("Please select an item.");
+                alert("Please select a commorbidity.");
                 return;
             }
 
             let valueToAdd = selectedValue === 'Others' ? (otherValue === "" ? null : otherValue) : selectedValue;
 
             if (!valueToAdd) {
-                alert("Please specify the item.");
+                alert("Please specify the commorbidity.");
                 return;
             }
 
             // Check if the item already exists
             const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
             if (existingValues.includes(valueToAdd)) {
-                alert("This item has already been added.");
+                alert("This commorbidity has already been added.");
                 return;
             }
 
@@ -737,9 +743,9 @@
             addItem('comorbidity_select', 'comorbidity_other', 'added_comorbidities', 'comorbidities_input');
         });
 
-        document.getElementById('add_lab_test').addEventListener('click', function() {
-            addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
-        });
+        // document.getElementById('add_lab_test').addEventListener('click', function() {
+        //     addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
+        // });
 
 
         // Remove item functionality
@@ -841,6 +847,69 @@
         if (!event.target.matches('.dropdown-input') && !event.target.closest('.dropdown')) {
             dropdown.classList.remove("show");
         }
+    }
+
+
+    // Lab Tests
+    let selectedLabTests = []; // To store added lab tests
+
+    document.getElementById('add_lab_test').addEventListener('click', function() {
+        updateAddedLabTests();
+    });
+
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle("show");
+    }
+
+    function selectLabTest(test) {
+        if (selectedLabTests.includes(test)) {
+            alert("This lab test has already been added.");
+        } else {
+            selectedLabTests.push(test);
+            updateAddedLabTests();
+        }
+    }
+
+    function showOtherInput() {
+        const otherInput = document.getElementById('lab_test_other');
+        otherInput.classList.toggle("hidden");
+    }
+
+    function captureOtherInput() {
+        const otherInput = document.getElementById('lab_test_other');
+        const otherValue = otherInput.value.trim();
+        if (otherValue !== "") {
+            if (selectedLabTests.includes(otherValue)) {
+                alert("This lab test has already been added.");
+            } else {
+                selectedLabTests.push(otherValue);
+                updateAddedLabTests();
+            }
+        }
+    }
+
+    function updateAddedLabTests() {
+        const addedLabTestsContainer = document.getElementById('added_lab_tests');
+        
+        // Clear existing items
+        addedLabTestsContainer.innerHTML = ''; 
+
+        // Display added items
+        selectedLabTests.forEach(test => {
+            const item = document.createElement('div');
+            item.classList.add('added-item');
+            item.innerHTML = `<span>${test}</span><span class="remove-btn" onclick="removeLabTest('${test}')">X</span>`;
+            addedLabTestsContainer.appendChild(item);
+        });
+
+        // Update hidden input field
+        document.getElementById('lab_tests_input').value = selectedLabTests.join(',');
+    }
+
+    function removeLabTest(test) {
+        selectedLabTests = selectedLabTests.filter(item => item !== test);
+        updateAddedLabTests();
     }
 
     function resetForm() {
