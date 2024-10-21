@@ -1,0 +1,618 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <style>
+    @media only screen and (max-width: 768px) {
+      .content-section {
+        max-width: 90%;
+      }
+
+      .features-section h3, .content-section h1 {
+        font-size: 24px;
+      }
+    }
+    .info-msg,
+    .success-msg,
+    .warning-msg,
+    .error-msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 3px 3px 3px 3px;
+    }
+
+    .success-msg {
+      color: #270;
+      background-color: #DFF2BF;
+    }
+
+    .error-msg {
+      color: #D8000C;
+      background-color: #FFBABA;
+    }
+
+    .zoomOut {
+      transition: transform .2s;
+    }
+
+    .zoomOut:hover {
+      transform: scale(1.2);
+    }
+
+    .circle-shape {
+      flex-shrink: 0;
+      padding: 0;
+      width: 85px;
+      height: 85px;
+      line-height: 64px;
+      border-radius: 50%;
+      text-align: center;
+      font-size: 32px;
+    }
+
+    .bg-accent {
+      background-color: #16a085 !important;
+    }
+
+    #one {
+      margin-top: -3rem !important;
+    }
+
+    #button1 {
+      background-color: #16a085;
+      border-color: #16a085;
+    }
+
+    .page-hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+    }
+
+    .container-home {
+      width: 100%;
+      text-align: center;
+    }
+
+    body, html{
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      color: #644ca4;
+    }
+
+    .hero-section {
+      text-align: center;
+    }
+
+    .custom-index {
+      z-index: 11;
+    }
+
+    .page-section {
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+
+    .content-section {
+      max-width: 70%;
+      min-height: 400px;
+      margin: 5vh;
+      padding: 2vh;
+      text-align: left;
+      background-color: rgb(250, 250, 250);
+      border-radius: 20px;
+      background-blend-mode: multiply;
+      box-shadow: 0 4px 20px rgba(0.1, 0.1, 0.1, 0.2);
+    }
+
+    .description {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #767C80;
+      text-align: justify;
+    }
+
+    .btn-primary {
+      background-color: #f2c434 !important;
+      border-color: #f2c434 !important;
+    }
+
+    /* Styles for the Features Section */
+    .features-section {
+      margin-top: 20px;
+    }
+
+    .features-section h3 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .feature-item {
+      margin-bottom: 10px;
+    }
+
+    .feature-item i {
+      color: #dad2ec;
+      font-size: 24px;
+      margin-right: 15px;
+    }
+
+    .feature-item p {
+      display: inline;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .pending-user {
+      background-color: #f9f9f9;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pending-user p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+
+    .pending-user-details {
+        flex-grow: 1;
+    }
+
+    .pending-user-buttons {
+        text-align: right;
+    }
+
+    .pending-user-buttons form {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .pending-user-buttons button {
+        width: 100px;
+    }
+
+    .pending-user-details {
+        flex-grow: 1;
+    }
+
+    .pending-user-buttons {
+        text-align: right;
+    }
+
+    .pending-user-buttons form {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .pending-user-buttons button {
+        width: 100px;
+    }
+
+    .btn-create-sample {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 20px;
+        font-family: Helvetica, sans-serif;
+        color: white;
+        background-color: #644ca4;
+        border: none;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        /* transition: background-color 0.3s; */
+        cursor: pointer;
+    }
+
+    .btn-create-sample:hover {
+        background-color: #523a8d; /* Darker shade on hover */
+    }
+
+    .profile-section, .actions-section {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .aligning {
+      justify-content: center;
+      margin: 0 0px 0 0px;      
+    }
+
+    h1, h2 {
+      color: #644ca4;
+      text-align: center; /* Center-align the headers */
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    form input[type="text"],
+    form input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 0px 0px 10px 0px;
+    }
+
+    .btn-primary, .btn-create-sample, .btn-danger {
+      /* display: inline-block; */
+      padding: 12px 40px;
+      font-size: 16px;
+      font-family: Helvetica, sans-serif;
+      color: white;
+      text-align: center;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: auto;
+    }
+
+    .actions-section a {
+      margin-right: 15px;
+    }
+
+    .grid-layout {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .grid-layout .item {
+      flex: 1 1 300px;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .grid-layout {
+        flex-direction: column;
+      }
+    }
+
+    hr {
+      border: none; /* Remove the default border */
+      height: 2px; /* Set the height of the line */
+      background-color: #4b0082; /* Set the color of the line */
+      margin: 10px 0; /* Add margin above and below the line */
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Main content area */
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+    }
+
+    .edit-icon {
+        cursor: pointer;
+        position: absolute;
+        top: 10px; /* Adjust this value as needed */
+        right: 10px; /* Adjust this value as needed */
+        background: none;
+        border: none;
+        color:  gray; 
+        font-size: 18px; 
+        transition: color 0.3s;
+    }
+
+    /* Optional: Add hover effect */
+    .edit-icon:hover {
+        color: #e6a20e; /* Darker shade for hover effect */
+    }
+
+    .editable {
+        background-color: #f0f8ff; /* Light blue background for editable fields */
+        border: 1px solid #007bff; /* Border color for editable fields */
+    }
+
+    select[disabled] {
+        background-color: white;/* Make disabled select appear like text */
+        border: none; /* Remove border */
+        color: inherit; /* Use the inherited color */
+        padding: 0; /* Remove padding */
+        font: inherit; /* Use the same font as the surrounding text */
+    }
+
+    select.custom-select {
+        color: black;
+        border: 1px solid #ddd; /* Blue border when editing */
+        border-radius: 4px; /* Optional: Rounded corners */
+        padding: 12px;
+    }
+
+    /* Positioning the profile section */
+    .profile-section {
+        position: relative; /* Needed for absolute positioning of edit icon */
+    }
+
+    .custom-select {
+        border-radius: .25rem;
+        border: 1px solid #ddd;
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin: 0px 0px 10px 0px;
+    }
+    
+    .custom-select select {
+        appearance: none;
+        width: 100%;
+        font-size: 1.15rem;
+        padding: 0.675em 6em 0.675em 1em;
+        background-color: #fff;
+        border: 1px solid #caced1;
+        border-radius: 0.25rem;
+        color: #000;
+        cursor: pointer;
+    }
+
+    .mobile-input-container {
+        display: flex;
+        float: left;
+        align-items: center; /* Vertically center the items */
+    }
+
+    .country-code {
+        border: 1px solid #ccc; /* Add a border to match the input box */
+        border-right: none; /* Remove the right border */
+        padding: 0.5em; /* Add some padding */
+        background-color: #f7f7f7; /* Light background color for the country code */
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin: 0px 0px 10px 0px;
+    }
+
+    .required::after {
+			content: " *";
+			color: rgb(185, 24, 24);
+			font-size: 14px;
+	  }
+
+  </style>
+</head>
+ <section class="page-hero bg-image">
+    <div class="content-section">
+        <h1><strong>Researcher</strong></h1>
+        <div class="content">
+            <div id="profile" class="section active">
+                <div class="profile-section">
+                    <button id="toggle-button" class="edit-icon" title="Edit">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+            
+                    <h2>Profile Information</h2>
+                    <hr>
+                    <p>Review and update your profile information using the form below.</p>
+            
+                    <form method="POST" action="{% url 'update_user' %}">
+                        {% csrf_token %}
+            
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;">
+                                <label for="uname">Username:</label>
+                                <input type="text" name="uname" value="{{ user.username }}" required readonly>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="email">Email:</label>
+                                <input type="email" name="email" value="{{ user.email }}" required readonly>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="mobile_number">Mobile Number:</label>
+                                <div class="mobile-input-container">
+                                    <span class="country-code">+63</span>
+                                    <input type="text" id="mobile_number" name="mobile_number" value="{{ user.mobile_number }}" maxlength="10" placeholder="9XXXXXXXXX" required readonly/>
+                                </div>
+                            </div>  
+                        </div>
+                        
+                        <br>
+                        
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;">
+                                <label for="first_name">First Name:</label>
+                                <input type="text" name="first_name" value="{{ user.first_name }}" required readonly>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="middle_name">Middle Name:</label>
+                                <input type="text" name="middle_name" value="{{ user.middle_name }}" readonly>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="last_name">Last Name:</label>
+                                <input type="text" name="last_name" value="{{ user.last_name }}" required readonly>
+                            </div>
+                        </div>
+            
+                        <br>
+                        
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;">
+                                <label for="unit">Unit</label>
+                                <select name="unit" class="unit custom-select" required disabled>
+                                    <option value=""></option>
+                                    <option value="Biochemical Genetics Laboratory" {% if user.unit == "Biochemical Genetics Laboratory" %}selected{% endif %}>Biochemical Genetics Laboratory</option>
+                                    <option value="Clinical Genetics and Research Unit" {% if user.unit == "Clinical Genetics and Research Unit" %}selected{% endif %}>Clinical Genetics and Research Unit</option>
+                                    <option value="Cytogenetics Laboratory" {% if user.unit == "Cytogenetics Laboratory" %}selected{% endif %}>Cytogenetics Laboratory</option>
+                                    <option value="Hemoglobinopathy Confirmatory Laboratory" {% if user.unit == "Hemoglobinopathy Confirmatory Laboratory" %}selected{% endif %}>Hemoglobinopathy Confirmatory Laboratory</option>
+                                    <option value="Microarray Core Laboratory" {% if user.unit == "Microarray Core Laboratory" %}selected{% endif %}>Microarray Core Laboratory</option>
+                                    <option value="Molecular Genetics Laboratory" {% if user.unit == "Molecular Genetics Laboratory" %}selected{% endif %}>Molecular Genetics Laboratory</option>
+                                    <option value="Newborn Screening Center - NIH" {% if user.unit == "Newborn Screening Center - NIH" %}selected{% endif %}>Newborn Screening Center - NIH</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="position">Position:</label>
+                                <select name="position" class="position custom-select" required disabled>
+                                    <option value=""></option>
+                                    <option value="Research Fellow I" {% if user.position == "Research Fellow I" %}selected{% endif %}>Research Fellow I</option>
+                                    <option value="Research Fellow II" {% if user.position == "Research Fellow II" %}selected{% endif %}>Research Fellow II</option>
+                                    <option value="Research Fellow III" {% if user.position == "Research Fellow III" %}selected{% endif %}>Research Fellow III</option>
+                                    <option value="Research Fellow IV" {% if user.position == "Research Fellow IV" %}selected{% endif %}>Research Fellow IV</option>
+                                    <option value="Science Research Specialist I" {% if user.position == "Science Research Specialist I" %}selected{% endif %}>Science Research Specialist I</option>
+                                    <option value="Science Research Specialist II" {% if user.position == "Science Research Specialist II" %}selected{% endif %}>Science Research Specialist II</option>
+                                    <option value="Project Technical Specialist I" {% if user.position == "Project Technical Specialist I" %}selected{% endif %}>Project Technical Specialist I</option>
+                                    <option value="Project Technical Specialist II" {% if user.position == "Project Technical Specialist II" %}selected{% endif %}>Project Technical Specialist II</option>
+                                    <option value="Project Technical Specialist III" {% if user.position == "Project Technical Specialist III" %}selected{% endif %}>Project Technical Specialist III</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <br>
+                        
+                    </form>
+                </div>
+            </div>
+                    
+            
+
+        <!-- Request Deletion Section -->
+            <div class="profile-section">
+                <h2>Account Deletion Request</h2>
+                <hr>
+                <p style="margin-left: 170px;">
+                    If you wish to delete your account, please click the button below.
+                </p>
+                
+                {% if user.deletion_requested %}
+                    <button class="btn btn-danger" style="display: block; margin: 0 auto; width: 660px;" disabled>
+                        Account Deletion Requested
+                    </button>
+                    <p style="color: red; text-align: center;">You have already requested account deletion.</p>
+                {% else %}
+                    <form method="POST" action="{% url 'request_deletion' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" style="display: block; margin: 0 auto; width: 660px;">
+                            Request Account Deletion
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        
+        </div> 
+    </div>
+</section>  
+
+<script>
+    let isEditing = false; // Track whether the user is in editing mode
+
+    document.getElementById("toggle-button").addEventListener("click", function() {
+        // Get all input fields in the form
+        const inputs = document.querySelectorAll("input[type='text'], input[type='email']");
+        const selects = document.querySelectorAll("select.custom-select"); // Select all custom select elements
+        const labels = document.querySelectorAll("label.required"); // Select labels with 'required' class
+
+        if (isEditing) {
+            // If currently in editing mode, switch to view mode
+            inputs.forEach(input => {
+                input.setAttribute("readonly", true); // Make fields read-only
+                input.classList.remove("editable"); // Remove highlight class
+            });
+            selects.forEach(select => {
+                select.setAttribute("disabled", true); // Disable select fields
+                select.classList.remove("editable"); // Remove editable class
+            });
+
+            // Hide the Update button if it exists
+            const updateButton = document.getElementById('update-button');
+            const requiredFieldsNote = document.getElementById('required-fields-note');
+            if (updateButton) {
+                updateButton.remove(); // Remove the update button
+            }
+            if (requiredFieldsNote) {
+            requiredFieldsNote.remove(); // Remove the required fields note
+            }
+
+            labels.forEach(label => {
+              label.classList.remove("required");
+            });
+
+            // Change button text and icon back to Edit
+            this.innerHTML = '<i class="fas fa-edit"></i> Edit';
+        } else {
+            // If currently in view mode, switch to editing mode
+            inputs.forEach(input => {
+                input.removeAttribute("readonly"); // Remove read-only attribute
+                input.classList.add("editable"); // Add highlight class
+            });
+            selects.forEach(select => {
+                select.removeAttribute("disabled"); // Enable select fields
+                select.classList.add("editable"); // Add editable class
+            });
+
+            let requiredFieldsNote = document.getElementById('required-fields-note');
+            if (!requiredFieldsNote) {
+                requiredFieldsNote = document.createElement('p');
+                requiredFieldsNote.id = 'required-fields-note'; // Set ID for the paragraph
+                requiredFieldsNote.style.color = 'rgb(185, 24, 24)';
+                requiredFieldsNote.style.fontSize = '14px';
+                requiredFieldsNote.style.textAlign = 'center'; // Center the text
+                requiredFieldsNote.style.margin = '0'; // Set margin to 0
+                requiredFieldsNote.innerHTML = '<i>Fields marked with an asterisk (*) are required.</i>';
+            }
+
+
+            // Show an "Update" button
+            let updateButton = document.getElementById('update-button');
+            if (!updateButton) {
+                updateButton = document.createElement('button');
+                updateButton.id = 'update-button'; // Set ID for the button
+                updateButton.type = 'submit';
+                updateButton.className = 'btn btn-primary';
+                updateButton.textContent = 'Update';
+                updateButton.style.display = 'block';
+                updateButton.style.margin = '0';
+                updateButton.style.width = '660px';
+            }
+
+            const form = document.querySelector('form');
+            form.appendChild(updateButton); // Append the update button after the note
+            form.appendChild(requiredFieldsNote); // Insert the required fields note before the button
+           
+
+            const requiredFields = ["mobile_number", "email", "uname", "first_name", "last_name", "unit", "position"];
+            requiredFields.forEach(fieldId => {
+                const label = document.querySelector(`label[for="${fieldId}"]`);
+                if (label) {
+                    label.classList.add("required");
+                }
+            });
+
+            // Change button text and icon to View
+            this.innerHTML = '<i class="fas fa-eye"></i> View';
+        }
+
+        // Toggle editing state
+        isEditing = !isEditing;
+    });
+</script>
+
+
+
+
+{% endblock %}
