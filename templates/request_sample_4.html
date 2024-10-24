@@ -92,7 +92,8 @@
    
 </head>
 <body>
-
+    <form method="post" enctype="multipart/form-data" action="{% url 'request_sample_step4' %}" id="request-sample-step4-form">
+        {% csrf_token %}
     <div class="container">
         <h1>Request Sample</h1>
         <h4><b>Step 4:</b> Do you need multiple samples from the same source/participant with multiple time points?</h4>
@@ -143,12 +144,11 @@
                     <input type="number" class="form-control" name="start_date_yyyy" placeholder="yyyy" min="1900" max="2100">
                     <small class="form-text text-muted">if year only</small>
                 </div>
-            </div>
-
-            
+            </div>            
         </div>
     
         <div class="form-buttons">
+            <button class="btn btn-next" type="submit">Save</button>
             <a href="{% url 'request_sample_step3' %}">
                 <button class="btn btn-back" type="button">Back</button>
             </a>
@@ -157,8 +157,7 @@
             </a>
         </div>
     </div>
-    
-
+    </form>
 </body>
 
 <script>
@@ -177,6 +176,17 @@
         nextButton.disabled = false;
     });
 
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const fullDate = document.querySelector('[name="start_date_ddmmyyyy"]').value;
+        const monthYear = document.querySelector('[name="start_date_mmyyyy"]').value;
+        const yearOnly = document.querySelector('[name="start_date_yyyy"]').value;
+
+        // Check if multiple date fields are filled
+        if ((fullDate && (monthYear || yearOnly)) || (monthYear && yearOnly)) {
+            alert("Please fill only one of the date fields: Full Date, Month-Year, or Year.");
+            event.preventDefault();  // Prevent form submission
+        }
+    });
 </script>
 </html>
 

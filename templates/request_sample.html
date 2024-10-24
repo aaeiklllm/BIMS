@@ -95,105 +95,137 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>Request Sample</h1>
-    <h4><b>Step 1:</b> For what Research Project is this sample request?</h4>
-
-    <div class="option">
-        <label>
-            <input type="radio" name="project" onclick="toggleSelection('existing')">
-            Select Research Project
-        </label>
-
-        <!-- Projects List, hidden by default, will show when "Select Research Project" is selected -->
-        <div id="existing-project" class="projects-container" style="display:none;">
+    <div class="container">
+        <h1>Request Sample</h1>
+        <h4><b>Step 1:</b> For what Research Project is this sample request?</h4>
+    
+        <div class="option">
             <label>
-                <input type="radio" name="existing-project" onclick="toggleProjectDetails()">
-                Project ID 1 <span class="underline-link" onclick="toggleProjectDetails()">View details</span>
+                <input type="radio" name="project" onclick="toggleSelection('existing')">
+                Select Research Project
             </label>
-
-            <!-- Project details will appear here -->
-            <div id="project-details" class="project-details">
-                <h3>Research Project Details</h3>
-                <p><strong>Research Project ID:</strong> 000001</p>
-                <p><strong>Title:</strong> Genetic Factors Contributing to Early-Onset Parkinson's Disease in Filipinos</p>
-                <p><strong>Principal Investigator:</strong> Juan Dela Cruz</p>
-                <p><strong>Description:</strong> This study aims to identify and analyze genetic mutations associated with early-onset Parkinson’s disease (EOPD) in the Filipino population. Through the use of genetic sequencing and clinical data, we will investigate specific gene variants that contribute to the onset of Parkinson’s disease before the age of 50. By comparing the genetic profiles of affected individuals to those of healthy controls, the research seeks to uncover potential biomarkers and risk factors unique to Filipinos. The findings may contribute to early diagnosis, personalized treatments, and preventative strategies for EOPD in the Philippines.</p>
-                <p><strong>Anticipated Initiation Date:</strong> 01-10-2024</p>
-                <p><strong>Anticipated Completion Date:</strong> 31-03-2025</p>
-                <p><strong>ERB #:</strong> UPMREB-2024-0645-01</p>
-                <p><strong>Funding source:</strong> The National Institutes of Health (NIH), University of the Philippines Manila</p>
+    
+            <!-- Projects List, hidden by default, will show when "Select Research Project" is selected -->
+            <div id="existing-project" class="projects-container" style="display:none;">
+                <label>
+                    <input type="hidden" name="request_sample_id" value="{{ request_sample.id }}">
+                    <input type="radio" name="existing-project" onclick="toggleProjectDetails()">
+                    Project ID 1 <span class="underline-link" onclick="toggleProjectDetails()">View details</span>
+                </label>
+    
+                <!-- Project details will appear here -->
+                <div id="project-details" class="project-details">
+                    <h3>Research Project Details</h3>
+                    <p><strong>Research Project ID:</strong> 000001</p>
+                    <p><strong>Title:</strong> Genetic Factors Contributing to Early-Onset Parkinson's Disease in Filipinos</p>
+                    <p><strong>Principal Investigator:</strong> Juan Dela Cruz</p>
+                    <p><strong>Description:</strong> This study aims to identify and analyze genetic mutations associated with early-onset Parkinson’s disease (EOPD) in the Filipino population...</p>
+                    <!-- More details -->
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="option">
-        <label>
-            <input type="radio" name="project" onclick="toggleSelection('new')">
-            Create a Research Project entry
-        </label>
-
-        <!-- New Research Project Form -->
-        <div id="new-project-form" class="new-project">
-            <div class="form-group">
-                <label for="project-id">Research Project ID: 00001</label>
-            </div>
-            <div class="form-group">
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title">
-            </div>
-            <div class="form-group">
-                <label for="investigator">Principal Investigator:</label>
-                <input type="text" id="investigator" name="investigator">
-            </div>
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description"></textarea>
-                <small>Note: Should include the scientific background, rationale, study design/methods, and references.</small>
-            </div>
-            <div class="form-group">
-                <label for="initiation-date">Anticipated Initiation Date:</label>
-                <input type="date" id="initiation-date" name="initiation-date">
-            </div>
-            <div class="form-group">
-                <label for="completion-date">Anticipated Completion Date:</label>
-                <input type="date" id="completion-date" name="completion-date">
-            </div>
-            <div class="form-group">
-                <label for="erb">ERB #:</label>
-                <input type="text" id="erb" name="erb">
-            </div>
-            <div class="form-group">
-                <label for="funding">Funding source:</label>
-                <input type="text" id="funding" name="funding">
-            </div>
-
-            <!-- Save and Reset buttons -->
-            <button class="btn" type="button">Save</button>
-            <button class="btn-reset" type="button">Reset</button>
+    
+        <div class="option">
+            <label>
+                <input type="radio" name="project" onclick="toggleSelection('new')">
+                Create a Research Project entry
+            </label>
+    
+            
+                <!-- New Research Project Form -->
+                <div id="new-project-form" class="new-project">
+                    <div class="form-group">
+                        <label for="project-id">Research Project ID: 00001</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="investigator">Principal Investigator:</label>
+                        <input type="text" id="investigator" name="investigator" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description"></textarea>
+                        <small>Note: Should include the scientific background, rationale, study design/methods, and references.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="initiation_date">Anticipated Initiation Date:</label>
+                        <input type="date" id="initiation_date" name="initiation_date" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="completion_date">Anticipated Completion Date:</label>
+                        <input type="date" id="completion_date" name="completion_date" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="erb">ERB #:</label>
+                        <input type="text" id="erb" name="erb" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="funding">Funding source:</label>
+                        <input type="text" id="funding" name="funding" value="">
+                    </div>
+                    <!-- Save and Reset buttons -->
+                    <!-- <button type="submit" class="btn">Save</button> -->
+                    <button type="reset" class="btn-reset">Reset</button>    
+                </div>
         </div>
+    
+        <!-- Next button to go to step 2 -->
+        <a href="{% url 'request_sample_step2' %}">
+            <button class="btn btn-next" type="button" onclick="saveInputValues()">Next</button>
+        </a>
     </div>
-
-    <!-- Next button to go to step 2 -->
-    <a href="{% url 'request_sample_step2' %}">
-        <button class="btn btn-next" type="button">Next</button>
-    </a>
-</div>
-
-<script>
-    // Ensure project list only appears when "Select Research Project" is chosen
-    function toggleSelection(option) {
-        if (option === 'existing') {
-            document.getElementById('new-project-form').style.display = 'none';
-            document.getElementById('existing-project').style.display = 'block';
-        } else {
-            document.getElementById('existing-project').style.display = 'none';
-            document.getElementById('new-project-form').style.display = 'block';
+    
+    <script>
+        // Ensure project list only appears when "Select Research Project" is chosen
+        function toggleSelection(option) {
+            if (option === 'existing') {
+                document.getElementById('new-project-form').style.display = 'none';
+                document.getElementById('existing-project').style.display = 'block';
+            } else {
+                document.getElementById('existing-project').style.display = 'none';
+                document.getElementById('new-project-form').style.display = 'block';
+            }
         }
-    }
-</script>
+    
+        // Save form input values to localStorage
+        function saveInputValues() {
+            const title = document.getElementById('title').value;
+            const investigator = document.getElementById('investigator').value;
+            const description = document.getElementById('description').value;
+            const initiation_date = document.getElementById('initiation_date').value;
+            const completion_date = document.getElementById('completion_date').value;
+            const erb = document.getElementById('erb').value;
+            const funding = document.getElementById('funding').value;
+            
+            localStorage.setItem('title', title);
+            localStorage.setItem('investigator', investigator);
+            localStorage.setItem('description', description);
+            localStorage.setItem('initiation_date', initiation_date);
+            localStorage.setItem('completion_date', completion_date);
+            localStorage.setItem('erb', erb);
+            localStorage.setItem('funding', funding);
+        }
 
-</body>
+        // Retrieve saved input values from localStorage
+        function loadInputValues() {
+            document.getElementById('title').value = localStorage.getItem('title') || '';
+            document.getElementById('investigator').value = localStorage.getItem('investigator') || '';
+            document.getElementById('description').value = localStorage.getItem('description') || '';
+            document.getElementById('initiation_date').value = localStorage.getItem('initiation_date') || '';
+            document.getElementById('completion_date').value = localStorage.getItem('completion_date') || '';
+            document.getElementById('erb').value = localStorage.getItem('erb') || '';
+            document.getElementById('funding').value = localStorage.getItem('funding') || '';
+        }
+
+        // Automatically load input values when the page is loaded
+        window.onload = loadInputValues;
+    </script>
+    
+    </body>
+    
 </html>
 
 

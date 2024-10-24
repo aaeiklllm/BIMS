@@ -99,27 +99,31 @@
    
 </head>
 <body>
+<form method="post" enctype="multipart/form-data" action="{% url 'request_sample_step6' %}" id="request-sample-step6-form">
+    {% csrf_token %}
+    <div class="container">
+        <h1>Request Sample</h1>
+        <h4>Step 6: When is the desired start date of the use of the sample(s) requested?</h4>
 
-<div class="container">
-    <h1>Request Sample</h1>
-    <h4>Step 6: When is the desired start date of the use of the sample(s) requested?</h4>
+        <div class="form-group">
+            <label for="desired_start_date">Desired Start Date:</label>
+            <input type="date" id="desired_start_date" name="desired_start_date" class="form-control">
+        </div>
 
-    <div class="form-group">
-        <label for="desired_start_date">Desired Start Date:</label>
-        <input type="date" id="desired_start_date" name="desired_start_date" class="form-control">
+        <p><i>Note: This date refers to when the samples are needed. If your requested sample(s) is/are not yet available, the biobank manager can choose to wait for it to be available until the desired start date. If the sample request is not available by then, the system will automatically reject your request.</i></p>
+
+        <div class="form-buttons">
+            <button class="btn btn-next" type="submit">Save</button>
+            <a href="{% url 'request_sample_step5' %}">
+                <button class="btn btn-back" type="button">Back</button>
+            </a>
+            <a href="{% url 'request_sample_step7' %}">
+                <button class="btn btn-next" type="button" id="nextButton" disabled>Next</button>
+            </a>
+        </div>
     </div>
+</form>
 
-    <p><i>Note: This date refers to when the samples are needed. If your requested sample(s) is/are not yet available, the biobank manager can choose to wait for it to be available until the desired start date. If the sample request is not available by then, the system will automatically reject your request.</i></p>
-
-    <div class="form-buttons">
-        <a href="{% url 'request_sample_step5' %}">
-            <button class="btn btn-back" type="button">Back</button>
-        </a>
-        <a href="{% url 'request_sample_step7' %}">
-            <button class="btn btn-next" type="button" id="nextButton" disabled>Next</button>
-        </a>
-    </div>
-</div>
 
 </body>
 </html>

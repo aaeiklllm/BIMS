@@ -17,6 +17,7 @@ urlpatterns = [
     path('viewsample', views.view_sample, name='viewsample'),
     path('sample_detail/<int:sample_id>/', views.sample_detail, name='sample_detail'),
 
+    # Request samples 
     path('requestsample', views.request_sample, name='requestsample'),
     path('requestsample/step2', views.request_sample_step2, name='request_sample_step2'),
     path('requestsample/step3', views.request_sample_step3, name='request_sample_step3'),

@@ -92,7 +92,8 @@
    
 </head>
 <body>
-
+    <form method="post" enctype="multipart/form-data" action="{% url 'request_sample_step5' %}" id="request-sample-step5-form">
+        {% csrf_token %}
     <div class="container">
         <h1>Request Sample</h1>
         <h4><b>Step 5: </b>Do you need the same sample request from different sources/participants?</h4>   
@@ -121,6 +122,46 @@
                         <input type="radio" name="multiple_timepoints_each" value="no"> No
                     </label>
                 </div>
+
+                <!-- If Yes is selected: Indented section for multiple time points -->
+                <div id="timePointsSection" style="display:none;">
+                    <div class="form-group">
+                        <label># of time points:</label>
+                        <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Time point interval:</label>
+                        <input type="number" class="form-control" name="interval" min="1" placeholder="Interval">
+                        <select class="form-control" name="interval_unit">
+                            <option value="days">Days</option>
+                            <option value="weeks">Weeks</option>
+                            <option value="months">Months</option>
+                            <option value="years">Years</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Is there a specific start date? (optional):</label>
+                        <!-- Full date picker -->
+                        <div class="date-picker-wrapper">
+                            <input type="date" class="form-control" name="start_date_ddmmyyyy" placeholder="dd-mm-yyyy">
+                            <small class="form-text text-muted">if day, month, and year</small>
+                        </div>
+
+                        <!-- Month and year picker -->
+                        <div class="date-picker-wrapper">
+                            <input type="month" class="form-control" name="start_date_mmyyyy" placeholder="mm-yyyy">
+                            <small class="form-text text-muted">if month and year only</small>
+                        </div>
+
+                        <!-- Year only picker -->
+                        <div class="date-picker-wrapper">
+                            <input type="number" class="form-control" name="start_date_yyyy" placeholder="yyyy" min="1900" max="2100">
+                            <small class="form-text text-muted">if year only</small>
+                        </div>
+                    </div>
+                </div>
     
                 <!-- If No is selected: Indented section for single sample collection date -->
                 <div id="single_sample_collection" style="display:none;">
@@ -147,6 +188,7 @@
         </div>
     
         <div class="form-buttons">
+            <button class="btn btn-next" type="submit">Save</button>
             <a href="{% url 'request_sample_step4' %}">
                 <button class="btn btn-back" type="button">Back</button>
             </a>
@@ -154,7 +196,9 @@
                 <button class="btn btn-next" type="button" id="nextButton" disabled>Next</button>
             </a>
         </div>
-    </div>    
+    </div>
+    </form>
+
 </body>
 
 <script>
@@ -167,9 +211,39 @@ document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
 
 document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
     radio.addEventListener('change', function() {
+        const timePointsSection = document.getElementById('timePointsSection');
         const singleSampleCollection = document.getElementById('single_sample_collection');
-        singleSampleCollection.style.display = this.value === 'no' ? 'block' : 'none';
+
+        if (this.value === 'yes') {
+            timePointsSection.style.display = 'block';  // Show time points section
+            singleSampleCollection.style.display = 'none';  // Hide single sample collection
+        } else if (this.value === 'no') {
+            timePointsSection.style.display = 'none';  // Hide time points section
+            singleSampleCollection.style.display = 'block';  // Show single sample collection
+        }
     });
+});
+
+document.querySelector('form').addEventListener('submit', function(event) {
+    const fullDate1 = document.querySelector('[name="start_date_ddmmyyyy"]').value;
+    const monthYear1 = document.querySelector('[name="start_date_mmyyyy"]').value;
+    const yearOnly1 = document.querySelector('[name="start_date_yyyy"]').value;
+
+    const fullDate2 = document.querySelector('[name="collection_date_ddmmyyyy"]').value;
+    const monthYear2 = document.querySelector('[name="collection_date_mmyyyy"]').value;
+    const yearOnly2 = document.querySelector('[name="collection_date_yyyy"]').value;
+
+    // Check if multiple date fields are filled
+    if ((fullDate1 && (monthYear1 || yearOnly1)) || (monthYear1 && yearOnly1)) {
+        alert("Please fill only one of the date fields: Full Date, Month-Year, or Year.");
+        event.preventDefault();  // Prevent form submission
+    }
+    
+    // Check if multiple date fields are filled
+    if ((fullDate2 && (monthYear2 || yearOnly2)) || (monthYear2 && yearOnly2)) {
+        alert("Please fill only one of the date fields: Full Date, Month-Year, or Year.");
+        event.preventDefault();  // Prevent form submission
+    }
 });
 
 </script>

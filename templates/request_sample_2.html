@@ -60,6 +60,12 @@
         textarea {
             height: 100px;
         }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* Add space between the buttons */
+            margin-top: 20px; /* Adjust as needed */
+        }
         .btn {
             padding: 10px 15px;
             background-color: #007BFF;
@@ -74,7 +80,14 @@
         }
         .btn-next {
             float: right;
-            margin-top: 20px;
+            margin-top: 0px;
+        }
+        .btn-back {
+            background-color: #6c757d; /* Gray color for the 'Back' button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
         }
     </style>
     <script>
@@ -95,28 +108,55 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>Request Sample</h1>
-    <h4><b>Step 2: </b>Upload Research Ethics Boards Approval (ERB) (.pdf)</h4>
+    <div class="container">
+        <h1>Request Sample</h1>
+        <h4><b>Step 2: </b>Upload Research Ethics Boards Approval (ERB) (.pdf)</h4>
+        
+            <!-- Hidden inputs to carry over Step 1 data -->
+            <input type="hidden" id="title" name="title" value="">
+            <input type="hidden" id="investigator" name="investigator" value="">
+            <input type="hidden" id="description" name="description" value="">
+            <input type="hidden" id="initiation_date" name="initiation_date" value="">
+            <input type="hidden" id="completion_date" name="completion_date" value="">
+            <input type="hidden" id="erb" name="erb" value="">
+            <input type="hidden" id="funding" name="funding" value="">
 
-    <div class="mb-3">
-        <!-- File input for uploading the file -->
-        <input type="file" class="form-control" id="erb_approval" name="erb_approval" accept=".pdf" onchange="handleFileChange()">
-            
-        <!-- Area to display the selected file name and action buttons -->
-        <div id="file-info" class="mt-2" style="display: none;">
-            <span id="file-name"></span>
-            <button type="button" class="btn btn-link" onclick="removeFile()">Remove</button>
-        </div>            
+            <div class="mb-3">
+                <!-- File input for uploading the file -->
+                <input type="file" class="form-control" id="erb_approval" name="erb_approval" accept=".pdf" onchange="handleFileChange()">
+                    
+                <!-- Area to display the selected file name and action buttons -->
+                <div id="file-info" class="mt-2" style="display: none;">
+                    <span id="file-name"></span>
+                    <button type="button" class="btn btn-link" onclick="removeFile()">Remove</button>
+                </div>            
+            </div>
+        
+        <div class="button-container">
+            <button class="btn btn-next" type="submit">Save</button>
+            <a href="{% url 'requestsample' %}">
+                <button class="btn btn-back" type="button" onclick="saveStep2Values()">Back</button>
+            </a>
+            <a href="{% url 'request_sample_step3' %}">
+                <button class="btn btn-next" type="button" onclick="saveStep2Values()">Next</button>
+            </a>
+        </div>
     </div>
 
-    <a href="{% url 'request_sample_step3' %}">
-        <button class="btn btn-next" type="button">Next</button>
-    </a>
-</div>
-
 <script>
-        function handleFileChange() {
+    // Load saved input values from localStorage (Step 1 values)
+    function loadStep1Values() {
+        // Pre-populate the Step 1 form with saved values
+        document.getElementById('title').value = localStorage.getItem('title') || '';
+        document.getElementById('investigator').value = localStorage.getItem('investigator') || '';
+        document.getElementById('description').value = localStorage.getItem('description') || '';
+        document.getElementById('initiation_date').value = localStorage.getItem('initiation_date') || '';
+        document.getElementById('completion_date').value = localStorage.getItem('completion_date') || '';
+        document.getElementById('erb').value = localStorage.getItem('erb') || '';
+        document.getElementById('funding').value = localStorage.getItem('funding') || '';
+    }
+
+    function handleFileChange() {
         const fileInput = document.getElementById('erb_approval');
         const fileInfo = document.getElementById('file-info');
         const fileNameDisplay = document.getElementById('file-name');
@@ -125,17 +165,72 @@
             const fileName = fileInput.files[0].name;
             fileNameDisplay.textContent = fileName; // Display selected file name
             fileInfo.style.display = 'block'; // Show the file info section
+            
+            // Save the selected file name to localStorage (not the file itself)
+            localStorage.setItem('erb_approval_filename', fileName);
         }
     }
 
-       // Function to remove the selected file
-       function removeFile() {
+    // Function to remove the selected file
+    function removeFile() {
         const fileInput = document.getElementById('erb_approval');
         const fileInfo = document.getElementById('file-info');
         
         fileInput.value = ''; // Clear the file input
         fileInfo.style.display = 'none'; // Hide the file info section
         document.getElementById('file-name').textContent = ''; // Clear the file name
+
+        // Remove file name from localStorage
+        localStorage.removeItem('erb_approval_filename');
+    }
+
+    // Save all Step 2 input values and Step 1 values when the form is submitted
+    function saveStep2Values() {
+        const erb_approval = document.getElementById('erb_approval').value;
+
+        // Save step 2 input values to localStorage
+        localStorage.setItem('erb_approval', erb_approval);
+    }
+
+    // Retrieve saved input values from localStorage
+    function loadInputValues() {
+        const savedFileName = localStorage.getItem('erb_approval_filename') || '';
+        if (savedFileName) {
+            document.getElementById('file-name').textContent = savedFileName;
+            document.getElementById('file-info').style.display = 'block';
+        }
+    }
+
+    // Clear the localStorage after submission
+    function clearLocalStorage() {
+        localStorage.clear();
+    }
+
+    // On form submit, save Step 2 inputs and clear all stored data
+    document.getElementById('request-sample-step2-form').addEventListener('submit', function() {
+        saveStep2Values();
+        clearLocalStorage(); // Clear all saved values when form is submitted
+    });
+
+    // Dynamically create hidden fields for Step 1 data
+    function createHiddenFields() {
+        const form = document.getElementById('request-sample-step2-form');
+        const step1Fields = ['title', 'investigator', 'description', 'initiation_date', 'completion_date', 'erb', 'funding'];
+        
+        step1Fields.forEach(field => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = field;
+            input.value = localStorage.getItem(field) || '';
+            form.appendChild(input);
+        });
+    }
+
+    // Load saved Step 1 data when Step 2 form is submitted
+    window.onload = function() {
+        loadStep1Values();  // Ensure step 1 values are loaded visually
+        createHiddenFields(); // Attach hidden fields dynamically
+        loadInputValues()
     }
 </script>
 

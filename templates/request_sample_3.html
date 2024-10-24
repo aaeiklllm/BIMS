@@ -246,7 +246,7 @@
     <h1>Request Sample</h1>
     <h4><b>Step 3: </b>What kind of sample are you requesting?</h4>
 
-    <form method="post" enctype="multipart/form-data" action="" id="create-sample-form">
+    <form method="post" enctype="multipart/form-data" action="{% url 'request_sample_step3' %}" id="request-sample-step3-form">
         {% csrf_token %}
         <div class="dropdown mb-2">
             <label for="type" class="form-label">Type:</label>
@@ -454,6 +454,7 @@
         </div>
 
         <div class="button-container">
+            <button class="btn btn-next" type="submit">Save</button>
             <a href="{% url 'request_sample_step2' %}">
                 <button class="btn btn-back" type="button">Back</button>
             </a>
@@ -461,8 +462,9 @@
                 <button class="btn btn-next" type="button">Next</button>
             </a> 
         </div>
-               
+    </form>
 </div>
+</body>
 
 <script>
     function handleFileChange() {
@@ -660,7 +662,6 @@
     }
 </script>
 
-</body>
 </html>
 
 
