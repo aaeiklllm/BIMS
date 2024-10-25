@@ -266,6 +266,8 @@
 
 <div class="container">
     <h1><b>Request Sample</b></h1>
+    <form method="post" enctype="multipart/form-data" action="{% url 'requestsample' %}" id="request-sample-form">
+        {% csrf_token %}
     <!-- Step 1 -->
     <div id="step1" class="step">
         <h4><b>Step 1:</b> For what Research Project is this sample request?</h4>
@@ -277,23 +279,26 @@
     
             <!-- Projects List, hidden by default, will show when "Select Research Project" is selected -->
             <div id="existing-project" class="projects-container" style="display:none;">
-                <label>
-                    <input type="radio" name="existing-project" onclick="toggleProjectDetails()">
-                    Project ID 1 <span class="underline-link" onclick="toggleProjectDetails()">View details</span>
-                </label>
-    
-                <!-- Project details will appear here -->
-                <div id="project-details" class="project-details">
-                    <h3>Research Project Details</h3>
-                    <p><strong>Research Project ID:</strong> 000001</p>
-                    <p><strong>Title:</strong> Genetic Factors Contributing to Early-Onset Parkinson's Disease in Filipinos</p>
-                    <p><strong>Principal Investigator:</strong> Juan Dela Cruz</p>
-                    <p><strong>Description:</strong> This study aims to identify and analyze genetic mutations associated with early-onset Parkinson’s disease (EOPD) in the Filipino population. Through the use of genetic sequencing and clinical data, we will investigate specific gene variants that contribute to the onset of Parkinson’s disease before the age of 50. By comparing the genetic profiles of affected individuals to those of healthy controls, the research seeks to uncover potential biomarkers and risk factors unique to Filipinos. The findings may contribute to early diagnosis, personalized treatments, and preventative strategies for EOPD in the Philippines.</p>
-                    <p><strong>Anticipated Initiation Date:</strong> 01-10-2024</p>
-                    <p><strong>Anticipated Completion Date:</strong> 31-03-2025</p>
-                    <p><strong>ERB #:</strong> UPMREB-2024-0645-01</p>
-                    <p><strong>Funding source:</strong> The National Institutes of Health (NIH), University of the Philippines Manila</p>
-                </div>
+                {% for project in research_projects %}
+                    <label>
+                        <input type="radio" name="existing-project" value="{{ project.id }}" onclick="toggleProjectDetails('{{ project.id }}')">
+                        Project ID {{ project.id }}: {{ project.title }} 
+                        <span class="underline-link" onclick="toggleProjectDetails('{{ project.id }}')">View details</span>
+                    </label>
+
+                    <!-- Project details will appear here -->
+                    <div id="project-details-{{ project.id }}" class="project-details" style="display:none;">
+                        <h3>Research Project Details</h3>
+                        <p><strong>Research Project ID:</strong> {{ project.id }}</p>
+                        <p><strong>Title:</strong> {{ project.title }}</p>
+                        <p><strong>Principal Investigator:</strong> {{ project.principal_investigator }}</p>
+                        <p><strong>Description:</strong> {{ project.description }}</p>
+                        <p><strong>Anticipated Initiation Date:</strong> {{ project.anticipated_initiation_date }}</p>
+                        <p><strong>Anticipated Completion Date:</strong> {{ project.anticipated_completion_date }}</p>
+                        <p><strong>ERB #:</strong> {{ project.erb_number }}</p>
+                        <p><strong>Funding source:</strong> {{ project.funding_source }}</p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     
@@ -339,7 +344,6 @@
                 </div>
     
                 <div class="button-container">
-                    <button class="btn-next" type="button">Save</button>
                     <button class="btn-back" type="button" onclick="resetForm()">Reset</button>
                 </div>
             </div>
@@ -366,6 +370,7 @@
         </div>
 
         <div class="button-container">
+            <button class="btn btn-back" type="button" onclick="showStep('step1')">Back</button>
             <button class="btn btn-next" type="button" onclick="showStep('step3')">Next</button>
         </div>
     </div>
@@ -593,10 +598,10 @@
         
         <div class="radio-buttons">
             <label>
-                <input type="radio" name="multiple_samples" value="yes" id="yesOption"> Yes
+                <input type="radio" name="multiple_samples" value="yes" id="yesOption" onclick="checkConditions()"> Yes
             </label>
             <label>
-                <input type="radio" name="multiple_samples" value="no" id="noOption"> No
+                <input type="radio" name="multiple_samples" value="no" id="noOption" onclick="checkConditions()"> No
             </label>
         </div>
     
@@ -651,10 +656,10 @@
         <h4><b>Step 5: </b>Do you need the same sample request from different sources/participants?</h4>   
         <div class="radio-buttons">
             <label>
-                <input type="radio" name="different_sources" value="yes"> Yes
+                <input type="radio" name="different_sources" value="yes" onclick="checkConditions()"> Yes
             </label>
             <label>
-                <input type="radio" name="different_sources" value="no"> No
+                <input type="radio" name="different_sources" value="no" onclick="checkConditions()"> No
             </label>
         </div>
     
@@ -675,13 +680,27 @@
                     </label>
                 </div>
     
-                <!-- If No is selected: Indented section for single sample collection date -->
-                <div id="single_sample_collection" style="display:none;">
+                <!-- If yes is selected: Indented section for time point details -->
+                <div id="timepoint_details" style="display:none;">
                     <br>
-                    <label>Is there a specific collection date from the single sample request from the same source? (optional):</label>
+                    <div class="form-group-4">
+                        <label># of time points:</label>
+                        <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number">
+                    </div>
+            
+                    <div class="form-group-4">
+                        <label>Time point interval:</label>
+                        <input type="number" class="form-control" name="interval" min="1" placeholder="Interval">
+                        <select class="form-control" name="interval_unit">
+                            <option value="days">Days</option>
+                            <option value="weeks">Weeks</option>
+                            <option value="months">Months</option>
+                            <option value="years">Years</option>
+                        </select>
+                    </div>
+                    <label>Is there a specific start date? (optional):</label>
     
                     <div class="date-pickers">
-                        <!-- Date picker section like in Step 4 -->
                         <div class="date-picker-wrapper">
                             <input type="date" class="form-control" name="collection_date_ddmmyyyy" placeholder="dd-mm-yyyy">
                         </div>
@@ -696,6 +715,27 @@
                             <small class="form-text text-muted">if year only</small>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="single_sample_collection" style="display:none;">
+            <br>
+            <label>Is there a specific collection date from the single sample request from the same source? (optional):</label>
+    
+            <div class="date-pickers">
+                <div class="date-picker-wrapper">
+                    <input type="date" class="form-control" name="collection_date_ddmmyyyy" placeholder="dd-mm-yyyy">
+                </div>
+    
+                <div class="date-picker-wrapper">
+                    <input type="month" class="form-control" name="collection_date_mmyyyy" placeholder="mm-yyyy">
+                    <small class="form-text text-muted">if month and year only</small>
+                </div>
+    
+                <div class="date-picker-wrapper">
+                    <input type="number" class="form-control" name="collection_date_yyyy" placeholder="yyyy" min="1900" max="2100">
+                    <small class="form-text text-muted">if year only</small>
                 </div>
             </div>
         </div>
@@ -717,81 +757,35 @@
         <p><i>Note: This date refers to when the samples are needed. If your requested sample(s) is/are not yet available, the biobank manager can choose to wait for it to be available until the desired start date. If the sample request is not available by then, the system will automatically reject your request.</i></p>
         <div class="button-container">
             <button class="btn btn-back" type="button" onclick="showStep('step5')">Back</button>
-            <button class="btn btn-next" type="button" onclick="showStep('step7')">Next</button>
+            <button class="btn btn-next" type="submit">Next</button>
         </div>
     </div>
+    </form>
 
-    <!-- Step 7 -->
-    <div id="step7" class="step">
-
-        <h4><b>Step 7:</b> Is the information below correct?</h4>
-    
-        <div class="form-group-4">
-            <div class="request-summary">
-                <p><strong>Research Project:</strong> Asthma Susceptibility and Genetic Markers in Filipino Children (Research Project ID 000002)</p>
-                <p><strong>Research Ethics Boards Approval (ERB):</strong> UPMREB-2024-0721</p>
-                <p><strong>Sample Information:</strong></p>
-                <ul>
-                    <li>Type: DNA</li>
-                    <li>Source
-                        <ul>
-                            <li>Sex: Either</li>
-                            <li>Age: 5-17</li>
-                            <li>Clinical Diagnosis: Asthma</li>
-                            <li>Comorbidities: None</li>
-                            <li>Lab Tests: None</li>
-                        </ul>
-                    </li>
-                    <li style="margin-left: 20px;">Quantity Volume: 100 μL</li>
-                </ul>
-    
-                <p><strong>Multiple samples from the same source/participant with multiple time points:</strong> NO</p>
-                
-                <p><strong>Same sample request from different sources/participants:</strong> YES - 5 sources/participants</p>
-                <ul style="margin-left: 20px;">
-                    <li>Multiple samples with multiple time points from each source/participant: YES - 3 time points - 6 months interval</li>
-                </ul>
-    
-                <p><strong>Desired Start Date:</strong> 01-11-2024</p>
-                <p><strong>Total number of sample requests:</strong> 15</p>
-            </div>
-        </div>
-
-        <div class="button-container">
-            <button class="btn btn-back" type="button" onclick="showStep('step6')">Back</button>
-            <button class="btn btn-next" type="button" onclick="showStep('ty')">Submit Request</button>
-        </div>
-    </div>
-
-    <!-- thank you -->
-    <div id="ty" class="step">
-        <h2>Your request has been submitted for approval.</h2>
-            <p>You may check the status of your request in <strong>‘My Requests’</strong>.</p>
-            <p>You will also receive an Acknowledgement Receipt if approved.</p>
-
-            <div class="button-container">
-                <a href="{% url 'requestsample' %}">
-                    <button class="btn btn-back" type="button">Submit Another Request</button>
-                </a>
-                <a href="{% url '' %}">
-                    <button class="btn btn-next" type="button">Back Home</button>
-                </a>
-            </div>
-    </div>
 </div>
 
 <script>
-    function toggleProjectDetails() {
-        document.getElementById('project-details').style.display = 'block';
-    }
-
     function toggleSelection(option) {
         if (option === 'existing') {
-            document.getElementById('new-project-form').style.display = 'none';
             document.getElementById('existing-project').style.display = 'block';
+            document.getElementById('new-project-form').style.display = 'none';
         } else {
             document.getElementById('existing-project').style.display = 'none';
             document.getElementById('new-project-form').style.display = 'block';
+        }
+    }
+
+    function toggleProjectDetails(projectId) {
+        // Hide all other project details
+        var allProjectDetails = document.querySelectorAll('.project-details');
+        allProjectDetails.forEach(function(details) {
+            details.style.display = 'none';  // Hide all project details
+        });
+
+        // Show only the clicked project details
+        var projectDetails = document.getElementById('project-details-' + projectId);
+        if (projectDetails) {
+            projectDetails.style.display = 'block';  // Show the selected project
         }
     }
 
@@ -998,17 +992,24 @@
     document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
     radio.addEventListener('change', function() {
         const numSources = document.getElementById('num_sources');
-        numSources.style.display = this.value === 'yes' ? 'block' : 'none';
+        const singleSampleCollection = document.getElementById('single_sample_collection');
+        if (this.value === 'yes') {
+            numSources.style.display = 'block';
+            singleSampleCollection.style.display = 'none'; // Hide single sample section if "Yes" is selected
+        } else if (this.value === 'no') {
+            numSources.style.display = 'none';
+            singleSampleCollection.style.display = 'block'; // Show single sample section if "No" is selected
+        }
         });
     });
 
     document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            const singleSampleCollection = document.getElementById('single_sample_collection');
-            singleSampleCollection.style.display = this.value === 'no' ? 'block' : 'none';
+            const timepointDetails= document.getElementById('timepoint_details');
+            timepointDetails.style.display = this.value === 'yes' ? 'block' : 'none';
         });
     });
-    
+
 </script>
 
 </body>

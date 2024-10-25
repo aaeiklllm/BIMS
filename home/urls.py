@@ -19,4 +19,6 @@ urlpatterns = [
 
     # Request sample
     path('requestsample', views.request_sample, name='requestsample'),
+    path('requestsample/step7/<int:sample_id>/', views.request_sample_step7, name='request_sample_step7'),
+    path('requestsample/ty', views.request_sample_ty, name='request_sample_ty'),
 ]
