@@ -12,14 +12,77 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 
 # Create your views here.
-def homePage(request):
+
+def home(request):
+    return render(request, 'home.html')  
+
+#Admin Creation Requests (For Navbar)
+def creation_requests(request):
+    pending_users = User.objects.filter(is_active=False, deletion_requested=False)  # Filter for creation requests only
+
+    biobank_managers = []  # Initialize empty lists to avoid errors
+    researchers = []
+
+    for user in pending_users:
+        user_role_map = UserroleMap.objects.filter(user_id=user).first()
+        if user_role_map:
+            role = user_role_map.role_id.role
+            if role == 'BiobankManager':
+                biobank_managers.append(user)
+            elif role == 'Researcher':
+                researchers.append(user)
+
+    deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
+
+    # Pass both creation and deletion requests in the context
+    return render(request, 'admin_home.html', {
+        'pending_users': pending_users,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers': biobank_managers,
+        'researchers': researchers,
+        'active_tab': 'creation_requests'
+    })
+
+#Admin Deletion Requests (For Navbar)
+def deletion_requests(request):
+    deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
+
+    biobank_managers = []  # Initialize empty lists
+    researchers = []
+
+    for user in deletion_requests:
+        user_role_map = UserroleMap.objects.filter(user_id=user).first()
+        if user_role_map:
+            role = user_role_map.role_id.role
+            if role == 'BiobankManager':
+                biobank_managers.append(user)
+            elif role == 'Researcher':
+                researchers.append(user)
+
+    pending_users = User.objects.filter(is_active=False, deletion_requested=False)  # Filter for creation requests
+
+    # Pass both creation and deletion requests in the context
+    return render(request, 'admin_home.html', {
+        'deletion_requests': deletion_requests,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers': biobank_managers,
+        'researchers': researchers,
+        'active_tab': 'deletion_requests'
+    })
+
+
+def admin_home(request):
     try:
-        user_id = request.session.get('id')
+        user_id = request.session.get("user_id") 
+        user = User.objects.get(id=user_id)  
+       
         print(f"User ID from homePage: {user_id}")
         if user_id:
             user = User.objects.get(id=user_id)
         else:
-            return render(request, 'home.html') 
+            return render(request, 'admin_home.html') 
 
         print(f"User from homePage1: {user}")
         # Get pending users and deletion requests
@@ -61,14 +124,17 @@ def homePage(request):
                 elif role == 'Researcher':
                     researchers2.append(user)
 
-        return render(request, 'home.html', {
+        return render(request, 'admin_home.html', {
             'user': user,
             'pending_users': pending_users,
             'deletion_requests': deletion_requests,
             'biobank_managers': biobank_managers,  
             'researchers': researchers,  
             'biobank_managers2': biobank_managers2,  
-            'researchers2': researchers2,            
+            'researchers2': researchers2,  
+            'deletion_request_count': deletion_requests.count(),
+            'creation_request_count': pending_users.count(),
+            'active_tab': 'creation_requests'      
         })
     except Exception as e:
         print(e)

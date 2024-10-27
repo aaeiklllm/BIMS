@@ -66,7 +66,7 @@ def register_user(request, roledata):
                             message='',
                             html_message=f'''Hi {uname}, <br><br>
                         We will send you a response using the email address you have provided within 2-4 business days.<br><br>
-                        For further inquiries, please contact us at bims@gmail.com.<br><br>Regards,<br>
+                        For further inquiries, please contact us at techassist.bims@gmail.com.<br><br>Regards,<br>
                         BIMS''',
                             from_email=settings.EMAIL_HOST_USER,
                             recipient_list=[email]
@@ -102,8 +102,6 @@ def register_user(request, roledata):
         print(e)
         messages.add_message(request, messages.ERROR, "Something Went Wrong!")
         return render(request, 'index.html') 
-        # Change this index.html
-
 def create_account(request):
     role = request.GET.get('role')
 
@@ -115,7 +113,6 @@ def create_account(request):
     roledata = roledata_mapping.get(role)
     message = f"Create {roledata}"
     
-    # Pass roledata and message to the template context
     context = {
         'roledata': roledata,
         'message': message,
@@ -126,11 +123,32 @@ def create_account(request):
 def create_sample(request):
     messages.add_message(request, messages.SUCCESS, "Sample has been created.")
     return render(request, 'create_sample.html')
+
 def home(request):
-    return render(request, 'home.html')  # Make sure to have 'index.html' in your templates folder
+    return render(request, 'home.html')  
 
-# def create_sample(request):
+def biobankmanager_home(request):
+    user_id = request.session.get("user_id") 
+    user = User.objects.get(id=user_id)  
 
+    context = {
+        'user': user,
+    }
+    return render(request, 'biobankmanager_home.html', context)
+
+def researcher_home(request):
+    user_id = request.session.get("user_id") 
+    user = User.objects.get(id=user_id)  
+
+    context = {
+        'user': user,
+    }
+    return render(request, 'researcher_home.html', context)
+
+def admin_home(request):
+    return render(request, 'admin_home.html')
+
+#Admin Creation Requests (For Navbar)
 def creation_requests(request):
     pending_users = User.objects.filter(is_active=False, deletion_requested=False)  # Filter for creation requests only
 
@@ -149,14 +167,16 @@ def creation_requests(request):
     deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
 
     # Pass both creation and deletion requests in the context
-    return render(request, 'home.html', {
+    return render(request, 'admin_home.html', {
         'pending_users': pending_users,
         'deletion_request_count': deletion_requests.count(),
         'creation_request_count': pending_users.count(),
         'biobank_managers': biobank_managers,
-        'researchers': researchers
+        'researchers': researchers,
+        'active_tab': 'creation_requests'
     })
 
+#Admin Deletion Requests (For Navbar)
 def deletion_requests(request):
     deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
 
@@ -175,17 +195,19 @@ def deletion_requests(request):
     pending_users = User.objects.filter(is_active=False, deletion_requested=False)  # Filter for creation requests
 
     # Pass both creation and deletion requests in the context
-    return render(request, 'home.html', {
+    return render(request, 'admin_home.html', {
         'deletion_requests': deletion_requests,
         'deletion_request_count': deletion_requests.count(),
         'creation_request_count': pending_users.count(),
-        'biobank_managers': biobank_managers,
-        'researchers': researchers
+        'biobank_managers2': biobank_managers,
+        'researchers2': researchers,
+        'active_tab': 'deletion_requests'
     })
 
 
 def approve_users(request):
     pending_users = User.objects.filter(is_active=False)
+    deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
 
     # Create empty lists for each role
     biobank_managers = []
@@ -213,7 +235,7 @@ def approve_users(request):
                 email = user.email
                 user.is_active = True
                 user.save()
-                messages.add_message(request, messages.SUCCESS,  f"Account for {user.first_name} {user.last_name} has been approved.")
+                messages.add_message(request, messages.SUCCESS, f"Account for {user.first_name} {user.last_name} has been approved.")
                 
                 # Send email notification here
                 try:
@@ -226,7 +248,7 @@ def approve_users(request):
                                         Username: {uname}<br>
                                         Email: {email}<br><br>
                                         To log in, visit <a href="https://example.com/login">our login page</a> and enter your credentials.<br><br>
-                                        If you have any questions or need assistance, please contact us at bims@gmail.com.<br><br>
+                                        If you have any questions or need assistance, please contact us at techassist.bims@gmail.com.<br><br>
                                         Regards,<br>
                                         BIMS''',
                         from_email=settings.EMAIL_HOST_USER,
@@ -234,17 +256,26 @@ def approve_users(request):
                     )
                 except Exception as e:
                     print(e)
-                    return render(request, 'home.html', {'message': 'Failed To Send Email'})
-                finally:
-                    return render(request, 'home.html', {'biobank_managers': biobank_managers, 'researchers': researchers})
-
+                    messages.add_message(request, messages.ERROR, 'Failed to send email notification.')
+            
             except User.DoesNotExist:
-                pass  
+                messages.add_message(request, messages.ERROR, 'User not found.')
+            
+            return redirect('approve_users')
 
-    return render(request, 'home.html', {'biobank_managers': biobank_managers, 'researchers': researchers})
+    return render(request, 'admin_home.html', {
+        'pending_users': pending_users,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers': biobank_managers,
+        'researchers': researchers,
+        'active_tab': 'creation_requests'
+    })
 
+#User request for deletion
 def request_deletion(request):
-    user_id = request.session.get('id')  # Assuming you set 'id' in the session upon login
+    user_id = request.session.get("user_id")
+    user = User.objects.get(id=user_id)
     
     # Handle deletion request
     if user_id:  # Check if the user is logged in
@@ -252,44 +283,62 @@ def request_deletion(request):
         user.deletion_requested = True  # Set the flag for deletion request
         user.save()
         messages.success(request, "Deletion request has been made.")
+        user_role = get_user_role(user)  # Function to determine user role
+        if user_role == 'Admin':
+            return redirect('admin_home')
+        elif user_role == 'BiobankManager':
+            return redirect('biobankmanager_home')
+        elif user_role == 'Researcher':
+            return redirect('researcher_home')
+        else:
+            return redirect("")  
     else:
         messages.error(request, "You need to be logged in to request deletion.")
         return redirect('/accounts/loginpage/')  # Redirect to the login page
-    
-    # Get all users who requested deletion (for admin to see)
-    deletion_requests = UserProfile.objects.filter(deletion_requested=True)
-
-    biobank_managers2 = []
-    researchers2 = []
-
-    # Loop through pending users and separate them by role
-    for user in deletion_requests:
-        # Assuming UserRoleMap model relates User and Role
-        user_role_map2 = UserroleMap.objects.filter(user_id=user).first()
-        
-        if user_role_map2:
-            role = user_role_map2.role_id.role  # Adjust based on your actual model structure
-            if role == 'BiobankManager':
-                biobank_managers2.append(user)
-            elif role == 'Researcher':
-                researchers2.append(user)
-    
-    # Pass the user to the template as well
-    return render(request, 'home.html', {
-        'biobank_managers': biobank_managers2, 
-        'researchers': researchers2,
-        'user': user,  # Pass the logged-in user to the template
-    })
-
 
 def delete_users(request):
+    pending_users = User.objects.filter(is_active=False)
+    deletion_requests = User.objects.filter(deletion_requested=True)
+
+     # Create empty lists for each role
+    biobank_managers = []
+    researchers = []
+
+    # Loop through pending users and separate them by role
+    for user in pending_users:
+        user_role_map = UserroleMap.objects.filter(user_id=user).first()
+        
+        if user_role_map:
+            role = user_role_map.role_id.role  # Adjust based on your actual model structure
+            if role == 'BiobankManager':
+                biobank_managers.append(user)
+            elif role == 'Researcher':
+                researchers.append(user)
+
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
-        user = UserProfile.objects.get(id=user_id)
-        # Perform the actual deletion of the user
-        user.delete()
-        messages.add_message(request, messages.SUCCESS,  f"Account for {user.first_name} {user.last_name} has been deleted.")
-    return redirect('')  # Redirect to the admin page
+
+        try:
+            # Attempt to retrieve and delete the user
+            user = UserProfile.objects.get(id=user_id)
+            user_name = f"{user.first_name} {user.last_name}"  # Store user name for messaging
+            user.delete()
+            messages.add_message(request, messages.SUCCESS, f"Account for {user_name} has been deleted.")
+        except UserProfile.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 'User not found.')
+            return redirect('delete_users')  # Redirect back to the same page or appropriate view
+
+        return redirect('delete_users') 
+
+    
+    return render(request, 'admin_home.html', {
+        'pending_users': pending_users,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers': biobank_managers,
+        'researchers': researchers,
+        'active_tab': 'creation_requests'
+    })
 
 def login(request):
     print(f"Request path: {request.path}")
@@ -305,25 +354,21 @@ def login(request):
     roledata = roledata_mapping.get(role)
 
     try:
-        if request.method =='POST':
-            email=request.POST.get('eml',None)
-            pwd=request.POST.get('pwd',None)
-            
-            # print(request.POST)
+        if request.method == 'POST':
+            email = request.POST.get('eml', None)
+            pwd = request.POST.get('pwd', None)
+
             user = User.objects.get(username=email)
+
             if 'forgot_password' in request.POST:
                 if not email:                
                     messages.add_message(request, messages.ERROR, "Please enter your username.")
                     return redirect(request.path)
-                # Proceed with password reset logic
-                # Send the reset code to the email/username
-                # Generate a random verification code
-                reset_code = random.randint(100000, 999999)
 
-                # Save code in the PasswordResetCode model (linked with User)
+                # Password reset logic
+                reset_code = random.randint(100000, 999999)
                 PasswordResetCode.objects.create(user=user, code=reset_code, created_at=timezone.now())
 
-                # Send code via email
                 try:
                     send_mail(
                         subject='Password Reset Code',
@@ -331,38 +376,40 @@ def login(request):
                         html_message=f'''Your password reset code is {reset_code}''',
                         from_email=settings.EMAIL_HOST_USER,
                         recipient_list=[user.email]
-                )
+                    )
                 except Exception as e:
                     print(e)
-                    return render(request, 'index.html',{'message':'Failed To Send Email'})
-                messages.add_message(request, messages.SUCCESS,  f"Password reset code sent to your email.")
+                    return render(request, 'index.html', {'message': 'Failed To Send Email'})
+
+                messages.add_message(request, messages.SUCCESS, "Password reset code sent to your email.")
                 return render(request, 'reset.html')
 
-            ubj= authenticate(request, username=email, password=pwd) 
-            if ubj == None:
+            ubj = authenticate(request, username=email, password=pwd) 
+            if ubj is None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 return redirect(request.path)
-            q = User.objects.filter(username=email).filter(is_staff=True)
+
+            q = User.objects.filter(username=email).filter
             table1_data = UserroleMap.objects.filter(user_id=ubj.id).first()
             if table1_data:
                 userRole = Role.objects.filter(id=table1_data.role_id.id).first()
                 print(userRole.role)
-                print(role)
-                # if userRole.role != role:  # Check if the user's role matches the selected role
-                #     messages.error(request, "Please select the correct role to log in.")
-                #     return redirect(request.path)
 
-                user = User.objects.get(id=ubj.id)
-                request.session["role"]=userRole.role
-                request.session["id"]=user.id
-                print(f"User ID from session: {request.session.get('id')}")
-                print(f"User ID from user: {user.id}")
+                request.session["role"] = userRole.role
+                request.session["user_id"] = ubj.id
+                print(f"User ID from session: {request.session.get('user_id')}")
+                
                 if q and ubj:
                     messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                    return redirect("")
+                    if userRole.role == 'BiobankManager':
+                        return redirect('biobankmanager_home')  # Replace with the actual URL name
+                    elif userRole.role == 'Researcher':
+                        return redirect('researcher_home')  # Replace with the actual URL name
+                    elif userRole.role == 'Admin':
+                        return redirect('admin_home')  # Replace with the actual URL name
                 else:
                     messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                    return redirect("")
+                    return redirect("")  # Fallback if no specific role
 
             else:
                 messages.add_message(request, messages.ERROR, "User role not found.")
@@ -373,7 +420,7 @@ def login(request):
         print(e)
         messages.add_message(request, messages.ERROR, "Something Went Wrong!")
         return render(request, 'index.html', {'role': roledata})
-    
+
 def login_admin(request):
     try:
         if request.method =='POST':
@@ -384,7 +431,7 @@ def login_admin(request):
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 return redirect(request.path)
 
-            q = User.objects.filter(username=email).filter(is_staff=True)
+            q = User.objects.filter(username=email).filter
             table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
             userRole= Role.objects.filter(id=table1_data.role_id.id).first()
             request.session["role"]=userRole.role
@@ -408,7 +455,8 @@ def logout(request):
     except:
         return HttpResponse('<h3 style="text-align:center"> Somthing went wrong !!!!!</h3>')
 
-def update_user(request, user_id):
+def update_user(request):
+    user_id = request.session.get("user_id")
     user = User.objects.get(id=user_id)
 
     if request.method == 'POST':
@@ -418,6 +466,7 @@ def update_user(request, user_id):
         user.first_name = request.POST.get('first_name', user.first_name)
         user.middle_name = request.POST.get('middle_name', user.middle_name)
         user.last_name = request.POST.get('last_name', user.last_name)
+        user.unit = request.POST.get('unit',user.unit)
         user.position = request.POST.get('position', user.position)
         user.mobile_number = request.POST.get('mobile_number', user.mobile_number)
 
@@ -425,7 +474,15 @@ def update_user(request, user_id):
             # Attempt to save user
             user.save()
             messages.success(request, "User details updated successfully")
-            return redirect('')
+            user_role = get_user_role(user)  # Function to determine user role
+            if user_role == 'Admin':
+                return redirect('admin_home')
+            elif user_role == 'BiobankManager':
+                return redirect('biobankmanager_home')
+            elif user_role == 'Researcher':
+                return redirect('researcher_home')
+            else:
+                return redirect("")
         except Exception as e:
             print(f"Error saving user: {e}")  # Log the error
             messages.error(request, f"Error updating user: {e}")
@@ -435,51 +492,79 @@ def update_user(request, user_id):
     }
     return render(request, 'home.html', context)
 
-def request_deletion(request):
-    user_id = request.session.get('id')  # Assuming you set 'id' in the session upon login
-    
-    # Handle deletion request
-    if user_id:  # Check if the user is logged in
-        user = UserProfile.objects.get(id=user_id)  # Get the user profile based on session id
-        user.deletion_requested = True  # Set the flag for deletion request
-        user.save()
-        messages.add_message(request, messages.SUCCESS, f"Deletion request has been made.")
-    else:
-        messages.add_message(request, messages.ERROR, "You need to be logged in to request deletion.")
-        return redirect('/accounts/loginpage/')  # Redirect to the login page
-    
-    # Get all users who requested deletion (for admin to see)
-    # if request.session.get('role') == 'Admin':
-    deletion_requests = UserProfile.objects.filter(deletion_requested=True)
-    # else:
-    #     deletion_requests = []
+def get_user_role(user):
+    table1_data = UserroleMap.objects.filter(user_id=user.id).first()
+    if table1_data:
+        user_role = Role.objects.filter(id=table1_data.role_id.id).first()
+        return user_role.role if user_role else None
+    return None
 
-    
-    # Pass the user to the template as well
-    return render(request, 'home.html', {
-        'deletion_requests': deletion_requests,  # Pass deletion requests to the template for admin
-        'user': user,  # Pass the logged-in user to the template
-    })
-
+#Admin Approve or Deny
 def approve_deletion(request):
+    deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
+    pending_users = User.objects.filter(is_active=False)
+
+    biobank_managers = []  # Initialize empty lists
+    researchers = []
+
+    for user in deletion_requests:
+        user_role_map = UserroleMap.objects.filter(user_id=user).first()
+        if user_role_map:
+            role = user_role_map.role_id.role
+            if role == 'BiobankManager':
+                biobank_managers.append(user)
+            elif role == 'Researcher':
+                researchers.append(user)
+    
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         user = UserProfile.objects.get(id=user_id)
-        # Perform the actual deletion of the user
         user.delete()
         messages.add_message(request, messages.SUCCESS, f"Account for {user.first_name} {user.last_name} has been deleted.")
-    return redirect('')  # Redirect to the admin page
+        return redirect('approve_deletion')
+    return render(request, 'admin_home.html', {
+        'deletion_requests': deletion_requests,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers2': biobank_managers,
+        'researchers2': researchers,
+        'active_tab': 'deletion_requests'
+    })
 
+#Admin Approve or Deny
 def deny_deletion(request):
+    deletion_requests = User.objects.filter(deletion_requested=True)  # Separate query for deletion requests
+    pending_users = User.objects.filter(is_active=False)
+
+    biobank_managers = []  # Initialize empty lists
+    researchers = []
+
+    for user in deletion_requests:
+            user_role_map = UserroleMap.objects.filter(user_id=user).first()
+            if user_role_map:
+                role = user_role_map.role_id.role
+                if role == 'BiobankManager':
+                    biobank_managers.append(user)
+                elif role == 'Researcher':
+                    researchers.append(user)
+
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         user = UserProfile.objects.get(id=user_id)
-        # Simply reset the deletion_requested flag
         user.deletion_requested = False
         user.save()
         messages.add_message(request, messages.SUCCESS, f"Account deletion request for {user.first_name} {user.last_name} has been denied.")
-    return redirect('')  # Redirect to the admin page
-
+        return redirect('deny_deletion')
+    
+    return render(request, 'admin_home.html', {
+        'deletion_requests': deletion_requests,
+        'deletion_request_count': deletion_requests.count(),
+        'creation_request_count': pending_users.count(),
+        'biobank_managers2': biobank_managers,
+        'researchers2': researchers,
+        'active_tab': 'deletion_requests'
+    })
+  
 def reset_password(request):
     if request.method == 'POST':
         code = request.POST.get('code')
@@ -488,7 +573,7 @@ def reset_password(request):
 
         # Check if the new password and confirm password match
         if new_password != confirm_password:
-            messages.error(request, "Passwords do not match.")
+            messages.add_message(request, messages.ERROR, "Passwords do not match.")
             return render(request, 'reset.html')
 
         try:
@@ -497,7 +582,7 @@ def reset_password(request):
 
             # Check if the code is still valid (e.g., within 24 hours)
             if timezone.now() - reset_code_obj.created_at > timedelta(hours=24):
-                messages.error(request, "Reset code has expired.")
+                messages.add_message(request, messages.ERROR, "Reset code has expired.")
                 return render(request, 'reset.html')
 
             # Update the user's password

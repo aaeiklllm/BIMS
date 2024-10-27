@@ -11,58 +11,59 @@
 		@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
 		
 		.info-msg,
-		   .success-msg,
-		   .warning-msg,
-		   .error-msg {
-			 margin: 10px 0;
-			 padding: 10px;
-			 border-radius: 3px 3px 3px 3px;
-		   }
-	   
-		   .success-msg {
-			 color: #270;
-			 background-color: #DFF2BF;
-		   }
-	   
-		   .error-msg {
-			 color: #D8000C;
-			 background-color: #FFBABA;
-		   }
-	   
-		   .zoomOut {
-			 transition: transform .2s;
-		   }
-	   
-		   .zoomOut:hover {
-			 transform: scale(1.2);
-		   }
-	   
-		   .circle-shape {
-			 flex-shrink: 0;
-			 padding: 0;
-			 width: 85px;
-			 height: 85px;
-			 line-height: 64px;
-			 border-radius: 50%;
-			 text-align: center;
-			 font-size: 32px;
-		   }
-	   
-		   body, html{
-				height: 100%;
-				display: flex;
-				flex-direction: column;
-				min-height: 100%;
-				margin: 0;
-				padding: 0;
-				color: #644ca4;
-    		}
-	   
+		.success-msg,
+		.warning-msg,
+		.error-msg {
+			margin: 10px 0;
+			padding: 10px;
+			border-radius: 3px 3px 3px 3px;
+		}
+	
+		.success-msg {
+			color: #270;
+			background-color: #DFF2BF;
+		}
+	
+		.error-msg {
+			color: #D8000C;
+			background-color: #FFBABA;
+		}
+	
+		.zoomOut {
+			transition: transform .2s;
+		}
+	
+		.zoomOut:hover {
+			transform: scale(1.2);
+		}
+	
+		.circle-shape {
+			flex-shrink: 0;
+			padding: 0;
+			width: 85px;
+			height: 85px;
+			line-height: 64px;
+			border-radius: 50%;
+			text-align: center;
+			font-size: 32px;
+		}
+	
+		body, html{
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			min-height: 100%;
+			margin: 0;
+			padding: 0;
+			color: #644ca4;
+		}
+	
 	   .btn-primary {
 		   background-color: #674FA7 !important;
 		   border-color: #674FA7 !important;
 		   color: #FFFFFF;
 		   transition: transform 80ms ease-in;
+		   width: 100%;
 	   }
 	   
 	   .btn-login {
@@ -96,11 +97,6 @@
 	   	form button{
           transition: transform .2s; /* Animation */
         }
-		
-		form button:hover{
-          transform: scale(1.2); 
-    	}
-
 	   
 	   input {
 		   background-color: #ffffff;
@@ -315,27 +311,6 @@
 		   width: 40px;
 	   }
 	   
-	   footer {
-		background-color: #644ca4; /* Updated background color */
-		width: 100%;
-		color: white;
-		text-align: center;
-		padding: 5px 0; /* Smaller padding for a compact footer */
-		font-size: 12px; /* Reduced font size */
-		margin: 0
-		}
-
-		footer.bg-dark {
-		background-color: #644ca4; /* Updated background color */
-		color: white; /* White text */
-		padding: 5px 0; /* Smaller padding for a compact footer */
-		font-size: 12px; /* Reduced font size */
-		}
-
-		footer .footer p {
-		margin: 0; /* Removes extra margin for a more compact appearance */
-		}
-
 	   
 	   .newclass img {
 		 max-width: 100%; /* Set the maximum width of the image to 100% of its container */
@@ -356,9 +331,8 @@
 	   
 	   .name-grid cell {
 		   display: grid;
-	   }
-	   
-		</style>     
+	   }  
+	</style>     
 </head>
 <body>
 
@@ -379,14 +353,12 @@
 				<label class="required">Last Name</label>
 				<input type="text" name="last_name" required/>
 			</div>
-			
-			
 		</div>
 
 		{% if roledata == 'BiobankManager' %}
 		<label class="required">Position</label>
 		<select name="position" class="position custom-select" required>
-			<option value="0"> </option>
+			<option value=""> </option>
 			<option value="Science Research Specialist I">Science Research Specialist I</option>
 			<option value="Science Research Specialist II">Science Research Specialist II</option>
 			<option value="University Research Associate I">University Research Associate I</option>
@@ -399,7 +371,7 @@
 		{% elif roledata == 'Researcher' %}
 		<label class="required">Unit</label>
 		<select name="unit" class="unit custom-select" required>
-			<option value="0"></option>
+			<option value=""></option>
 			<option value="Biochemical Genetics Laboratory">Biochemical Genetics Laboratory </option>
 			<option value="Clinical Genetics and Research Unit">Clinical Genetics and Research Unit</option>
 			<option value="Cytogenetics Laboratory">Cytogenetics Laboratory</option>
@@ -410,7 +382,7 @@
 		</select>
 		<label class="required">Position</label>
 		<select name="position" class="position custom-select" required>
-			<option value="0"></option>
+			<option value=""></option>
 			<option value="Research Fellow I">Research Fellow I</option>
 			<option value="Research Fellow II">Research Fellow II</option>
 			<option value="Research Fellow III">Research Fellow III</option>
@@ -421,27 +393,33 @@
 			<option value="Project Technical Specialist II">Project Technical Specialist II</option>
 			<option value="Project Technical Specialist III">Project Technical Specialist III</option>
 		</select>
-		
 		{% endif %}
-		<label class="required">Email</label>
-        <input type="email" name='eml'required/>
-		<label class="required">Mobile Number</label>
-		<div class="mobile-input-container" >
-			<span class="country-code">+63</span>
-			<input type="text" id="mobile_number" name="mobile_number" pattern="\[0-9]{10}" title="Enter 10 digits only." placeholder="9XXXXXXXXX" required />
+
+		<div class="name-grid">
+			<div class="cell">
+				<label class="required">Email</label>
+				<input type="email" name="eml" required/>
+			</div>
+			<div class="cell">
+				<label class="required">Mobile Number</label>
+				<div class="mobile-input-container">
+					<span class="country-code">+63</span>
+					<input type="text" id="mobile_number" name="mobile_number" maxlength="10" placeholder="9XXXXXXXXX" required />
+				</div>
+			</div>			
 		</div>
 
 		<label class="required">Username</label>
-		<input type="text" name="uname" id="username" oninput="toLowerCase(this)" />
+		<input type="text" name="uname" id="username" oninput="toLowerCase(this)" required/>
 		<label class="required">Password</label>
         <input id="password" type="password" name='pwd' pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
 		<label class="required">Confirm Password</label>
         <input  id="confirm_password" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
-
+		
 		<br>
 			<button class="btn btn-primary btn-sm-2" style="background-color: #674FA7;">Register</button>
-			<a href="/">or back to Home</a>			
-
+			
+			<p style="color: rgb(185, 24, 24); font-size: 14px; "><i>Fields marked with an asterisk (*) are required.</i></p>
       </form>
     </div>
     <div class="overlay-container">
@@ -481,7 +459,7 @@
 	function validatePosition() {
 		var position = document.getElementById("position").value;
 		
-		if (position === "0") {
+		if (position === "") {
 			alert("Please select a valid position.");
 			return false; 
 		}
@@ -491,12 +469,40 @@
 	function validateUnit() {
 		var unit = document.getElementById("unit").value;
 		
-		if (unit === "0") {
+		if (unit === "") {
 			alert("Please select a valid unit.");
 			return false; 
 		}
 		return true; 
 	}	
+
+	document.getElementById('mobile_number').addEventListener('input', function (e) {
+        let input = e.target.value;
+
+        // Remove any non-numeric characters
+        input = input.replace(/\D/g, '');
+
+        // Limit the input to 10 digits
+        if (input.length > 10) {
+            input = input.slice(0, 10);
+        }
+
+        // Update the input value
+        e.target.value = input;
+	});
+
+	document.querySelector('form').addEventListener('submit', function(event) {
+        const mobileNumber = document.getElementById('mobile_number').value;
+
+        // Check for valid mobile number
+        if (!/^[9]\d{9}$/.test(mobileNumber)) {
+            // Show alert if invalid
+            alert("Mobile number must start with 9 and be 10 digits long.");
+            event.preventDefault(); // Prevent form submission
+        }
+    });
+
+	
 
 
 </script>

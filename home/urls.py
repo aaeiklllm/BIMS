@@ -3,8 +3,9 @@ from django.urls import path
 from home import views
 
 urlpatterns = [
-    path('', views.homePage, name=''),
+    path('', views.home, name=''),
     path('aboutUs', views.aboutUs, name='aboutUs'),
+     path('admin/home/', views.admin_home, name='admin_home'),
 
     # Create samples
     path('createsample', views.create_sample, name='createsample'),

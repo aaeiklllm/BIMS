@@ -32,7 +32,7 @@ class Storage(models.Model):
     aliquot_id = models.ForeignKey(Aliquot, on_delete=models.CASCADE, null=True, blank=True)
     sample_id = models.ForeignKey(Samples, on_delete=models.CASCADE)
 
-    freezer_num = models.IntegerField(null=True, blank=True)
+    freezer_num = models.CharField(max_length=300, blank=True, null=True)
     shelf_num = models.IntegerField(null=True, blank=True)
     rack_num = models.IntegerField(null=True, blank=True)
     box_num = models.IntegerField(null=True, blank=True)
