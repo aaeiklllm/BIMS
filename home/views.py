@@ -7,7 +7,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 User = get_user_model()
 from accounts.models import UserroleMap 
-
+from .models import Request_Sample, Research_Project, RS_Comorbidities, RS_Lab_Test, RS_Step4, RS_Step5, Approve_Reject_Request, Acknowledgement_Receipt, Acknowledgement_Storage
+from datetime import datetime
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -299,3 +301,273 @@ def sample_detail(request, sample_id):
         'total_aliquots': total_aliquots,
         'aliquots': aliquots,
     })
+
+
+def request_sample(request):
+    # Fetch all research projects from the database
+    research_projects = Research_Project.objects.all()
+
+    if request.method == 'POST':
+        selected_project_id = request.POST.get('existing-project')  # Get selected project ID
+        selected_project = None
+        
+        if selected_project_id:
+            # Fetch the project from the database
+            selected_project = get_object_or_404(Research_Project, id=selected_project_id)
+
+        # Collect Request Sample data
+        erb_approval = request.FILES.get('erb_approval')
+        type_selected = request.POST.get('typeValue')
+        sex = request.POST.get('sex')
+        age = request.POST.get('age')
+        clinical_diagnosis = request.POST.get('clinical_diagnosis')
+        amount = request.POST.get('amount')
+        unit = request.POST.get('unit')
+        desired_start_date = request.POST.get('desired_start_date')
+
+        # Convert the desired_start_date to a date format if it's provided
+        if desired_start_date:
+            try:
+                desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            desired_start_date = None
+
+        if age == '':
+            age = None
+        if amount == '':
+            amount = None
+
+        # Create and save Request Sample instance
+        request_sample = Request_Sample(
+            erb_approval=erb_approval,
+            type=type_selected, 
+            sex=sex,
+            age=age,
+            clinical_diagnosis=clinical_diagnosis,
+            amount=amount,
+            unit=unit,
+            desired_start_date=desired_start_date
+        )
+        request_sample.save()
+
+        # If an existing project was selected, create a duplicate with a new FK
+        if selected_project:
+            # Copy existing project data and associate it with the new request_sample
+            Research_Project.objects.create(
+                request_sample=request_sample,
+                title=selected_project.title,
+                principal_investigator=selected_project.principal_investigator,
+                description=selected_project.description,
+                anticipated_initiation_date=selected_project.anticipated_initiation_date,
+                anticipated_completion_date=selected_project.anticipated_completion_date,
+                erb_number=selected_project.erb_number,
+                funding_source=selected_project.funding_source
+            )
+
+        else:
+            # Collect Research Project data
+            title = request.POST.get('title')
+            principal_investigator = request.POST.get('investigator')
+            description = request.POST.get('description')
+            anticipated_initiation_date = request.POST.get('initiation-date')
+            anticipated_completion_date = request.POST.get('completion-date')
+            erb_number = request.POST.get('erb')
+            funding_source = request.POST.get('funding')
+
+            # Convert anticipated initiation and completion dates if provided
+            if anticipated_initiation_date:
+                try:
+                    anticipated_initiation_date = datetime.strptime(anticipated_initiation_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{anticipated_initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
+                anticipated_initiation_date = None
+
+            if anticipated_completion_date:
+                try:
+                    anticipated_completion_date = datetime.strptime(anticipated_completion_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{anticipated_completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
+                anticipated_completion_date = None
+
+            # Create and save a new Research Project instance with the new request_sample FK
+            Research_Project.objects.create(
+                request_sample=request_sample,
+                title=title,
+                principal_investigator=principal_investigator,
+                description=description,
+                anticipated_initiation_date=anticipated_initiation_date,
+                anticipated_completion_date=anticipated_completion_date,
+                erb_number=erb_number,
+                funding_source=funding_source
+            )
+
+        # Collect and save Comorbidities
+        comorbidities = request.POST.get('comorbidities')
+        if comorbidities:
+            for comorbidity in comorbidities.split(','):
+                comorbidity_instance = RS_Comorbidities(
+                    request_sample = request_sample,
+                    comorbidity=comorbidity.strip()  # Clean any extra spaces
+                )
+                comorbidity_instance.save()
+
+        # Collect and save Lab Tests
+        lab_tests = request.POST.get('lab_tests')
+        if lab_tests:
+            for lab_test in lab_tests.split(','):
+                lab_test_instance = RS_Lab_Test(
+                    request_sample = request_sample,
+                    labtest=lab_test.strip()  # Clean any extra spaces
+                )
+                lab_test_instance.save()
+    
+        # Collect Step4 data
+        multiple_samples = request.POST.get('multiple_samples')
+        time_points = request.POST.get('time_points')
+        interval = request.POST.get('interval')
+        interval_unit = request.POST.get('interval_unit')
+        start_date_ddmmyyyy = request.POST.get('start_date_ddmmyyyy')
+        start_date_mmyyyy = request.POST.get('start_date_mmyyyy')
+        start_date_yyyy = request.POST.get('start_date_yyyy')
+
+        # Validate and parse the start_date_ddmmyyyy
+        if start_date_ddmmyyyy:
+            try:
+                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            start_date_ddmmyyyy = None
+
+        # Ensure 'time_points', 'interval', and 'start_date_yyyy' are None if empty
+        if time_points == '':
+            time_points = None
+        else:
+            time_points = int(time_points) if time_points else None  # Convert to int if not None
+
+        # Initialize interval as None by default
+        if interval == '':
+            interval = None
+        else:
+            try:
+                interval = int(interval)  # Convert to int if provided
+            except ValueError:
+                interval = None  # Handle case where conversion fails
+
+        if start_date_yyyy == '':
+            start_date_yyyy = None
+        else:
+            start_date_yyyy = int(start_date_yyyy) if start_date_yyyy else None  # Convert to int if not None
+
+
+        # Create and save Step4 instance
+        rs_step4 = RS_Step4(
+            request_sample=request_sample,  # Associate with the request sample
+            multiple_samples=multiple_samples, 
+            time_points=time_points,
+            interval=interval,
+            interval_unit=interval_unit,
+            start_date_ddmmyyyy=start_date_ddmmyyyy,
+            start_date_mmyyyy=start_date_mmyyyy,
+            start_date_yyyy=start_date_yyyy,
+        )
+        rs_step4.save()
+
+        # Collect Step5 data
+        different_sources = request.POST.get('different_sources')
+        num_participants = request.POST.get('num_participants')
+        multiple_timepoints_each = request.POST.get('multiple_timepoints_each')
+        time_points = request.POST.get('time_points')
+        interval = request.POST.get('interval')
+        interval_unit = request.POST.get('interval_unit')
+        start_date_ddmmyyyy = request.POST.get('start_date_ddmmyyyy')
+        start_date_mmyyyy = request.POST.get('start_date_mmyyyy')
+        start_date_yyyy = request.POST.get('start_date_yyyy')
+        collection_date_ddmmyyyy = request.POST.get('collection_date_ddmmyyyy')
+        collection_date_mmyyyy = request.POST.get('collection_date_mmyyyy')
+        collection_date_yyyy = request.POST.get('collection_date_yyyy')
+
+        # Validate and parse the start_date_ddmmyyyy
+        if start_date_ddmmyyyy:
+            try:
+                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            start_date_ddmmyyyy = None
+
+        if collection_date_ddmmyyyy:
+            try:
+                collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            collection_date_ddmmyyyy = None
+
+        if num_participants == '':
+            num_participants = None
+        if time_points == '':
+            time_points = None
+        if interval == '':
+            interval = None
+        if start_date_yyyy == '':
+            start_date_yyyy = None
+        if collection_date_yyyy == '':
+            collection_date_yyyy = None
+
+        # Handle the time_points field
+        # If "No" is selected for multiple_timepoints_each, ignore time_points
+        if multiple_timepoints_each == 'no':
+            time_points = None  # Set time_points to None if "No" for multiple time points
+
+        # Create and save Step5 instance
+        rs_step5 = RS_Step5(
+            request_sample=request_sample,  # Associate with the request sample
+            different_sources=different_sources,
+            num_participants=num_participants, 
+            multiple_timepoints_each=multiple_timepoints_each,
+            time_points=time_points,
+            interval=interval,
+            interval_unit = interval_unit,
+            start_date_ddmmyyyy=start_date_ddmmyyyy,
+            start_date_mmyyyy=start_date_mmyyyy,
+            start_date_yyyy=start_date_yyyy, 
+            collection_date_ddmmyyyy=collection_date_ddmmyyyy,
+            collection_date_mmyyyy=collection_date_mmyyyy,
+            collection_date_yyyy=collection_date_yyyy,
+        )
+        rs_step5.save()
+           
+        # Redirect to step 7 with sample_id after saving
+        return redirect('request_sample_step7', sample_id=request_sample.id)
+
+    # For a GET request, render the form page
+    return render(request, 'request_sample.html', {'research_projects': research_projects})
+
+def request_sample_step7(request, sample_id):
+    # Fetch the request sample from the database using the sample_id
+    request_sample = get_object_or_404(Request_Sample, id=sample_id)
+    research_project = Research_Project.objects.filter(request_sample=request_sample).first()
+    comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
+    lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
+    step4_data = RS_Step4.objects.filter(request_sample=request_sample).first()
+    step5_data = RS_Step5.objects.filter(request_sample=request_sample).first()
+
+    # Prepare context with all the fetched data
+    context = {
+        'request_sample': request_sample,
+        'research_project': research_project,
+        'comorbidities': comorbidities,
+        'lab_tests': lab_tests,
+        'step4': step4_data,
+        'step5': step5_data
+    }
+    
+    return render(request, 'request_sample_step7.html', context)
+
+def request_sample_ty(request):
+    return render(request, 'request_sample_ty.html')
