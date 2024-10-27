@@ -1,4 +1,3 @@
-{% extends "base.html" %}
 {% load static %}
 {% block content %}
 <title>Sign In</title>
@@ -7,11 +6,11 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- <style>
- @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+	<style>
+ 	@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
  
- 
- .info-msg,
+ 	.info-msg,
     .success-msg,
     .warning-msg,
     .error-msg {
@@ -140,206 +139,216 @@
 		grid-template-columns: 50% 50%;
 	}
 
-html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      color: #644ca4;
-	  background-color: #fcfcfc;
-    }
-html, body {
-      /* margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      color: #644ca4; */
-    }
+	body {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    min-height: 100vh; /* Ensure the body takes the full height of the viewport */
+    margin: 0; /* Remove default body margin */
+	}
 
-.btn-primary {
-	background-color: #674FA7 !important;
-	border-color: #674FA7 !important;
-	background-color: #674FA7 !important;
-	border-color: #674FA7 !important;
-	color: #FFFFFF;
-	transition: transform 80ms ease-in;
-}
+	.btn-primary {
+		background-color: #674FA7 !important;
+		border-color: #674FA7 !important;
+		background-color: #674FA7 !important;
+		border-color: #674FA7 !important;
+		width: 100%;
+		color: #FFFFFF;
+		transition: transform 80ms ease-in;
+	}
 
-.btn-login {
-	margin: 10px;
-}
+	.btn-login {
+		margin: 10px;
+	}
 
-button:active {
-	transform: scale(0.95);
-}
+	button:active {
+		transform: scale(0.95);
+	}
 
-button:focus {
-	outline: none;
-}
+	button:focus {
+		outline: none;
+	}
 
-button.ghost {
-	background-color: transparent;
-	border-color: #FFFFFF;
-}
+	button.ghost {
+		background-color: transparent;
+		border-color: #FFFFFF;
+	}
 
-form {
-	background-color: #eeeeee;
-	background-color: #eeeeee;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	padding: 0 50px;
-	height: 100%;
-	text-align: center;
-}
+	form {
+		background-color: #eeeeee;
+		background-color: #eeeeee;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		padding: 0 50px;
+		height: 100%;
+		text-align: center;
+	}
 
-input {
-	background-color: #ffffff;
-	border: none;
-	padding: 12px 15px;
-	margin: 8px 0;
-	width: 100%;
-}
+	input {
+		background-color: #ffffff;
+		border: none;
+		padding: 12px 15px;
+		margin: 8px 0;
+		width: 100%;
+	}
 
-.container {
-	background-color: #fff;
-	border-radius: 10px;
-	position: relative;
-	overflow: hidden;
-	width: 768px;
-	max-width: 100%;
-	min-height: 480px;
-	box-shadow: 8px 12px 28px rgba(0,0,0,0.25), 
-			8px 8px 10px rgba(0,0,0,0.22);
-	margin-top: 100px;
-}
+	.container {
+		background-color: #fff;
+		border-radius: 10px;
+		position: relative;
+		overflow: hidden;
+		width: 768px;
+		max-width: 100%;
+		min-height: 480px;
+		box-shadow: 8px 12px 28px rgba(0,0,0,0.25), 
+				8px 8px 10px rgba(0,0,0,0.22);
+		margin: 0px;
+	}
 
-.form-container {
-	position: absolute;
-	top: 0;
-	height: 100%;
-	width: 100%;
-	/* transition: all 0.6s ease-in-out; */
-	background-color: #644ca4 !important;
-}
+	.form-container {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		width: 100%;
+		/* transition: all 0.6s ease-in-out; */
+		background-color: #644ca4 !important;
+	}
 
 
-.sign-in-container {
-	left: 0;
-	width: 60%;
-	z-index: 2;
-	background-color: #644ca4 !important;
-}
+	.sign-in-container {
+		left: 0;
+		width: 60%;
+		z-index: 2;
+		background-color: #644ca4 !important;
+	}
 
-.splash-container {
-	background-color: #ffffff;
-	width: 100%;
-	height: 100%;
-}
 
-.container.right-panel-active .sign-in-container {
-	/* transform: translateX(100%); */
-}
+  /* .sign-in-container {
+    left: 0;
+    width: 60%;
+    z-index: 2;
+    background-color: #644ca4 !important;
+  } */
 
-.sign-in-container {
-	left: 0;
-	width: 60%;
-	z-index: 2;
-	background-color: #644ca4 !important;
-}
+	.splash-container {
+		background-color: #ffffff;
+		width: 100%;
+		height: 100%;
+	}
 
-.container.right-panel-active .sign-up-container {
-	/* transform: translateX(100%); */
-	opacity: 1;
-	z-index: 5;
-	animation: show 0.6s;
-}
+	.container.right-panel-active .sign-in-container {
+		/* transform: translateX(100%); */
+	}
 
-@keyframes show {
-	0%, 49.99% {
+	.sign-up-container {
+		left: 0;
+		width: 50%;
 		opacity: 0;
 		z-index: 1;
+		background-color: #F2EDFC !important;
+		background-color: #F2EDFC !important;
 	}
-	
-	50%, 100% {
+
+	.container.right-panel-active .sign-up-container {
+		/* transform: translateX(100%); */
 		opacity: 1;
 		z-index: 5;
+		animation: show 0.6s;
 	}
-}
 
-.overlay-container {
-	position: absolute;
-	top: 0;
-	left: 60%;
-	width: 40%;
-	height: 100%;
-	overflow: hidden;
-	transition: transform 0.6s ease-in-out;
-	z-index: 100;
-}
+	@keyframes show {
+		0%, 49.99% {
+			opacity: 0;
+			z-index: 1;
+		}
+		
+		50%, 100% {
+			opacity: 1;
+			z-index: 5;
+		}
+	}
 
-.container.right-panel-active .overlay-container{
-	/* transform: translateX(-100%); */
-}
+	.overlay-container {
+		position: absolute;
+		top: 0;
+		left: 60%;
+		width: 40%;
+		height: 100%;
+		overflow: hidden;
+		transition: transform 0.6s ease-in-out;
+		z-index: 100;
+	}
 
-.overlay {
-	background: #F8DD8C;
-	background: -webkit-linear-gradient(to right, #755cb9, #644ca4);
-	background: linear-gradient(to right, #755cb9, #644ca4);
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: 0 0;
-	color: #ffffff;
-	position: relative;
-	left: -100%;
-	height: 100%;
-	width: 200%;
-  	/* transform: translateX(50);
-	transition: transform 0.6s ease-in-out; */
-}
+	.overlay {
+		background: #F8DD8C;
+		background: -webkit-linear-gradient(to right, #755cb9, #644ca4);
+		background: linear-gradient(to right, #755cb9, #644ca4);
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: 0 0;
+		color: #ffffff;
+		position: relative;
+		left: -100%;
+		height: 100%;
+		width: 200%;
+	}
 
-.container.right-panel-active .overlay {
-  	/* transform: translateX(50%); */
-}
+	.overlay-panel {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		padding: 0 40px;
+		text-align: center;
+		top: 0;
+		height: 100%;
+		width: 50%;
+	}
+    
+	.overlay-left {
+		transform: translateX(-60%);
+	}
 
-.overlay-panel {
-	position: absolute;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	padding: 0 40px;
-	text-align: center;
-	top: 0;
-	height: 100%;
-	width: 50%;
-	/* transform: translateX(0);
-	transition: transform 0.6s ease-in-out; */
-}
+	.overlay-right {
+		right: 0;
+	}
 
-.overlay-left {
-	transform: translateX(-60%);
-}
+	.social-container {
+		margin: 20px 0;
+	}
 
-.container.right-panel-active .overlay-left {
-	/* transform: translateX(30); */
-}
+	.social-container a {
+		border: 1px solid #F2EDFC;
+		border: 1px solid #F2EDFC;
+		border-radius: 50%;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		margin: 0 5px;
+		height: 40px;
+		width: 40px;
+	}
 
-.overlay-right {
-	right: 0;
-	/* transform: translateX(0); */
-}
+	.newclass img {
+	max-width: 100%; 
+	height: auto; 
+	}
 
-.container.right-panel-active .overlay-right {
-	/* transform: translateX(20%); */
-}
+	.forgot-password-btn {
+		background: none;
+		border: none;
+		color: #4a90e2; /* Default color */
+		cursor: pointer;
+		text-decoration: underline; /* To keep the underline effect */
+	}
 
-
-.newclass img {
-  max-width: 100%; /* Set the maximum width of the image to 100% of its container */
-  height: auto; /* Ensure the height adjusts proportionally to the width */
-}
+	.forgot-password-btn:hover {
+		color: #1d74c4; /* Change to a darker shade or a different color on hover */
+		text-decoration: none; /* Optional: Remove underline on hover */
+	}
 
 
  </style>   
@@ -348,28 +357,26 @@ input {
 
   <div class="container" id="container">
     <div class="form-container sign-in-container">
-      <p>test</p>
-        <form action="/accounts/adminlogin/" method="post">
-            {% csrf_token %}
-            <h1 style="color: #674FA7;">Login</h1>
-           
-            <input type='text' placeholder="Username" name='eml' required>
-            <input type="password" placeholder="Password" name='pwd' />
-            <button class="btn btn-primary">LOGIN</button>
-			<u>
-                <button type="submit" name="forgot_password" value="1" style="background: none; border: none; color: blue; cursor: pointer;">Forgot Password?</button>
-            </u>
-          </form>
-          {% csrf_token %}
-
+      <form action="/accounts/loginpage/" method="post">
+        {% csrf_token %}
+        <h1 style="color: #674FA7;">Admin Login</h1>
+       
+        <input type='text' placeholder="Username" name='eml' id="username" required>
+        <input type="password" placeholder="Password" name='pwd' />
+		<br>
+        <button class="btn btn-primary">Login</button>
+		<u>
+			<button type="submit" name="forgot_password" value="1" class="forgot-password-btn">Forgot your password?</button>
+		</u>
+		
+      </form>
+      {% csrf_token %}
     </div>
     <div class="form-container sign-up-container">
 		<div class="splash-container">
-
 		</div>
       	<div class="newclass">
     </div>
-	
 	
     </div>
     <div class="overlay-container">
@@ -378,14 +385,10 @@ input {
 			<div>
 			</div>
           <h1>Welcome Back!</h1>
-          <!-- <button class="ghost" id="signIn">Sign In</button> -->
         </div>
 		
         <div class="overlay-panel overlay-right">
 		<h1><div class="d-flex p-2 bd-highlight">Welcome to BIMS!</div></h1>
-		<p style="margin-bottom: 0; font-size: smaller; opacity: 80%;">
-				Log in as an <b>Admin</b>.
-		</p>
         </div>
       </div>
     </div>

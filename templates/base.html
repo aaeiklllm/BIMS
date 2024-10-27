@@ -7,19 +7,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <style>
-        #loginButton{
-            background-color: #ffffff;
-            border-color: #ffffff;
-            color: #644ca4;
-            
-        }
+      #loginButton{
+          background-color: #ffffff;
+          border-color: #ffffff;
+          color: #644ca4;
+          
+      }
 
       header {
         font-family: Helvetica, sans-serif;
@@ -29,137 +29,98 @@
         top: 0;
         left: 0;
         width: 100%;
+      }
+
+      html{
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: #644ca4;
         
       }
 
-    html{
-
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      width: 100vw;
-      margin: 0;
-      padding: 0;
-      color: #644ca4;
-      
-    }
-
-    footer {
-      font-family: Helvetica, sans-serif;
-      color: white;
-      background-color: #644ca4;
-      z-index: 999;
-      display: flex;
-      flex-wrap: auto;
-      margin-top: auto;
-      
-    }
-
-    footer p {
-      margin: 10px 0;
-    }
-
-    footer i {
-        color: red;
-    }
-
-    footer a {
-        color: #3c97bf;
-        text-decoration: none;
-    }
-
-    .btn-primary {
-      background-color: #ffffff !important;
-      border-color: #ffffff !important;
-    }
+      .btn-primary {
+        background-color: #ffffff !important;
+        border-color: #ffffff !important;
+      }
 
 
-        #navbar-custom{
-          background-color: #644ca4;           
-        }
-        #navBar a{
-          transition: transform .2s; /* Animation */
-        }
+      #navbar-custom{
+        background-color: #644ca4;           
+      }
 
-        #navBar a:hover{
-          transform: scale(1.2); 
-        }
+      #navBar a{
+        transition: transform .2s; /* Animation */
+      }
 
-        .nav-item{
-          color: white !important;
-        }
-
-        .row {
-          display: flex;  
-          width: 100%;
-
-        }
-
-        /* #page-footer{
-            position: relative;
-            display: block;
-            padding-top: 80px;
-            padding-bottom: 17px;
-            background-color: white;
-            color: #fff;
-            font-size: 18px;
-            
-           
-        }
-        #page-footer a{
-          text-decoration: none;
-          background-color: none;
-          transition: transform .2s; /* Animation */
-        }*/
-
-      /* #page-footer a:hover{
+      #navBar a:hover{
         transform: scale(1.2); 
       }
-      
-      .footer-menu a{
-          display: inline-block;
-          padding-top: 6px;
-          padding-bottom: 6px;
-          color: white;
-          transition: all .2s ease;
+
+      .nav-item{
+        color: white !important;
       }
-      
-      #page-footer ul{
-        list-style: none;
-      } */
+
+      .row {
+        display: flex;  
+        width: 100%;
+
+      }
         
-    .container-fluid {
-      max-height: 10%;
-    }      
+      .container-fluid {
+        max-height: 10%;
+      }      
+
+      .toast-success {
+        background-color: #270 !important; 
+        color: #fff !important;  
+      } 
 
       .toast-error {
-    background-color: #d9534f !important; 
-    color: #fff !important;  
-  } */
+        background-color: #d9534f !important; 
+        color: #fff !important;  
+      } 
 
-  .toast-top-right {
-    top: 100px; 
-    right: 12px;
-  }
+      footer {
+        background-color: #644ca4 !important; 
+        width: 100%;
+        color: white !important;
+        text-align: center;
+        padding: 5px 0; 
+        font-size: 12px; 
+        margin: 0;
+        left: 0;
+        bottom: 0;
+        position: fixed;
+        z-index: 9999;
+      }
 
-  footer {
-  background-color: #644ca4; /* Updated background color */
-  width: 100%;
-  color: white;
-  text-align: center;
-  padding: 5px 0; /* Smaller padding for a compact footer */
-  font-size: 12px; /* Reduced font size */
-  margin: 0
-}
-
-footer .footer p {
-  margin: 0; /* Removes extra margin for a more compact appearance */
-}
+      footer {
+        font-family: Helvetica, sans-serif;
+        color: white !important;
+        background-color: #644ca4 !important; 
+        z-index: 999;
+        text-align: center !important;
+        display: flex;
+        flex-wrap: auto;
+        font-size: 12px; 
+        margin-top: auto;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        margin: 0;  
+        justify-content: center; 
+      }
     </style>
 </head>
+
 <body>
   <header>
     <div id="navBar">
@@ -168,7 +129,6 @@ footer .footer p {
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <!-- <a class="navbar-brand " href="#" style="font-size: 22px; font-family: Helvetica, sans-serif;"><span style="color: white;"><i class='fas fa-heartbeat fa-1x'></i>&nbsp;BIMS </span></a> -->
           <a class="navbar-brand" href="/" style="font-size: 22px; font-family: Helvetica, sans-serif;">
             <span style="color: white;">
                 <img src="{% static 'BIMS_transparent_new.png' %}" alt="Logo" style="height: 60px; vertical-align: middle; padding-left: 20%;">&nbsp;
@@ -180,7 +140,7 @@ footer .footer p {
                 
                 {% if request.session.role == 'BiobankManager' %}
                 <li class="nav-item">
-                  <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+                  <a class="nav-link active" href="/accounts/biobankmanager/home/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
                 </li> 
 
                 <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
@@ -207,13 +167,13 @@ footer .footer p {
                   <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Generate Reports</button></a>
                 </li>       
                 <li class="nav-item">
-                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important;">Logout</button></a>
-                </li>       
+                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: white !important; border-color:white !important; color: black !important;">Logout</button></a>
+                </li>     
 
 
                 {% elif request.session.role == 'Researcher' %}
                 <li class="nav-item">
-                  <a class="nav-link active" href="/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+                  <a class="nav-link active" href="/accounts/researcher/home/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
                 </li> 
 
                 <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
@@ -233,29 +193,36 @@ footer .footer p {
                 <li class="nav-item">
                   <a class="nav-link active" href="/requestsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Request Sample</button></a>
                 </li>
+
                 <li class="nav-item">
-                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important; ">Logout</button></a>
+                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: white !important; border-color:white !important; color: black !important;">Logout</button></a>
                 </li>
+                
 
                 {% elif request.session.role == 'Admin' %}
-                <li class="nav-item">
-                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: #F2C434 !important; border-color: #767C80 !important; ">Logout</button></a>
-                </li>
+                
+                <ul class="nav">
+                  <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'creation_requests' %}active{% endif %}" href="{% url 'creation_requests' %}" style="position: relative;">
+                      <button type="button" class="btn btn-sm-2" style="background-color: #ffffff !important; border-color: #767C80 !important;">
+                        Account Creation Requests
+                      </button>
+                      <span class="badge bg-danger" style="position: absolute; top: 1px; right: -2px;">{{ creation_request_count }}</span>
+                    </a>
+                  </li>
+                
+                  <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'deletion_requests' %}active{% endif %}" href="{% url 'deletion_requests' %}" style="position: relative;">
+                      <button type="button" class="btn btn-sm-2" style="background-color: #ffffff !important; border-color: #767C80 !important;">
+                        Account Deletion Requests
+                      </button>
+                      <span class="badge bg-danger" style="position: absolute; top: 1px; right: -2px;">{{ deletion_request_count }}</span>
+                    </a>
+                  </li>
+                </ul>
 
                 <li class="nav-item">
-                  <a class="nav-link active" href="{% url 'creation_requests' %}" style="position: relative;">
-                      <button type="button" class="btn btn-sm-2 {% if request.path == '/creation_requests/' %}active{% endif %}" style="background-color: #ffffff !important; border-color: #767C80 !important; position: relative;">
-                          Account Creation Requests</button>
-                      <span class="badge bg-danger" style="position: absolute; top: 1px; right: -2px;">{{ creation_request_count }}</span>
-                  </a>
-              </li>
-              
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'deletion_requests' %}" style="position: relative;">
-                        <button type="button" class="btn btn-sm-2 {% if request.path == '/deletion_requests/' %}active{% endif %}" style="background-color: #ffffff !important; border-color: #767C80 !important; position: relative;">
-                          Account Deletion Requests</button>
-                        <span class="badge bg-danger" style="position: absolute; top: 1px; right: -2px;">{{ deletion_request_count }}</span>
-                    </a>
+                  <a class="nav-link active" href="/accounts/logout"><button type="button" class="btn btn-sm-2" id="loginButton" style="background-color: white !important; border-color:white !important; color: black !important;">Logout</button></a>
                 </li>
 
                 {% else %}
@@ -279,111 +246,48 @@ footer .footer p {
       </nav>
     </div>
   </header>
-    <script>
-  toastr.options = {
-    "closeButton": false,
-    "debug": false,
-    "newestOnTop": false,
-    "progressBar": true,
-    "positionClass": "toast-top-right",
-    "preventDuplicates": false,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-  };
+  <script>
 
-  {% if messages %}
-      {% for message in messages %}
-          var toastrType = "";
-          if ("{{ message.tags }}" === "alert-success") {
-              toastrType = "success";
-          } else if ("{{ message.tags }}" === "alert-info") {
-              toastrType = "info";
-          } else if ("{{ message.tags }}" === "alert-warning") {
-              toastrType = "warning";
-          } else if ("{{ message.tags }}" === "alert-danger") {
-              toastrType = "error";
-          }
-          toastr[toastrType]("{{ message|escapejs }}");
-      {% endfor %}
-  {% endif %}
-</script>
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-bottom-left",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    };
 
-    
-  
-    {% block content %}
-    {% endblock %}
+    {% if messages %}
+        {% for message in messages %}
+            var toastrType = "";
+            if ("{{ message.tags }}" === "alert-success") {
+                toastrType = "success";
+            } else if ("{{ message.tags }}" === "alert-info") {
+                toastrType = "info";
+            } else if ("{{ message.tags }}" === "alert-warning") {
+                toastrType = "warning";
+            } else if ("{{ message.tags }}" === "alert-danger") {
+                toastrType = "error";
+            }
+            toastr[toastrType]("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+  </script>
 
-    <footer class="text-center mt-auto">
-      <div class="footer">
-        <p>&copy; 2024 BIMS. All Rights Reserved. | techassist.bims@gmail.com</p>
-      </div>
-    </footer>
-    
-    <!-- <footer class="page-footer" id="page-footer">
-        <div class="container">
-          <div class="row px-md-3">
-            <div class="col-sm-6 col-lg-3 py-3">
-              
-              <ul class="footer-menu" id="footer-menu">
-                <h3>Company</h3>
-                <li><a href="/aboutUs">About Us</a></li>
-                <li><a href="#">Career</a></li>
-                <li><a href="#">Editorial Team</a></li>
-                <li><a href="#">Protection</a></li>
-              </ul>
-            </div>
-            <div class="col-sm-6 col-lg-3 py-3">
-              <ul class="footer-menu">
-                <h3>More</h3>
-                <li><a href="#">Terms & Condition</a></li>
-                <li><a href="#">Privacy</a></li>
-                <li><a href="#">Advertise</a></li>
-                <li><a href="#">Join as Doctors</a></li>
-              </ul>
-            </div>
-            <div class="col-sm-6 col-lg-3 py-3">
-             <ul class="footer-menu" style="text-decoration: none;">
-                <h3>Our partner</h3>
-                <li><a href="#">One-Fitness</a></li>
-                <li><a href="#">One-Drugs</a></li>
-                <li><a href="#">One-Live</a></li>
-              </ul>
-            </div>
-            <div class="col-sm-6 col-lg-3 py-3">
-              <h3>Contact</h3>
-              <p class="footer-link mt-3">351 Willow Street Franklin, MA 02038</p>
-              <p>701-573-7582</p>
-              <p>healthcare@temporary.net</p>
-    
-              <div class="social mt-2 mb-3 socialCustom">
-                 <h5>Social Media
-                  <i class="fa fa-facebook-official fa-lg zoomOut"></i>
-                  <i class="fa fa-instagram fa-lg zoomOut"></i>
-                  <i class="fa fa-twitter fa-lg zoomOut"></i> 
-                  <i class="fa fa-linkedin-square fa-lg zoomOut"></i>
-                 </h5>
-                  
-                 
-            </div>
-          </div>
-    
-          <hr>
-          <p id="copyright" style="text-align: center;">Copyright &copy; 2024 Mend. All right reserved</p>
-        </div>
+  {% block content %}
+  {% endblock %}
 
-      </footer> 
-</body>
-  <footer class="page-footer" id="page-footer">
-    <div class="row">
-      <p id="copyright">Copyright &copy; 2024 BIMS. All right reserved</p>
-      <p>bims@test.com</p>
+  <footer class="text-center mt-auto">
+    <div class="footer">
+       2024 BIMS. All Rights Reserved. | techassist.bims@gmail.com
     </div>
   </footer>
-</html>

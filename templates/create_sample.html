@@ -176,6 +176,11 @@
             text-align: center;
             font-size: 12px;
         }
+        .required::after {
+			content: " *";
+			color: rgb(185, 24, 24);
+			font-size: 14px;
+	    }
     </style>
 </head>
 
@@ -203,11 +208,11 @@
 
             <div class="mb-3">
                 <label for="sample_id" class="form-label">Sample ID:</label>
-                <input type="text" class="form-control" id="sample_id" name="sample_id" value="000001" readonly>
+                <input type="text" class="form-control" id="sample_id" name="sample_id" readonly>
             </div>      
 
             <div class="dropdown mb-2">
-                <label for="type" class="form-label">Type:</label>
+                <label for="type" class="form-label required">Type:</label>
                 <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" readonly onclick="toggleDropdown()">
                 
                 <input type="hidden" id="typeValue" name="typeValue">
@@ -246,22 +251,22 @@
                 </div>
             </div>
             <div class="mb-3 d-flex align-items-center">
-                <label class="form-label me-2">Sex:</label>
+                <label class="form-label me-2 required">Sex:</label>
                 <div class="form-check me-2">
-                    <input class="form-check-input" type="radio" name="sex" id="male" value="Male">
+                    <input class="form-check-input" type="radio" name="sex" id="male" value="Male" required >
                     <label class="form-check-label" for="male">Male</label>
                 </div>
                 <div class="form-check me-2">
-                    <input class="form-check-input" type="radio" name="sex" id="female" value="Female">
+                    <input class="form-check-input" type="radio" name="sex" id="female" value="Female" required>
                     <label class="form-check-label" for="female">Female</label>
                 </div>
-                <label class="form-label" style="margin-left: 100px">Age:</label>
-                <input type="number" class="form-control" id="age" name="age" min="0" style="width: 80px; margin-left: 10px;">
+                <label class="form-label required" style="margin-left: 100px">Age:</label>
+                <input type="number" class="form-control" id="age" name="age" min="0" style="width: 80px; margin-left: 10px;" required>
             </div>
 
             <div class="mb-3">
-                <label for="clinical_diagnosis" class="form-label">Clinical Diagnosis:</label>
-                <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis">
+                <label for="clinical_diagnosis" class="form-label required">Clinical Diagnosis:</label>
+                <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis" required>
                     <option value="">Select Clinical Diagnosis</option>
                     <option value="Alzheimer's Disease">Alzheimer's Disease</option>
                     <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
@@ -314,8 +319,10 @@
                 <input type="text" id="other_diagnosis" name="other_diagnosis" class="form-control mt-2" placeholder="Specify if Others" style="display:none;">
             </div>
 
+             <!-- Comorbidities -->
+
             <div class="mb-3">
-                <label for="comorbidities" class="form-label">Comorbidities:</label>
+                <label for="comorbidities" class="form-label required">Comorbidities:</label>
                 <div class="d-flex align-items-center">
                     <select class="form-select me-2" id="comorbidity_select">
                         <option value="">Select Comorbidity</option>
@@ -372,37 +379,176 @@
                 <div id="added_comorbidities" class="mt-2"></div>
             </div>
 
-            <!-- Comorbidities -->
             <div id="added_comorbidities" class="mt-2"></div>
             <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
 
-            <div class="mb-3">
-                <label for="lab_tests" class="form-label">Lab Tests:</label>
-                <div class="d-flex align-items-center">
-                    <select class="form-select me-2" id="lab_test_select">
-                        <option value="">Select Lab Test</option>
-                        <option value="Blood Test">Blood Test</option>
-                        <option value="CT Scan">CT Scan</option>
-                        <option value="MRI">MRI</option>
-                        <option value="Others">Other (specify)</option>
-                    </select>
-                    <input type="text" class="form-control free-text-input" id="lab_test_other" placeholder="Specify other">
-                    <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
+            <!-- Lab Test -->
+            <div class="dropdown mb-2">
+                <label for="lab_tests" class="form-label required">Lab Tests:</label>
+                <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+                
+                <div id="lab-tests-dropdown" class="dropdown-content">
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
+                    </div>   
+                    <div class="nested-dropdown">
+                        <a href="#">Blood Chemistry Panel</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('Glucose')">Glucose</a>
+                            <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                            <a href="#" onclick="selectLabTest('Creatinine')">Creatinine</a>
+                            <a href="#" onclick="selectLabTest('Electrolytes (Sodium, Potassium, Chloride)')">Electrolytes (Sodium, Potassium, Chloride)</a>
+                            <a href="#" onclick="selectLabTest('Calcium')">Calcium</a>
+                            <a href="#" onclick="selectLabTest('Albumin')">Albumin</a>
+                        </div>
+                    </div>  
+                    <div class="nested-dropdown">
+                        <a href="#">Lipid Profile</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('Total Cholesterol')">Total Cholesterol</a>
+                            <a href="#" onclick="selectLabTest('HDL (High-Density Lipoprotein)')">HDL (High-Density Lipoprotein)</a>
+                            <a href="#" onclick="selectLabTest('LDL (Low-Density Lipoprotein)')">LDL (Low-Density Lipoprotein)</a>
+                            <a href="#" onclick="selectLabTest('Triglycerides')">Triglycerides</a>
+                        </div>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Hemoglobin A1c (HbA1c)')">Hemoglobin A1c (HbA1c)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Fasting Blood Sugar (FBS)')">Fasting Blood Sugar (FBS)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Oral Glucose Tolerance Test (OGTT)')">Oral Glucose Tolerance Test (OGTT)</a>
+                    </div>                    
+                    <div class="nested-dropdown">
+                        <a href="#">Thyroid Function Tests</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('T3 (Triiodothyronine)')">T3 (Triiodothyronine)</a>
+                            <a href="#" onclick="selectLabTest('T4 (Thyroxine)')">T4 (Thyroxine)</a>
+                            <a href="#" onclick="selectLabTest('TSH (Thyroid Stimulating Hormone)')">TSH (Thyroid Stimulating Hormone)</a>
+                        </div>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#">Kidney Function Tests</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('Serum Creatinine')">Serum Creatinine</a>
+                            <a href="#" onclick="selectLabTest('Estimated Glomerular Filtration Rate (eGFR)')">Estimated Glomerular Filtration Rate (eGFR)</a>
+                            <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                            <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
+                        </div>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#">Liver Function Tests</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('ALT (Alanine Aminotransferase)')">ALT (Alanine Aminotransferase)</a>
+                            <a href="#" onclick="selectLabTest('AST (Aspartate Aminotransferase)')">AST (Aspartate Aminotransferase)</a>
+                            <a href="#" onclick="selectLabTest('ALP (Alkaline Phosphatase)')">ALP (Alkaline Phosphatase)</a>
+                            <a href="#" onclick="selectLabTest('Bilirubin')">Bilirubin</a>
+                        </div>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#">Cardiac Enzyme Tests</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('Troponin')">Troponin</a>
+                            <a href="#" onclick="selectLabTest('Creatine Kinase-MB (CK-MB)')">Creatine Kinase-MB (CK-MB)</a>
+                        </div>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#">Coagulation Profile</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('Prothrombin Time (PT)')">Prothrombin Time (PT)</a>
+                            <a href="#" onclick="selectLabTest('Partial Thromboplastin Time (PTT)')">Partial Thromboplastin Time (PTT)</a>
+                            <a href="#" onclick="selectLabTest('INR (International Normalized Ratio)')">INR (International Normalized Ratio)</a>
+                        </div>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Electrocardiogram (ECG/EKG)')">Electrocardiogram (ECG/EKG)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Echocardiogram')">Echocardiogram</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Chest X-ray')">Chest X-ray</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Abdominal Ultrasound')">Abdominal Ultrasound</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Bone Mineral Density Test (DEXA)')">Bone Mineral Density Test (DEXA)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('CT Scan (Computed Tomography)')">CT Scan (Computed Tomography)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('MRI (Magnetic Resonance Imaging)')">MRI (Magnetic Resonance Imaging)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Blood Culture')">Blood Culture</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Sputum Culture')">Sputum Culture</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Stool Analysis')">Stool Analysis</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Pap Smear')">Pap Smear</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Prostate-Specific Antigen (PSA)')">Prostate-Specific Antigen (PSA)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('HIV Test')">HIV Test</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Hepatitis B Test')">Hepatitis B Test</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Hepatitis C Test')">Hepatitis C Test</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Tuberculosis Skin Test (Mantoux Test)')">Tuberculosis Skin Test (Mantoux Test)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Dengue NS1 Antigen Test')">Dengue NS1 Antigen Test</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Blood Typing and Crossmatching')">Blood Typing and Crossmatching</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('C-Reactive Protein (CRP)')">C-Reactive Protein (CRP)</a>
+                    </div>
+                    <div class="nested-dropdown">
+                        <a href="#" onclick="selectLabTest('Erythrocyte Sedimentation Rate (ESR)')">Erythrocyte Sedimentation Rate (ESR)</a>
+                    </div>                    
+                    <div class="nested-dropdown">
+                        <a href="#">Immunological Tests</a>
+                        <div class="nested-dropdown-content">
+                            <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
+                            <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
+                        </div>
+                    </div>
+                    <div class="nested-dropdown">
+                        <input type="text" id="lab_test_other" placeholder="Specify other" onchange="captureOtherInputs()">
+                    </div> 
                 </div>
-                <div id="added_lab_tests" class="mt-2"></div>
             </div>
-
-            <!-- Lab Tests -->
+            
             <div id="added_lab_tests" class="mt-2"></div>
             <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
+            
+            
 
             <div class="row">
                 <div class="col-md-6">
-                    <label for="amount" class="form-label">Amount:</label>
-                    <input type="number" class="form-control" id="amount" name="amount" step="0.01">
+                    <label for="amount" class="form-label required">Amount:</label>
+                    <input type="number" class="form-control" id="amount" name="amount" step="0.01" value='0' required>
                 </div>
                 <div class="col-md-6">
-                    <label for="unit" class="form-label">Unit:</label>
+                    <label for="unit" class="form-label required">Unit:</label>
                     <select class="form-select" id="unit" name="unit">
                         <option value="mL">mL</option>
                         <option value="uL">µL</option>
@@ -412,33 +558,33 @@
             </div>
             <br>
             <div class="mb-3">
-                <label for="date_collected" class="form-label">Date Collected:</label>
-                <input type="date" class="form-control" id="date_collected" name="date_collected">
+                <label for="date_collected" class="form-label required">Date Collected:</label>
+                <input type="date" class="form-control" id="date_collected" name="date_collected" required>
             </div>
             
                 <div class="mb-3">
-                    <label for="freezer" class="form-label">Under-counter ULT Freezer:</label>
+                    <label for="freezer" class="form-label required">Freezer:</label>
                     <select class="form-select" id="freezer" name="freezer_num">
-                        <option value="1">Freezer 1</option>
-                        <option value="2">Freezer 2</option>
+                        <option value="Under-counter ULT Freezer 1">Under-counter ULT Freezer 1</option>
+                        <option value="Under-counter ULT Freezer 2">Under-counter ULT Freezer 2</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="shelf" class="form-label">Shelf No.:</label>
+                    <label for="shelf" class="form-label required">Shelf No.:</label>
                     <select class="form-select" id="shelf" name="shelf_num">
                         <option value="1">Shelf No. 1</option>
                         <option value="2">Shelf No. 2</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="rack" class="form-label">Rack No.:</label>
+                    <label for="rack" class="form-label required">Rack No.:</label>
                     <select class="form-select" id="rack" name="rack_num">
                         <option value="1">Rack No. 1</option>
                         <option value="2">Rack No. 2</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="box" class="form-label">Box No.:</label>
+                    <label for="box" class="form-label required">Box No.:</label>
                     <select class="form-select" id="box" name="box_num">
                         <option value="1">Box No. 1</option>
                         <option value="2">Box No. 2</option>
@@ -446,7 +592,7 @@
                 </div>
                
                 <!-- Container Selection (10x10 Grid) -->
-                <label class="form-label">Container No.:</label>
+                <label class="form-label required">Container No.:</label>
                 <input type="hidden" id="container-input" name="container" value="">
                 <div class="container-grid">
                     <div id="container-grid" class="grid-container">
@@ -461,9 +607,9 @@
 
 
             <div class="mb-3">
-                <label for="consent_form" class="form-label">Informed Consent Form (.pdf)</label>
+                <label for="consent_form" class="form-label required">Informed Consent Form (.pdf)</label>
                 <!-- File input for uploading the file -->
-                <input type="file" class="form-control" id="consent_form" name="consent_form" accept=".pdf" onchange="handleFileChange()">
+                <input type="file" class="form-control" id="consent_form" name="consent_form" accept=".pdf" onchange="handleFileChange()" required>
                     
                 <!-- Area to display the selected file name and action buttons -->
                 <div id="file-info" class="mt-2" style="display: none;">
@@ -473,15 +619,13 @@
             </div>
 
             <button type="submit" class="btn btn-success">Save Sample</button>
-            <span> or                
-            <button type="button" class="btn btn-link" style="color: #007bff; cursor: pointer; border: none; background: none; padding: 0;" onclick="resetForm()">
-            Reset</button></span>
+            
         </form>
         <form method="post" enctype="multipart/form-data" action="{% url 'createaliquot' %}" id="create-aliquot-form" style="display: none;">
             {% csrf_token %}
             
             <div class="mb-3">
-                <label for="previous_sample_id" class="form-label">Select Existing Sample ID:</label>
+                <label for="previous_sample_id" class="form-label required">Select Existing Sample ID:</label>
                 <select id="previous_sample_id" class="form-control mt-2" name="previous_sample_id" required>
                     <option value="">Select a Sample ID</option>
                 </select>
@@ -489,38 +633,38 @@
     
             <div class="row">
                 <div class="col-md-6">
-                    <label for="amount2" class="form-label">Amount:</label>
-                    <input type="number" class="form-control" id="amount2" name="amount2" step="0.01">
+                    <label for="amount2" class="form-label required">Amount:</label>
+                    <input type="number" class="form-control" id="amount2" name="amount2" step="0.01" value="0" required>
                 </div>
                 <div class="col-md-6">
-                    <label for="unit2" class="form-label">Unit:</label>
+                    <label for="unit2" class="form-label required">Unit:</label>
                     <input type="text" id="unit2" name="unit2" class="form-control" readonly>
                 </div>
             </div>
             
             <div class="mb-3">
-                <label for="freezer2" class="form-label">Under-counter ULT Freezer:</label>
+                <label for="freezer2" class="form-label required">Freezer:</label>
                 <select class="form-select" id="freezer2" name="freezer_num2">
-                    <option value="1">Freezer 1</option>
-                    <option value="2">Freezer 2</option>
+                    <option value="Under-counter ULT Freezer 1">Under-counter ULT Freezer 1</option>
+                    <option value="Under-counter ULT Freezer 2">Under-counter ULT Freezer 2</option>
                 </select>
             </div>
             <div class="mb-3">
-                <label for="shelf2" class="form-label">Shelf No.:</label>
+                <label for="shelf2" class="form-label required">Shelf No.:</label>
                 <select class="form-select" id="shelf2" name="shelf_num2">
                     <option value="1">Shelf No. 1</option>
                     <option value="2">Shelf No. 2</option>
                 </select>
             </div>
             <div class="mb-3">
-                <label for="rack2" class="form-label">Rack No.:</label>
+                <label for="rack2" class="form-label required">Rack No.:</label>
                 <select class="form-select" id="rack2" name="rack_num2">
                     <option value="1">Rack No. 1</option>
                     <option value="2">Rack No. 2</option>
                 </select>
             </div>
             <div class="mb-3">
-                <label for="box2" class="form-label">Box No.:</label>
+                <label for="box2" class="form-label required">Box No.:</label>
                 <select class="form-select" id="box2" name="box_num2">
                     <option value="1">Box No. 1</option>
                     <option value="2">Box No. 2</option>
@@ -528,7 +672,7 @@
             </div>
             
             <!-- Container Selection (10x10 Grid) -->
-            <label class="form-label">Container No.:</label>
+            <label class="form-label required">Container No.:</label>
             <input type="hidden" id="container-input2" name="container2" value="">
             <div class="container-grid2">
                 <div id="container-grid2" class="grid-container2">
@@ -549,6 +693,28 @@
        
     // Dynamically generate 10x10 grid for container selection
     document.addEventListener('DOMContentLoaded', function () {
+       
+        document.getElementById("create-sample-form").addEventListener("submit", function(event) {
+            const typeValue = document.getElementById("typeValue").value;
+            const comorbiditiesValue = document.getElementById("comorbidities_input").value;
+            const LabTestValue = document.getElementById("lab_tests_input").value;
+            const storageValue = document.getElementById("selectedStorage").value;
+
+            if (!typeValue || !comorbiditiesValue || !LabTestValue || !storageValue) {
+                alert("Please complete required fields.");
+                event.preventDefault();
+            }
+        }); 
+
+        document.getElementById("create-aliquot-form").addEventListener("submit", function(event) {
+            const storageValue = document.getElementById("selectedStorage2").value;
+
+            if (!storageValue) {
+                alert("Please complete required fields.");
+                event.preventDefault();
+            }
+        }); 
+
         // Fetch the latest sample ID from the server
         fetch('{% url "latest_sample_id" %}')
             .then(response => response.json())
@@ -643,7 +809,7 @@
         function selectContainer(containerNo) {
             selectedContainer = containerNo;
             document.getElementById("container-input").value = selectedContainer; // Set hidden input value
-            alert('Selected Container: ' + selectedContainer); // Visual feedback
+            // alert('Selected Container: ' + selectedContainer); // Visual feedback
             const freezer = document.getElementById('freezer').value;
             const shelf = document.getElementById('shelf').value;
             const rack = document.getElementById('rack').value;
@@ -677,7 +843,7 @@
         function selectContainer2(containerNo2) {
             selectedContainer2 = containerNo2;
             document.getElementById("container-input2").value = selectedContainer2; // Set hidden input value
-            alert('Selected Container: ' + selectedContainer2); // Visual feedback
+            // alert('Selected Container: ' + selectedContainer2); // Visual feedback
             const freezer2 = document.getElementById('freezer2').value;
             const shelf2= document.getElementById('shelf2').value;
             const rack2 = document.getElementById('rack2').value;
@@ -689,8 +855,9 @@
         }
 
         const addedComorbidities = new Set(); // Set to track added comorbidities
-        const addedLabTests = new Set(); // Set to track added lab tests
+        // const addedLabTests = new Set(); // Set to track added lab tests
 
+        // Commorbidities
         function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
             const select = document.getElementById(selectId);
             const otherInput = document.getElementById(otherInputId);
@@ -700,21 +867,21 @@
             const otherValue = otherInput.value.trim();
 
             if (selectedValue === "") {
-                alert("Please select an item.");
+                alert("Please select a commorbidity.");
                 return;
             }
 
             let valueToAdd = selectedValue === 'Others' ? (otherValue === "" ? null : otherValue) : selectedValue;
 
             if (!valueToAdd) {
-                alert("Please specify the item.");
+                alert("Please specify the commorbidity.");
                 return;
             }
 
             // Check if the item already exists
             const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
             if (existingValues.includes(valueToAdd)) {
-                alert("This item has already been added.");
+                alert("This commorbidity has already been added.");
                 return;
             }
 
@@ -737,9 +904,9 @@
             addItem('comorbidity_select', 'comorbidity_other', 'added_comorbidities', 'comorbidities_input');
         });
 
-        document.getElementById('add_lab_test').addEventListener('click', function() {
-            addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
-        });
+        // document.getElementById('add_lab_test').addEventListener('click', function() {
+        //     addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
+        // });
 
 
         // Remove item functionality
@@ -749,11 +916,6 @@
                 item.remove();
 
                 updateHiddenInput();
-
-                // // Update the hidden input values
-                // const hiddenInput = document.getElementById(item.dataset.hiddenInputId);
-                // const items = Array.from(document.querySelectorAll('.added-item')).map(i => i.textContent.trim());
-                // hiddenInput.value = items.join(',');
             }
         }
 
@@ -794,8 +956,9 @@
 
     // Function to select an option and update units dynamically
     function selectOption(option, category) {
-        document.getElementById("selectedOption").value = option;
-        document.getElementById('typeValue').value = option; 
+        category = category.charAt(0).toUpperCase() + category.slice(1);
+        document.getElementById("selectedOption").value = category + ' - ' + option;
+        document.getElementById('typeValue').value = category + ' - ' + option; 
         updateUnitOptions(category, option);
         document.getElementById("type-dropdown").classList.remove("show");
     }
@@ -803,13 +966,15 @@
 
     // Capture the input in the "Other" field and update the display
     function captureOtherInput(type) {
-        const otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
+        let otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
         const selectedType = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize the first letter of the type
         if (otherValue) {
+            otherValue = otherValue.charAt(0).toUpperCase() + otherValue.slice(1);
             // Combine the type and the specified other value
             document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
             document.getElementById("typeValue").value = selectedType + " - " + otherValue; // Set the hidden input value as well
         }
+        updateUnitOptions(selectedType, otherValue);
     }
 
     // Function to show the "Other" input field
@@ -825,16 +990,16 @@
         const amountUnitSelect = document.getElementById('unit');
         amountUnitSelect.innerHTML = ''; // Clear existing options
 
-        if (category === 'molecular') {
+        if (category === 'Molecular') {
             amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
-        } else if (category === 'blood') {
+        } else if (category === 'Blood') {
             if (option === 'Whole Blood') {
                 amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
             } else {
                 amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
                 amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
             }
-        } else if (category === 'tissue') {
+        } else if (category === 'Tissue') {
             amountUnitSelect.innerHTML += '<option value="slides">Slides</option>';
             amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
         }
@@ -848,6 +1013,67 @@
         }
     }
 
+
+    // Lab Tests
+    let selectedLabTests = []; // To store added lab tests
+
+    document.getElementById('add_lab_test').addEventListener('click', function() {
+        updateAddedLabTests();
+    });
+
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle("show");
+    }
+
+    function selectLabTest(test) {
+        if (selectedLabTests.includes(test)) {
+            alert("This lab test has already been added.");
+        } else {
+            selectedLabTests.push(test);
+            updateAddedLabTests();
+        }
+    }
+
+    function captureOtherInputs() {
+        let otherValue = document.getElementById('lab_test_other').value.trim();
+        if (otherValue !== "") {
+            otherValue = otherValue.charAt(0).toUpperCase() + otherValue.slice(1);
+
+            if (selectedLabTests.includes(otherValue)) {
+                alert("This lab test has already been added.");
+            } else {
+                selectedLabTests.push(otherValue);
+                updateAddedLabTests();
+            }
+        }
+    }
+
+    selectedLabTests
+
+    function updateAddedLabTests() {
+        const addedLabTestsContainer = document.getElementById('added_lab_tests');
+        
+        // Clear existing items
+        addedLabTestsContainer.innerHTML = ''; 
+
+        // Display added items
+        selectedLabTests.forEach(test => {
+            const item = document.createElement('div');
+            item.classList.add('added-item');
+            item.innerHTML = `<span>${test}</span><span class="remove-btn" onclick="removeLabTest('${test}')">X</span>`;
+            addedLabTestsContainer.appendChild(item);
+        });
+
+        // Update hidden input field
+        document.getElementById('lab_tests_input').value = selectedLabTests.join(',');
+    }
+
+    function removeLabTest(test) {
+        selectedLabTests = selectedLabTests.filter(item => item !== test);
+        updateAddedLabTests();
+    }
+
     function resetForm() {
         removeFile();
         document.getElementById('create-sample-form').reset();  
@@ -855,6 +1081,7 @@
         document.getElementById('added_comorbidities').innerHTML = '';  
         updateHiddenInput(); 
     }
+
     </script>
 </body>
 {% endblock %}
