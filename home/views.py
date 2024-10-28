@@ -10,6 +10,7 @@ from accounts.models import UserroleMap
 from .models import Request_Sample, Research_Project, RS_Comorbidities, RS_Lab_Test, RS_Step4, RS_Step5, Approve_Reject_Request, Acknowledgement_Receipt, Acknowledgement_Storage
 from datetime import datetime
 from django.core.exceptions import ValidationError
+from django.contrib import messages 
 
 # Create your views here.
 
@@ -301,6 +302,98 @@ def sample_detail(request, sample_id):
         'total_aliquots': total_aliquots,
         'aliquots': aliquots,
     })
+
+def edit_sample(request, sample_id):
+    # Fetch the existing sample and its related data
+    sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
+
+    if request.method == "POST":
+        # Collect Sample data from the form
+        type_selected = request.POST.get('typeValue', sample.type)
+        sex = request.POST.get('sex', sample.sex)
+        age = request.POST.get('age', sample.age)
+        clinical_diagnosis = request.POST.get('clinical_diagnosis', sample.clinical_diagnosis)
+        amount = request.POST.get('amount', sample.amount)
+        unit = request.POST.get('unit', sample.unit)
+        date_collected = request.POST.get('date_collected', sample.date_collected)
+        consent_form = request.FILES.get('consent_form')
+
+        # Update the existing sample instance instead of creating a new one
+        sample.type = type_selected
+        sample.sex = sex
+        sample.age = age
+        sample.clinical_diagnosis = clinical_diagnosis
+        sample.amount = amount
+        sample.unit = unit
+        sample.date_collected = date_collected
+        
+        # Update the consent form only if a new file is uploaded
+        if consent_form:
+            sample.consent_form = consent_form
+
+        # Save the updated sample instance
+        sample.save()
+
+        # Update Comorbidities
+        comorbidities = request.POST.get('comorbidities', '')
+        
+        # Clear existing comorbidities
+        sample.comorbidities_set.all().delete()  # Clear existing entries if you want to replace them
+
+        # Add new comorbidities
+        if comorbidities:
+            for comorbidity in comorbidities.split(','):
+                comorbidity_instance = Comorbidities(
+                    sample_id=sample,
+                    comorbidity=comorbidity.strip()  # Clean any extra spaces
+                )
+                comorbidity_instance.save()
+
+        # Update Lab Tests
+        lab_tests = request.POST.get('lab_tests', '')
+
+        # Clear existing lab tests
+        sample.lab_test_set.all().delete()  # Clear existing entries if you want to replace them
+
+        # Add new lab tests
+        if lab_tests:
+            for lab_test in lab_tests.split(','):
+                lab_test_instance = Lab_Test(
+                    sample_id=sample,
+                    labtest=lab_test.strip()  # Clean any extra spaces
+                )
+                lab_test_instance.save()
+
+        messages.success(request, "Sample information updated successfully.")
+        # Get all related storage details
+        first_storage_info = sample.storage_set.first()
+        
+        # Get total number of aliquots for the sample
+        total_aliquots = sample.aliquot_set.count()
+        
+        # Get individual aliquots and their associated storage
+        aliquots = sample.aliquot_set.prefetch_related('storage_set').all()
+
+        return render(request, 'sample_detail.html', {
+            'sample': sample,
+            'first_storage_info': first_storage_info,
+            'total_aliquots': total_aliquots,
+            'aliquots': aliquots,
+        })
+
+    return render(request, 'edit_sample.html', {'sample': sample})
+
+def delete_sample(request, sample_id):
+    sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
+
+    if request.method == "POST":
+        # Handle the deletion
+        if "confirm_delete" in request.POST:
+            sample.delete()
+            messages.success(request, "Sample deleted successfully.")
+
+    samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
+    return render(request, 'view_sample.html', {'samples': samples})
 
 
 def request_sample(request):

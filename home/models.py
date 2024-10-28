@@ -10,6 +10,7 @@ class Samples(models.Model):
     unit = models.CharField(max_length=300, blank=True)
     date_collected = models.DateField(null=True, blank=False) 
     consent_form = models.FileField(blank=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
 class Comorbidities(models.Model):
     # Parent
@@ -76,7 +77,7 @@ class RS_Step4(models.Model):
     # Parent
     request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE)
 
-    multiple_samples = models.CharField(null=True, blank=False)
+    multiple_samples = models.CharField(max_length=255, null=True, blank=False)
     time_points = models.IntegerField(null=True, blank=True)
     interval = models.IntegerField(null=True, blank=True)
     interval_unit = models.CharField(max_length=100, blank=True)
@@ -88,9 +89,9 @@ class RS_Step5(models.Model):
     # Parent
     request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE)
 
-    different_sources = models.CharField(null=True, blank=False)
+    different_sources = models.CharField(max_length=255, null=True, blank=False)
     num_participants = models.IntegerField(null=True, blank=True)
-    multiple_timepoints_each = models.CharField(null=True, blank=False)
+    multiple_timepoints_each = models.CharField(max_length=255, null=True, blank=False)
     time_points = models.IntegerField(null=True, blank=True)
     interval = models.IntegerField(null=True, blank=True)
     interval_unit = models.CharField(max_length=100, blank=True)

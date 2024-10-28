@@ -857,8 +857,19 @@
         const addedComorbidities = new Set(); // Set to track added comorbidities
         // const addedLabTests = new Set(); // Set to track added lab tests
 
-        // Commorbidities
-        function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
+        
+    });
+
+    const ComorSelect = document.getElementById('comorbidity_select');
+    const ComorOthers = document.getElementById('comorbidity_other');
+        
+                // Show or hide the text input based on clinical diagnosis selection
+    ComorSelect.addEventListener('change', function () {
+        ComorOthers.style.display = ComorSelect.value === 'Others' ? 'block' : 'none';
+    });
+
+    // Commorbidities
+    function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
             const select = document.getElementById(selectId);
             const otherInput = document.getElementById(otherInputId);
             const addedItemsContainer = document.getElementById(addedItemsContainerId);
@@ -921,7 +932,6 @@
 
         document.getElementById('added_comorbidities').addEventListener('click', removeItem);
         document.getElementById('added_lab_tests').addEventListener('click', removeItem);
-    });
     
     function updateHiddenInput() {
       const items = Array.from(document.querySelectorAll('.added-item')).map(i => i.textContent.trim());

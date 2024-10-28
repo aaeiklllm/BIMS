@@ -61,6 +61,7 @@ class Migration(migrations.Migration):
                 ('unit', models.CharField(blank=True, max_length=300)),
                 ('date_collected', models.DateField(null=True)),
                 ('consent_form', models.FileField(blank=True, null=True, upload_to='')),
+                ('last_modified', models.DateTimeField(auto_now=True)),  # Add this line
             ],
         ),
         migrations.CreateModel(
@@ -80,9 +81,9 @@ class Migration(migrations.Migration):
             name='RS_Step5',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('different_sources', models.CharField(null=True)),
+                ('different_sources', models.CharField(max_length=255, null=True, blank=True)),
                 ('num_participants', models.IntegerField(blank=True, null=True)),
-                ('multiple_timepoints_each', models.CharField(null=True)),
+                ('multiple_timepoints_each', models.CharField(max_length=255, null=True, blank=True)),
                 ('time_points', models.IntegerField(blank=True, null=True)),
                 ('interval', models.IntegerField(blank=True, null=True)),
                 ('interval_unit', models.CharField(blank=True, max_length=100)),
@@ -99,7 +100,7 @@ class Migration(migrations.Migration):
             name='RS_Step4',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('multiple_samples', models.CharField(null=True)),
+                ('multiple_samples', models.CharField(max_length=255, null=True, blank=True)),
                 ('time_points', models.IntegerField(blank=True, null=True)),
                 ('interval', models.IntegerField(blank=True, null=True)),
                 ('interval_unit', models.CharField(blank=True, max_length=100)),

@@ -321,7 +321,26 @@ def delete_users(request):
         try:
             # Attempt to retrieve and delete the user
             user = UserProfile.objects.get(id=user_id)
+            email = user.email
             user_name = f"{user.first_name} {user.last_name}"  # Store user name for messaging
+
+            # Send email notification here
+            try:
+                send_mail(
+                    subject='Your Account Creation Request Has Been Denied',
+                    message='',  # Leave plain text message empty since we're using HTML
+                    html_message=f'''Hi {user_name}, <br><br>
+                                        We regret to inform you that your request to create an account has been <strong>denied</strong>. Unfortunately, we are unable to approve your account at this time.<br><br>
+                                        If you believe this is an error or have any questions, please contact us at techassist.bims@gmail.com for further assistance.<br><br>
+                                        Regards,<br>
+                                        BIMS''',
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[email]
+                )
+            except Exception as e:
+                print(e)
+                messages.add_message(request, messages.ERROR, 'Failed to send email notification.')
+
             user.delete()
             messages.add_message(request, messages.SUCCESS, f"Account for {user_name} has been deleted.")
         except UserProfile.DoesNotExist:
