@@ -1,0 +1,43 @@
+<body> 
+    <div class="container">
+        <div class="confirm-delete">
+            <h2>Permanently Delete This Sample?</h2>
+            <p>This action will permanently delete the selected sample and remove it from storage. This process cannot be undone. Do you wish to proceed?</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="confirm_delete" class="confirm-btn">Yes, Delete</button>
+                <a href="{% url 'sample_detail' sample.id %}" class="cancel-btn">Cancel</a>
+            </form>
+        </div>
+    </div>
+</body>
+
+<style>
+    .confirm-delete {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .confirm-btn {
+        background-color: #d9534f;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .cancel-btn {
+        background-color: #f0ad4e;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .confirm-btn:hover, .cancel-btn:hover {
+        opacity: 0.8;
+    }
+</style>

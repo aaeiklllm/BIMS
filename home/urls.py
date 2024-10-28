@@ -17,6 +17,8 @@ urlpatterns = [
     # View samples 
     path('viewsample', views.view_sample, name='viewsample'),
     path('sample_detail/<int:sample_id>/', views.sample_detail, name='sample_detail'),
+    path('sample_detail/edit/<int:sample_id>/', views.edit_sample, name='edit_sample'),
+    path('sample_detail/delete/<int:sample_id>/', views.delete_sample, name='delete_sample'),
 
     # Request sample
     path('requestsample', views.request_sample, name='requestsample'),
