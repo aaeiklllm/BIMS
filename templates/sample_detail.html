@@ -1,77 +1,342 @@
-<div>
-    <strong>Sample ID:</strong> {{ sample.id|default:"000000"|slice:"-6:" }}<br>
-    <strong>Type:</strong> {{ sample.type }}<br>
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Sample</title> 
+    <style>
+        body, html{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
 
-    <!-- Storage Information -->
-    <strong>Storage:</strong>
-    <h1>{{ first_storage_info.container }}</h1>
-    {% if first_storage_info %}
-        Freezer No. {{ first_storage_info.freezer_num }}, Shelf No. {{ first_storage_info.shelf_num }}, Rack No. {{ first_storage_info.rack_num }}, Box No. {{ first_storage_info.box_num }}<br>
-    {% else %}
-        No storage information available.
-    {% endif %}
-    <br>
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    <!-- Stored Amount -->
-    <strong>Stored Amount:</strong> {{ sample.amount }} {{ sample.unit }}<br>
-    <strong>Current Available Amount:</strong><br>
+        h1 {
+            text-align: right;
+            margin: 20px;
+            padding: 30px;
+            /* padding-bottom: 10px;
+            margin-bottom: 20px; */
+        }
 
+        .sample-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-    <hr><br>
+        .fieldset {
+            /* border: 2px solid #644ca4; */
+            /* border-radius: 8px; */
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
 
-    <strong>Aliquots</strong><br>
-    <strong>Total Number of Aliquots:</strong> {{ total_aliquots }}<br>
-    <strong>Aliquots:</strong>
-    {% if aliquots %}
-        {% for aliquot in aliquots %}
-            <div>
-                <strong>Amount:</strong> {{ aliquot.amount }} {{ aliquot.unit }}<br>
-                <strong>Storage:</strong>
-                {% for storage in aliquot.storage_set.all %}
-                    Freezer No. {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}<br>
-                {% endfor %}
-            </div><br>
+        .fieldset1 {
+            /* border: 2px solid #644ca4; */
+            /* border-radius: 8px; */
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .legend {
+            font-size: 18px;
+            font-weight: bold;
+            color: #644ca4;
+            margin-bottom: 15px;
+        }
+
+        .sample-id {
+            font-size: 18px;
+            color: #644ca4;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .sample-id a {
+            color: #ffffff;
+            text-decoration: none;
+            background-color: #644ca4;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .sample-id a:hover {
+            text-decoration: underline;
+        }
+
+        .grid-container {
+            display: grid;
+            text-align: left;
+            grid-template-columns: 1fr 4fr;
+            gap: 0px;
+            margin-top: 20px;
+        }
+
+        .grid-container1 {
+            display: grid;
+            text-align: left;
+            grid-template-columns: 1fr 1fr;
+            gap: 0px;
+        }
+
+        .grid-item {
+            /* background-color: #f0f0f0; */
+            border-radius: 5px;
+            /* padding: 10px; */
+            
+        }
+
+        .grid-item span {
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .grid-item b {
+            font-size: 18px;
+            font-weight: bold;
+            color: #644ca4;
+            margin: 5px;
+            /* margin-top: 20px; */
+        }
+
+        .highlight {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #644ca4;
+            margin-top: 20px;
+        }
+
+        .no-info {
+            font-style: italic;
+            color: #777;
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 768px) {
+            .grid-container {
+                margin-top: 20px;
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dropbtn {
+            background-color: #644ca4;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #644ca4;
+            color: #ffffff;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #ffffff;
+            color: #644ca4;
+            border: solid 2px #644ca4;
+            border-radius: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="sample-details">
+            <fieldset class="fieldset">
+                <div class="grid-container1">
+                    <div class="sample-id">
+                        <h2><b>Sample ID: {{ sample.id|default:"000000"|slice:"-6:" }}</b></h2> 
+                    </div>
+                    <div class="grid-item" style="text-align: end;">
+                    <div class="dropdown">
+                        <button class="dropbtn">Manage</button>
+                        <div class="dropdown-content">
+                            <a href="{% url 'edit_sample' sample.id %}">Edit Sample Information</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Delete Sample</a>
+                        </div>
+                    </div> 
+                </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true" style="color: #333;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmDeleteLabel">Permanently Delete This Sample?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Note: This action will permanently delete the selected sample and remove it from storage. 
+                                This process cannot be undone. Do you wish to proceed?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form method="post" action="{% url 'delete_sample' sample.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" name="confirm_delete" class="btn btn-danger confirm-btn">Yes, Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-container1">
+                    <div class="grid-item">
+                        <b>Type:</b> 
+                        <span class="highlight">{{ sample.type }}</span>
+                    </div>
+                    <div class="grid-item" style="text-align: end;">
+                        <b>Last Modified:</b> 
+                        <span class="highlight">{{ sample.last_modified }}</span>
+                    </div>
+                </div>
+
+                <fieldset class="fieldset1">
+                    <h5><strong>Storage</strong></h5> 
+                    <div class="grid-container">
+                    <div class="grid-item">
+                        <h1 style="background-color: #f0f0f0;
+                        border-radius: 0px;
+                        padding: 20px;
+                        margin: 0px; 
+                        width: fit-content;
+                        "><strong>{{ first_storage_info.container }}</strong></h1>
+                    </div>
+                    <div class="grid-item">
+                        {% if first_storage_info %}
+                            <span>{{ first_storage_info.freezer_num }} / Shelf No. {{ first_storage_info.shelf_num }} / Rack No. {{ first_storage_info.rack_num }} / Box No. {{ first_storage_info.box_num }}</span><br>
+                        {% else %}
+                            <span class="no-info">No storage information available.</span><br>
+                        {% endif %}
+                        <b>Stored Amount:</b> 
+                        <span class="highlight">{{ sample.amount }} {{ sample.unit }}</span><br>
+                        <b>Current Available Amount:</b><br>
+                    </div>
+                </div>
+                </fieldset>
+
+                <fieldset class="fieldset1">
+                    <h5><strong>Aliquots</strong></h5>
+                        <b>Total Number of Aliquots:</b> 
+                        <span class="highlight">{{ total_aliquots }}</span><br>
+                        <b>Aliquots:</b> 
+                        {% if aliquots %}
+                            {% for aliquot in aliquots %}
+                                <div class="aliquot-info">
+                                    <b>Amount:</b> 
+                                    <span class="highlight">{{ aliquot.amount }} {{ aliquot.unit }}</span><br>
+                                    <b>Storage:</b>
+                                    {% for storage in aliquot.storage_set.all %}
+                                        <span>Freezer No. {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <span class="no-info">No aliquots available.</span><br>
+                        {% endif %}
+                </fieldset>
         
-        {% endfor %}
-    {% else %}
-        <em>No aliquots available.</em><br>
-    {% endif %}
+                <fieldset class="fieldset1">
+                    <h5><strong>Source</strong></h5>
+                        <b>Date Collected:</b> 
+                        <span class="highlight">{{ sample.date_collected }}</span><br>
+                        <b>Sex:</b> 
+                        <span class="highlight">{{ sample.sex }}</span><br>
+                        <b>Age:</b> 
+                        <span class="highlight">{{ sample.age }}</span><br>
+                        <b>Clinical Diagnosis:</b> 
+                        <span class="highlight">{{ sample.clinical_diagnosis }}</span><br>
+                        <b>Comorbidities:</b> 
+                        {% if sample.comorbidities_set.all %}
+                            {% for comorbidity in sample.comorbidities_set.all %}
+                                <span>{{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="no-info">None</span>
+                        {% endif %}
+                        <br><b>Lab Tests:</b> 
+                        {% if sample.lab_test_set.all %}
+                            {% for lab_test in sample.lab_test_set.all %}
+                                <span>{{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="no-info">None</span>
+                        {% endif %}
+                        <br><b>Informed Consent Form:</b>
+                        {% if sample.consent_form %}
+                            <a href="{{ sample.consent_form.url }}">Download Consent Form</a><br>
+                        {% else %}
+                            <span class="no-info">Not Available</span><br>
+                        {% endif %}
 
-    <hr>
-    <strong>Source</strong><br>
-    <strong>Date Collected:</strong> {{ sample.date_collected }}<br>
-    <strong>Sex:</strong> {{ sample.sex }}<br>
-    <strong>Age:</strong> {{ sample.age }}<br>
-    <strong>Clinical Diagnosis:</strong> {{ sample.clinical_diagnosis }}<br>
+            </fieldset>
+            </fieldset>
+        </div>        
+    </div>
+</body>
 
-    <!-- Comorbidities -->
-    <strong>Comorbidities:</strong>
-    {% if sample.comorbidities_set.all %}
-        {% for comorbidity in sample.comorbidities_set.all %}
-            {{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    {% else %}
-        None
-    {% endif %}
-    <br>
+<!-- Include Bootstrap JS and CSS for Modal Functionality
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Lab Tests -->
-    <strong>Lab Tests:</strong>
-    {% if sample.lab_test_set.all %}
-        {% for lab_test in sample.lab_test_set.all %}
-            {{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    {% else %}
-        None
-    {% endif %}
-    <br>
-
-    <!-- Informed Consent Form -->
-    <strong>Informed Consent Form:</strong>
-    {% if sample.consent_form %}
-        <a href="{{ sample.consent_form.url }}">Download Consent Form</a>
-    {% else %}
-        Not Available
-    {% endif %}
-    <br>
-</div>
+{% endblock %}

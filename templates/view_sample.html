@@ -1,64 +1,531 @@
-{% for sample in samples %}
-<div>
-    <!-- Sample basic details -->
-    <a href="{% url 'sample_detail' sample.id %}">Sample ID {{ sample.id|default:"000000"|slice:"-6:" }}</a><br>
-    Type: {{ sample.type }}<br>
-    Sex: {{ sample.sex }}<br>
-    Age: {{ sample.age }}<br>
-    Clinical Diagnosis: {{ sample.clinical_diagnosis }}<br>
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Sample</title> 
+    <style>
+        body, html{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
 
-    <!-- Display Comorbidities -->
-    Comorbidities:
-    {% if sample.comorbidities_set.all %}
-        {% for comorbidity in sample.comorbidities_set.all %}
-            {{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    {% else %}
-        None
-    {% endif %}
-    <br>
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    <!-- Display Lab Tests -->
-    Lab Tests:
-    {% if sample.lab_test_set.all %}
-        {% for lab_test in sample.lab_test_set.all %}
-            {{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    {% else %}
-        None
-    {% endif %}
-    <br>
+        h1 {
+            text-align: center;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
 
-    Stored Amount: {{ sample.amount }} {{ sample.unit }}<br>
-    Date Collected: {{ sample.date_collected }}<br>
+        .sample-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-    <!-- Display Storage Details -->
-    Storage: 
-    {% if sample.storage_set.all %}
-        {% for storage in sample.storage_set.all %}
-            {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}<br>
+        .fieldset {
+            border: 2px solid #644ca4;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .legend {
+            font-size: 18px;
+            font-weight: bold;
+            color: #644ca4;
+            margin-bottom: 15px;
+        }
+
+        .sample-id {
+            font-size: 18px;
+            color: #644ca4;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .sample-id a {
+            color: #ffffff;
+            text-decoration: none;
+            background-color: #644ca4;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .sample-id a:hover {
+            text-decoration: underline;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .grid-item {
+            /* background-color: #f0f0f0; */
+            border-radius: 5px;
+            /* padding: 10px; */
+            
+        }
+
+        .grid-item span {
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .grid-item b {
+            font-size: 18px;
+            font-weight: bold;
+            color: #644ca4;
+            /* margin-top: 20px; */
+        }
+
+        .highlight {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #644ca4;
+            margin-top: 20px;
+        }
+
+        .no-info {
+            font-style: italic;
+            color: #777;
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 768px) {
+            .grid-container {
+                margin-top: 20px;
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><b>View Sample</b></h1>
+
+        <!-- Search Bar -->
+        <div class="search-filter">
+            <input type="text" id="search" placeholder="Search for samples..." />
+            <button id="filter-button" type="button">Filter</button>
+        </div>
+
+        <!-- Filter Modal -->
+        <div id="filter-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>Filter Samples</h2>
+                <form id="filter-form">
+                    <!-- Filter by Type -->
+                    <label for="type">By Type:</label>
+                    <select id="type" name="type">
+                        <option value="">Select Type</option>
+                        <!-- Add your options here -->
+                    </select>
+                    
+                    <br>
+                    <!-- Filter by Sex -->
+                    <label for="sex">By Sex:</label>
+                    <input type="radio" id="male" name="sex" value="male"> Male
+                    <input type="radio" id="female" name="sex" value="female"> Female
+                    <input type="radio" id="either" name="sex" value="either"> Either
+                    
+                    <br>
+
+                    <!-- Filter by Age -->
+                    <label>By Age:</label>
+                    <input type="radio" id="exact-age-option" name="age-filter" value="exact" checked> Exact Age
+                    <input type="radio" id="age-range-option" name="age-filter" value="range"> Age Range
+                    <br>
+
+                    <!-- Exact Age Input -->
+                    <div id="exact-age-container">
+                        <input type="number" id="exact-age" name="exact-age" placeholder="Age">
+                    </div>
+
+                    <!-- Age Range Inputs (hidden by default) -->
+                    <div id="age-range-container" style="display: none;">
+                        <input type="number" id="age-from" name="age-from" placeholder="From Age">
+                        to
+                        <input type="number" id="age-to" name="age-to" placeholder="To Age">
+                    </div>
+                    <br>
+
+                    <!-- Filter by Clinical Diagnosis -->
+                    <label for="clinical-diagnosis">By Clinical Diagnosis:</label>
+                    <select id="clinical-diagnosis" name="clinical-diagnosis">
+                        <option value="">Select Diagnosis</option>
+                        <!-- Add options -->
+                    </select>
+                    <br>
+
+                    <!-- Filter by Comorbidities (Multiple) -->
+                    <label for="comorbidities">By Comorbidities:</label>
+                    <select id="comorbidities" name="comorbidities" multiple>
+                        <!-- Add options -->
+                    </select>
+                    <br>
+
+                    <!-- Filter by Lab Tests (Multiple) -->
+                    <label for="lab-tests">By Lab Tests:</label>
+                    <select id="lab-tests" name="lab-tests" multiple>
+                        <!-- Add options -->
+                    </select>
+                    <br>
+
+                    <!-- Filter by Collection Date -->
+                    <label for="collection-date">By Collection Date:</label>
+                    <input type="date" id="collection-date" name="collection-date">
+                    <br>
+
+                    <!-- Filter by Research Project -->
+                    <label for="research-project">By Research Project(s):</label>
+                    <select id="research-project" name="research-project">
+                        <option value="">Select Project</option>
+                        <!-- Add options -->
+                    </select>
+                    <br>
+
+                    <div class="filter-buttons">
+                        <button type="submit" id="apply-filters">Apply Filters</button>
+                        <button type="reset" id="reset-filters">Reset Filters</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        {% for sample in samples %}
+        <div class="sample-details">
+            <fieldset class="fieldset">
+                <legend class="legend">Sample Details</legend>
+
+                <div class="sample-id">
+                    <b>Sample ID:</b> 
+                    <a href="{% url 'sample_detail' sample.id %}">
+                        {{ sample.id|default:"000000"|slice:"-6:" }}
+                    </a>
+                </div>
+
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <b>Type:</b>
+                        <span class="highlight">{{ sample.type }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <b>Sex:</b> <span class="sex highlight">{{ sample.sex }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <b>Age:</b> <span class="age highlight">{{ sample.age }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <b>Clinical Diagnosis:</b> <span class="highlight">{{ sample.clinical_diagnosis }}</span>
+                    </div>
+                </div>
+
+                <div class="section-header">Comorbidities</div>
+                <div class="grid-item">
+                    {% if sample.comorbidities_set.all %}
+                        {% for comorbidity in sample.comorbidities_set.all %}
+                            <span>{{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="no-info">None</span>
+                    {% endif %}
+                </div>
+
+                <div class="section-header">Lab Tests</div>
+                <div class="grid-item">
+                    {% if sample.lab_test_set.all %}
+                        {% for lab_test in sample.lab_test_set.all %}
+                            <span>{{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="no-info">None</span>
+                    {% endif %}
+                </div>
+
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <b>Stored Amount:</b> <span class="highlight">{{ sample.amount }} {{ sample.unit }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <b>Date Collected:</b> <span class="date highlight">{{ sample.date_collected }}</span>
+                    </div>
+                </div>
+
+                <div class="section-header">Storage Details</div>
+                <div class="grid-item">
+                    {% if sample.storage_set.all %}
+                        {% for storage in sample.storage_set.all %}
+                            <p>{{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <span class="no-info">No storage information available.</span>
+                    {% endif %}
+                </div>
+
+                <div class="section-header">Aliquots</div>
+                <div class="grid-item">
+                    {% if sample.aliquot_set.all %}
+                        {% for aliquot in sample.aliquot_set.all %}
+                            <p><b>Amount:</b> <span class="highlight">{{ aliquot.amount }} {{ aliquot.unit }}</span></p>
+                            <div class="storage-info">
+                                <b>Storage:</b>
+                                {% for storage in aliquot.storage_set.all %}
+                                    <p>{{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <span class="no-info">No aliquots available.</span>
+                    {% endif %}
+                </div>
+            </fieldset>
+
+            <div class="divider"></div>
+        </div>
         {% endfor %}
-    {% else %}
-        No storage information available.<br>
-    {% endif %}
-    
-    <!-- Display Aliquot Details -->
-    Aliquots:
-    {% if sample.aliquot_set.all %}
-        {% for aliquot in sample.aliquot_set.all %}
-            Amount: {{ aliquot.amount }} {{ aliquot.unit }}<br>
-            <!-- Aliquot Storage -->
-            Storage:
-            {% for storage in aliquot.storage_set.all %}
-                {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}<br>
-            {% endfor %}
-        {% endfor %}
-    {% else %}
-        <em>No aliquots available.</em><br>
-    {% endif %}
-    
-    <!-- Display Research Projects -->
-    Research Project(s) used in: <br>
-</div>
-<hr>
-{% endfor %}
+    </div>
+
+    <script>
+        document.getElementById("exact-age-option").addEventListener("click", function() {
+            document.getElementById("exact-age-container").style.display = "block";
+            document.getElementById("age-range-container").style.display = "none";
+        });
+
+        document.getElementById("age-range-option").addEventListener("click", function() {
+            document.getElementById("exact-age-container").style.display = "none";
+            document.getElementById("age-range-container").style.display = "block";
+        });
+
+        // JavaScript for filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButton = document.getElementById('filter-button');
+            const modal = document.getElementById('filter-modal');
+            const closeButton = document.querySelector('.close-button');
+
+            // Open the filter modal
+            filterButton.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+
+            // Close the filter modal
+            closeButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            // Close the modal if the user clicks outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('search');
+            searchInput.addEventListener('input', function() {
+                const filter = searchInput.value.toLowerCase();
+                const sampleDetails = document.querySelectorAll('.sample-details');
+                sampleDetails.forEach(sample => {
+                    const text = sample.textContent.toLowerCase();
+
+                    if (text.includes(filter)) {
+                        sample.style.display = '';
+                    } else {
+                        sample.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+             // Apply filters
+        document.getElementById("apply-filters").addEventListener("click", function(event) {
+                event.preventDefault();  // Prevent form from submitting
+                const modal = document.getElementById('filter-modal');
+                // Collecting filter values
+                const type = document.getElementById("type").value.toLowerCase();
+                const sex = document.querySelector('input[name="sex"]:checked')?.value.toLowerCase();
+                // Check if exact age or range is selected
+                const clinicalDiagnosis = document.getElementById("clinical-diagnosis").value.toLowerCase();
+                const comorbidities = Array.from(document.getElementById("comorbidities").selectedOptions).map(opt => opt.value.toLowerCase());
+                const labTests = Array.from(document.getElementById("lab-tests").selectedOptions).map(opt => opt.value.toLowerCase());
+                // Get the value from the input (which is usually in 'YYYY-MM-DD' format)
+                const collectionDateValue = document.getElementById("collection-date").value;
+                // Initialize formattedDate
+                let formattedDate = '';
+
+                if (collectionDateValue) {
+                    // Parse the collection date
+                    const collectionDate = new Date(collectionDateValue);
+                    
+                    // Get the month abbreviation with a period (e.g., "Oct.")
+                    const monthsWithPeriods = ["Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
+                    const month = monthsWithPeriods[collectionDate.getMonth()]; // getMonth() returns 0-based index
+
+                    // Format the day and year
+                    const day = collectionDate.getDate();
+                    const year = collectionDate.getFullYear();
+
+                    // Create the final formatted date
+                    formattedDate = `${month} ${day}, ${year}`;
+                    console.log(formattedDate); // Output: Oct. 16, 2024
+                }
+
+                const researchProject = document.getElementById("research-project").value.toLowerCase();
+
+                // Get all samples
+                let samples = document.querySelectorAll('.sample-details');
+
+                // Loop through samples and apply filters
+                samples.forEach(sample => {
+                    let typeMatch = !type || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(type);
+                    let sexMatch = !sex || sample.querySelector('.grid-item span.sex').innerText.toLowerCase() === sex;
+                    console.log(sample.querySelector('.grid-item span.sex').innerText.toLowerCase())
+                    let ageMatch = true;  // Default to true if no age filter
+                    let clinicalDiagnosisMatch = !clinicalDiagnosis || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(clinicalDiagnosis);
+                    let comorbiditiesMatch = comorbidities.length === 0 || comorbidities.every(c => sample.querySelector('.section-header + .grid-item').innerText.toLowerCase().includes(c));
+                    let labTestsMatch = labTests.length === 0 || labTests.every(l => sample.querySelector('.section-header + .grid-item').innerText.toLowerCase().includes(l));
+                    let dateMatch = !formattedDate || sample.querySelector('.grid-item span.date').innerText === formattedDate;
+                    console.log(sample.querySelector('.grid-item span.date').innerText)
+                    console.log(formattedDate)
+                    let projectMatch = !researchProject || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(researchProject);
+                    let ageFilterType = document.querySelector('input[name="age-filter"]:checked').value;
+                    let exactAge = document.getElementById("exact-age").value;
+                    let ageFrom = document.getElementById("age-from").value;
+                    let ageTo = document.getElementById("age-to").value;
+
+                    // Get the sample's age
+                    let sampleAge = parseInt(sample.querySelector('.grid-item span.age').innerText);
+                    console.log(sampleAge)
+                    // Handle exact age or range filtering
+                    if (ageFilterType === "exact") {
+                        if (exactAge) {
+                            ageMatch = sampleAge === parseInt(exactAge);
+                        }
+                    } else if (ageFilterType === "range") {
+                        if (ageFrom && ageTo) {
+                            ageMatch = sampleAge >= parseInt(ageFrom) && sampleAge <= parseInt(ageTo);
+                        } else if (ageFrom) {
+                            ageMatch = sampleAge >= parseInt(ageFrom);
+                        } else if (ageTo) {
+                            ageMatch = sampleAge <= parseInt(ageTo);
+                        }
+                    }
+
+                    // Show or hide based on matches
+                    if (typeMatch && sexMatch && ageMatch && clinicalDiagnosisMatch && comorbiditiesMatch && labTestsMatch && dateMatch && projectMatch) {
+                        sample.style.display = "";
+                    } else {
+                        sample.style.display = "none";
+                    }
+                });
+
+                // Close modal after applying filters
+                modal.style.display = "none";
+            });
+
+    // Reset filters
+    document.getElementById("reset-filters").addEventListener("click", function(event) {
+        // Reset form fields
+        document.getElementById("filter-form").reset();
+
+        // Show all samples
+        let samples = document.querySelectorAll('.sample-details');
+        samples.forEach(sample => {
+            sample.style.display = "";
+        });
+
+        // Close modal after resetting filters
+        modal.style.display = "none";
+    });
+    </script>
+
+    <style>
+        /* Basic styles for modal and search filter */
+        .search-filter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-filter input {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+        }
+
+        #filter-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        /* Add any additional styles as needed */
+    </style>
+</body>
+
+{% endblock %}
