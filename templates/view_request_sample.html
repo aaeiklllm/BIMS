@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Request Sample</title> 
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            position: relative;
+        }
+        th {
+            background-color: #f2f2f2;
+        }   
+        .icon-button {
+        text-decoration: none;
+        color: inherit;
+        display: inline-block;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f2f2f2;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        }
+
+        .icon-button:hover {
+            background-color: #e0e0e0;
+        }
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .hover-details {
+            visibility: hidden;
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 8px;
+        }
+        tr:hover .hover-details {
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><b>View Request Sample</b></h1>
+        
+        <h2>Research Projects</h2>
+        <div>
+            <button onclick="showSection('pending')">Pending</button>
+            <button onclick="showSection('completed')">Completed</button>
+        </div>
+
+        <div id="pending" class="section active">
+            <h3>Pending Requests</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Research Project ID</th>
+                        <th>Request Date</th>
+                        <th>Research Project</th>
+                        <th>Requested by</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                        </td>                        
+                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.request_sample.requested_by.username }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No research projects found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="completed" class="section">
+            <h3>Completed Requests</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Research Project ID</th>
+                        <th>Request Date</th>
+                        <th>Research Project</th>
+                        <th>Requested by</th>
+                        <th>Approval Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                        </td>                        
+                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.request_sample.requested_by.username }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No research projects found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.getElementById('pending').classList.remove('active');
+            document.getElementById('completed').classList.remove('active');
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+
+</body>
+
+{% endblock %}

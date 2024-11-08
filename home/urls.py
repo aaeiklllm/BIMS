@@ -20,6 +20,11 @@ urlpatterns = [
     path('sample_detail/edit/<int:sample_id>/', views.edit_sample, name='edit_sample'),
     path('sample_detail/delete/<int:sample_id>/', views.delete_sample, name='delete_sample'),
 
+    # View request sample
+    path('view_request_sample', views.view_request_sample, name='view_request_sample'),
+    path('view_details/<int:id>/', views.view_details, name='view_details'), 
+    path('create_ack_receipt/<int:id>/', views.create_ack_receipt, name='create_ack_receipt'),
+
     # Request sample
     path('requestsample', views.request_sample, name='requestsample'),
     path('requestsample/step7/<int:sample_id>/', views.request_sample_step7, name='request_sample_step7'),

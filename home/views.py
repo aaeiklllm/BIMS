@@ -7,10 +7,12 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 User = get_user_model()
 from accounts.models import UserroleMap 
-from .models import Request_Sample, Research_Project, RS_Comorbidities, RS_Lab_Test, RS_Step4, RS_Step5, Approve_Reject_Request, Acknowledgement_Receipt, Acknowledgement_Storage
+from .models import Request_Sample, Research_Project, RS_Comorbidities, RS_Lab_Test, RS_Step4, RS_Step5, Approve_Reject_Request, Create_Ack_Receipt, Acknowledgement_Storage
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.contrib import messages 
+from accounts.models import UserProfile
+from django.db.models import Q
 
 # Create your views here.
 
@@ -397,6 +399,14 @@ def delete_sample(request, sample_id):
 
 
 def request_sample(request):
+    user_id = request.session.get("user_id")  # Get the user ID from the session
+    if not user_id:
+        # Redirect to login page if no user ID is found in the session
+        messages.error(request, "You need to be logged in to make a request.")
+        return redirect('accounts:loginpage')
+
+    current_user = User.objects.get(id=user_id)  # Get the user using the ID
+
     # Fetch all research projects from the database
     research_projects = Research_Project.objects.all()
 
@@ -441,7 +451,8 @@ def request_sample(request):
             clinical_diagnosis=clinical_diagnosis,
             amount=amount,
             unit=unit,
-            desired_start_date=desired_start_date
+            desired_start_date=desired_start_date,
+            requested_by=current_user  # Assign the logged-in user
         )
         request_sample.save()
 
@@ -641,6 +652,23 @@ def request_sample(request):
     # For a GET request, render the form page
     return render(request, 'request_sample.html', {'research_projects': research_projects})
 
+def calculate_total_samples(step4, step5):
+    total_samples_step4 = 0
+    total_samples_step5 = 0
+
+    if step4 and step4.multiple_samples == 'yes':
+        total_samples_step4 = (step4.time_points or 1) * (step4.interval or 1)
+
+    if step5 and step5.different_sources == 'yes':
+        num_participants = step5.num_participants or 1
+        if step5.multiple_timepoints_each == 'yes':
+            total_samples_step5 = num_participants * (step5.time_points or 1) * (step5.interval or 1)
+        else:
+            total_samples_step5 = num_participants
+
+    # Add the default 1 sample request from step 3
+    return max(total_samples_step4 + total_samples_step5, 1)
+
 def request_sample_step7(request, sample_id):
     # Fetch the request sample from the database using the sample_id
     request_sample = get_object_or_404(Request_Sample, id=sample_id)
@@ -650,6 +678,9 @@ def request_sample_step7(request, sample_id):
     step4_data = RS_Step4.objects.filter(request_sample=request_sample).first()
     step5_data = RS_Step5.objects.filter(request_sample=request_sample).first()
 
+    # Calculate the total number of sample requests using the helper function
+    total_samples = calculate_total_samples(step4_data, step5_data)
+
     # Prepare context with all the fetched data
     context = {
         'request_sample': request_sample,
@@ -657,10 +688,80 @@ def request_sample_step7(request, sample_id):
         'comorbidities': comorbidities,
         'lab_tests': lab_tests,
         'step4': step4_data,
-        'step5': step5_data
+        'step5': step5_data,
+        'total_samples': total_samples  # Add this line
     }
     
     return render(request, 'request_sample_step7.html', context)
 
 def request_sample_ty(request):
     return render(request, 'request_sample_ty.html')
+
+def view_request_sample(request):
+    # Fetch all research projects with their related request sample data
+    projects = Research_Project.objects.select_related('request_sample__requested_by').all()
+    return render(request, 'view_request_sample.html', {'projects': projects})
+
+def view_details(request, id):
+    research_project = get_object_or_404(Research_Project, id=id)
+    request_sample = research_project.request_sample
+    comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
+    lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
+    step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
+    step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
+
+    # Calculate the total number of sample requests using the helper function
+    total_number_of_samples = calculate_total_samples(step4, step5)
+
+    context = {
+        'research_project': research_project,
+        'request_sample': request_sample,
+        'comorbidities': comorbidities,
+        'lab_tests': lab_tests,
+        'step4': step4,
+        'step5': step5,
+        'total_number_of_samples': total_number_of_samples,
+    }
+    return render(request, 'view_details.html', context)
+
+
+def create_ack_receipt(request, id):
+    project = get_object_or_404(Research_Project, id=id)
+    request_sample = project.request_sample  # Get the associated request sample
+    researcher = request_sample.requested_by  # Get the user who requested the sample
+
+    # Get the logged-in user's information using the session user_id
+    user_id = request.session.get("user_id")
+    biobank_manager = UserProfile.objects.get(id=user_id) if user_id else None
+
+    # Get step4 and step5 data
+    step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
+    step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
+
+    # Calculate total samples using the helper function
+    total_samples = calculate_total_samples(step4, step5)
+
+    # Fetch comorbidities and lab tests related to the request sample
+    request_comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample).values_list('comorbidity', flat=True)
+    request_lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample).values_list('labtest', flat=True)
+
+    # Filter matching samples from the Samples model, including related models for comorbidities and lab tests
+    matching_samples = Samples.objects.filter(
+        type=request_sample.type,
+        sex=request_sample.sex,
+        age=request_sample.age,
+        clinical_diagnosis=request_sample.clinical_diagnosis,
+    ).filter(
+        Q(comorbidities__comorbidity__in=request_comorbidities) &
+        Q(lab_test__labtest__in=request_lab_tests)
+    ).distinct()
+    # )
+
+    context = {
+        'project': project,
+        'sample_range': range(1, total_samples + 1),
+        'researcher': researcher,
+        'biobank_manager': biobank_manager,
+        'matching_samples': matching_samples,
+    }
+    return render(request, 'create_ack_receipt.html', context)
