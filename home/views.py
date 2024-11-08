@@ -7,12 +7,13 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 User = get_user_model()
 from accounts.models import UserroleMap 
-from .models import Request_Sample, Research_Project, RS_Comorbidities, RS_Lab_Test, RS_Step4, RS_Step5, Approve_Reject_Request, Create_Ack_Receipt, Acknowledgement_Storage
+from .models import Request_Sample, Research_Project, RS_Comorbidities, RS_Lab_Test, RS_Step4, RS_Step5, Approve_Reject_Request, Create_Ack_Receipt
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.contrib import messages 
 from accounts.models import UserProfile
 from django.db.models import Q
+from django.utils import timezone
 
 # Create your views here.
 
@@ -713,6 +714,43 @@ def view_details(request, id):
     # Calculate the total number of sample requests using the helper function
     total_number_of_samples = calculate_total_samples(step4, step5)
 
+    if request.method == 'POST':
+        approval = request.POST.get('approval')
+        attach_file = request.FILES.get('attach_file')
+        reject_reason = request.POST.get('reject_reason')
+        no_sample = request.POST.get('no_sample')
+
+        # Check if an acknowledgment receipt should be created
+        if approval == 'approve' and attach_file:
+            approval_record = Approve_Reject_Request.objects.create(
+                approve_reject=approval,
+                attach_file=attach_file,
+                reject_reason=reject_reason,
+                no_available_samples=no_sample,
+                create_ack_receipt=None  # Leave as None if no acknowledgment receipt is created
+            )
+        else:
+            approval_record = Approve_Reject_Request.objects.create(
+                approve_reject=approval,
+                attach_file=attach_file,
+                reject_reason=reject_reason,
+                no_available_samples=no_sample,
+            )
+        approval_record.save()
+
+        # Logic to handle the approval or rejection
+        if approval == 'approve':
+            research_project.status = 'approved'
+        elif approval == 'reject':
+            research_project.status = 'rejected'
+
+        # Update the 'updated_at' field to reflect the approval/rejection time
+        research_project.updated_at = timezone.now()
+        research_project.save()
+
+        # Redirect to a confirmation page or the same page
+        return redirect('view_request_sample')
+
     context = {
         'research_project': research_project,
         'request_sample': request_sample,
@@ -723,6 +761,36 @@ def view_details(request, id):
         'total_number_of_samples': total_number_of_samples,
     }
     return render(request, 'view_details.html', context)
+
+
+def update_view_details(request, id):
+    research_project = get_object_or_404(Research_Project, id=id)
+    approval_record = Approve_Reject_Request.objects.filter(create_ack_receipt__ack_sample_id=research_project.id).first()
+
+    if request.method == 'POST':
+        # Check if the user wants to remove the current attachment
+        remove_attachment = request.POST.get('remove_attachment')
+        attach_file = request.FILES.get('attach_file')
+
+        if remove_attachment and approval_record:
+            # Remove the current attachment
+            approval_record.attach_file.delete()
+            approval_record.attach_file = None
+
+        if attach_file:
+            # Replace or add the new attachment
+            approval_record.attach_file = attach_file
+        
+        approval_record.save()
+        
+        # Redirect after saving changes
+        return redirect('view_request_sample')
+
+    context = {
+        'research_project': research_project,
+        'approval_record': approval_record,
+    }
+    return render(request, 'update_view_details.html', context)
 
 
 def create_ack_receipt(request, id):
@@ -755,7 +823,36 @@ def create_ack_receipt(request, id):
         Q(comorbidities__comorbidity__in=request_comorbidities) &
         Q(lab_test__labtest__in=request_lab_tests)
     ).distinct()
-    # )
+    
+    if request.method == 'POST':
+        # Capture the sample_id from the form
+        sample_ids = []
+        for i in range(1, total_samples + 1):
+            sample_id = request.POST.get(f'sample_id_{i}')
+            if sample_id:
+                sample_ids.append(sample_id)
+
+        officer_signature = request.FILES.get('signature-file')
+
+        # Create and save the Create_Ack_Receipt instance
+        ack_receipt = Create_Ack_Receipt(
+            ack_sample_id=sample_id,
+            officer_signature=officer_signature
+        )
+        ack_receipt.save()
+
+        # Create a related Approve_Reject_Request instance
+        approval_record = Approve_Reject_Request.objects.create(
+            create_ack_receipt=ack_receipt,
+            approve_reject='approve',  # Set the status as 'Approved'
+            attach_file=None,  # No attached file needed for this action
+            reject_reason='',  # No reason needed as it's approved
+            no_available_samples=''  # Leave as empty or set appropriately
+        )
+        approval_record.save()
+
+        # Redirect to a success page or back to the list view
+        return redirect('view_request_sample')
 
     context = {
         'project': project,

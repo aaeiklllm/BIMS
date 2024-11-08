@@ -40,25 +40,25 @@ class Storage(models.Model):
     box_num = models.IntegerField(null=True, blank=True)
     container = models.CharField(max_length=100, blank=True)
 
+class Create_Ack_Receipt(models.Model):
+    ack_sample_id = models.IntegerField(null=True, blank=True)
+    officer_signature = models.FileField(blank=True, null=True)
+
 class Approve_Reject_Request(models.Model):
+    # Parent
+    create_ack_receipt = models.ForeignKey(Create_Ack_Receipt, on_delete=models.CASCADE, null=True, blank=True)
+
     approve_reject = models.CharField(max_length=100, null=True, blank=False)
     attach_file = models.FileField(blank=True, null=True)
     reject_reason = models.CharField(max_length=300, null=True, blank=False)
     no_available_samples = models.CharField(max_length=100, null=True, blank=False)
 
-class Create_Ack_Receipt(models.Model):
-    # Parent
-    approve = models.ForeignKey(Approve_Reject_Request, on_delete=models.CASCADE)
+# class Acknowledgement_Storage(models.Model):
+#     # Parent
+#     create_ack_receipt = models.ForeignKey(Create_Ack_Receipt, on_delete=models.CASCADE)
 
-    ack_sample_id = models.IntegerField(null=True, blank=True)
-    officer_signature = models.FileField(blank=True, null=True)
-
-class Acknowledgement_Storage(models.Model):
-    # Parent
-    create_ack_receipt = models.ForeignKey(Create_Ack_Receipt, on_delete=models.CASCADE)
-
-    ack_box_num = models.IntegerField(null=True, blank=True)
-    ack_container_num = models.IntegerField(null=True, blank=True)
+#     ack_box_num = models.IntegerField(null=True, blank=True)
+#     ack_container_num = models.IntegerField(null=True, blank=True)
 
 
 # Researcher ----------------------------------------------------------------------------------
@@ -85,6 +85,8 @@ class Research_Project(models.Model):
     anticipated_completion_date = models.DateField(null=True, blank=False) 
     erb_number = models.CharField(max_length=300, null=True, blank=False)
     funding_source = models.CharField(max_length=300, null=True, blank=False)
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='pending')
+    updated_at = models.DateTimeField(auto_now=True)  # Automatically updates on modification
 
 class RS_Comorbidities(models.Model):
     # Parent

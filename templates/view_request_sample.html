@@ -7,6 +7,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Request Sample</title> 
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        h1 {
+            margin-top: 20px;
+            text-align: center;
+            color: #644ca4
+        }
+        .tabs {
+            display: flex;
+            cursor: pointer;
+        }
+        .tab {
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-color: blue;
+            color: blue;
+        }
+        .pending, .completed-table, .pending-details, .completed-details, .tabs-container {
+            width: 90%;
+            margin: 20px auto;
+        }
+
+        .pending table, .completed-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pending th, .pending td, .completed-table th, .completed-table td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .pending-details, .completed-details {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .pending-details.active, .completed-details.active{
+            display: block;
+        }
+
+        .tabs-container.hidden, .pending.hidden, .completed-table.hidden {
+            display: none;
+        }
+
+        .pending-details h3, .completed-details h3{
+            color: #007bff;
+        }
+
+        .details-content {
+            margin-top: 10px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -53,32 +113,38 @@
         tr:hover .hover-details {
             visibility: visible;
         }
+        .highlight-approved {
+            background-color: rgb(203, 255, 203);
+        }
+        .highlight-rejected {
+            background-color: rgb(255, 207, 207);
+        }
+    </style>
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1><b>View Request Sample</b></h1>
-        
-        <h2>Research Projects</h2>
-        <div>
-            <button onclick="showSection('pending')">Pending</button>
-            <button onclick="showSection('completed')">Completed</button>
+    <h1><b>View Request Sample</b></h1>
+    
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('pending')">Pending</div>
+            <div class="tab" onclick="showTab('completed')">Completed</div>
         </div>
+    </div>
 
-        <div id="pending" class="section active">
-            <h3>Pending Requests</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Research Project ID</th>
-                        <th>Request Date</th>
-                        <th>Research Project</th>
-                        <th>Requested by</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for project in projects %}
+    <div class="pending" id="pending">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                    {% if project.status == 'pending' %}
                     <tr>
                         <td>
                             <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
@@ -87,53 +153,93 @@
                         <td>{{ project.title }}</td>
                         <td>{{ project.request_sample.requested_by.username }}</td>
                     </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">No research projects found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="4">No pending research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        <div id="completed" class="section">
-            <h3>Completed Requests</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Research Project ID</th>
-                        <th>Request Date</th>
-                        <th>Research Project</th>
-                        <th>Requested by</th>
-                        <th>Approval Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for project in projects %}
-                    <tr>
+    <div class="completed-table hidden" id="completed-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                    <th>Approval Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                    {% if project.status in 'approved' or project.status == 'rejected' %}
+                    <tr class="{% if project.status == 'approved' %}highlight-approved{% elif project.status == 'rejected' %}highlight-rejected{% endif %}">
                         <td>
-                            <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                            <a href="{% url 'update_view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
                         </td>                        
                         <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
                         <td>{{ project.title }}</td>
                         <td>{{ project.request_sample.requested_by.username }}</td>
+                        <td>{{ project.updated_at|date:"d/m/Y" }}</td> 
                     </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">No research projects found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="5">No completed research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <script>
-        function showSection(sectionId) {
-            document.getElementById('pending').classList.remove('active');
-            document.getElementById('completed').classList.remove('active');
-            document.getElementById(sectionId).classList.add('active');
+        function showTab(tab) {
+            const pendingTab = document.getElementById("pending");
+            const completedTab = document.getElementById("completed-table");
+
+            if (tab === 'pending') {
+                document.querySelector(".tab:nth-child(1)").classList.add("active");
+                document.querySelector(".tab:nth-child(2)").classList.remove("active");
+                pendingTab.classList.remove("hidden");
+                completedTab.classList.add("hidden");
+            } else {
+                document.querySelector(".tab:nth-child(1)").classList.remove("active");
+                document.querySelector(".tab:nth-child(2)").classList.add("active");
+                pendingTab.classList.add("hidden");
+                completedTab.classList.remove("hidden");
+            }
+        }
+
+        function showPendingDetails() {
+            document.getElementById("pending-details").classList.add("active");
+            document.getElementById("pending").classList.add("hidden");
+            document.getElementById("completed-table").classList.add("hidden");
+            document.querySelector(".tabs-container").classList.add("hidden");
+        }
+
+        function showCompletedDetails() {
+            document.getElementById("completed-details").classList.add("active");
+            document.getElementById("completed-table").classList.add("hidden");
+            document.getElementById("pending").classList.add("hidden");
+            document.querySelector(".tabs-container").classList.add("hidden");
+        }
+
+        function hidePendingDetails() {
+            document.getElementById("pending-details").classList.remove("active");
+            document.getElementById("pending").classList.remove("hidden");
+            document.getElementById("completed-table").classList.add("hidden");
+            document.querySelector(".tabs-container").classList.remove("hidden");
+        }
+
+        function hideCompletedDetails() {
+            document.getElementById("completed-details").classList.remove("active");
+            document.getElementById("completed-table").classList.remove("hidden");
+            document.getElementById("pending").classList.add("hidden");
+            document.querySelector(".tabs-container").classList.remove("hidden");
         }
     </script>
 

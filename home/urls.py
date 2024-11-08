@@ -22,7 +22,8 @@ urlpatterns = [
 
     # View request sample
     path('view_request_sample', views.view_request_sample, name='view_request_sample'),
-    path('view_details/<int:id>/', views.view_details, name='view_details'), 
+    path('view_details/<int:id>/', views.view_details, name='view_details'),
+    path('update_view_details/<int:id>/', views.update_view_details, name='update_view_details'), 
     path('create_ack_receipt/<int:id>/', views.create_ack_receipt, name='create_ack_receipt'),
 
     # Request sample
