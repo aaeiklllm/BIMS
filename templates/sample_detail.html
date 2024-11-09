@@ -211,11 +211,57 @@
                         <button class="dropbtn">Manage</button>
                         <div class="dropdown-content">
                             <a href="{% url 'edit_sample' sample.id %}">Edit Sample Information</a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#usageHistoryModal">View Usage History</a>
                             <a href="#" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">Delete Sample</a>
                         </div>
                     </div> 
                 </div>
                 </div>
+
+                <!-- Usage History Modal -->
+                <div class="modal fade" id="usageHistoryModal" tabindex="-1" aria-labelledby="usageHistoryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="usageHistoryModalLabel">Request History</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Table for Request History -->
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Requested By</th>
+                                            <th>Date of Request</th>
+                                            <th>Research Project ID</th>
+                                            <th>Project Title</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for request in request_samples %}
+                                            <tr>
+                                                <td>
+                                                    {{ request.requested_by.get_full_name }} 
+                                                    ({{ request.requested_by.username }}) - 
+                                                    {{ request.requested_by.position }}
+                                                </td>
+                                                <td>{{ request.date_of_request }}</td>
+                                                <td>{{ request.research_project.id }}</td>
+                                                <td>{{ request.research_project.title }}</td>
+                                                <td>{{ request.status }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- Delete Confirmation Modal -->
                 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true" style="color: #333;">

@@ -1,4 +1,7 @@
 from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from accounts.models import UserProfile
 
 # Biobank Manager -------------------------------------------------------------------------
 class Samples(models.Model):
@@ -40,7 +43,18 @@ class Storage(models.Model):
     container = models.CharField(max_length=100, blank=True)
 
 # Researcher ----------------------------------------------------------------------------------
+class Research_Project(models.Model):
+    # request_samples = models.ManyToManyField('Request_Sample', related_name='research_projects')
+    title = models.CharField(max_length=300, null=True, blank=False)
+    principal_investigator = models.CharField(max_length=300, null=True, blank=False)
+    description = models.CharField(max_length=300, null=True, blank=False)
+    anticipated_initiation_date = models.DateField(null=True, blank=False) 
+    anticipated_completion_date = models.DateField(null=True, blank=False) 
+    erb_number = models.CharField(max_length=300, null=True, blank=False)
+    funding_source = models.CharField(max_length=300, null=True, blank=False)
+    
 class Request_Sample(models.Model):
+    research_project = models.ForeignKey(Research_Project, on_delete=models.CASCADE, related_name='request_samples', null=True, blank=True)
     erb_approval = models.FileField(blank=True, null=True)
     type = models.CharField(max_length=300, null=True, blank=False)
     sex = models.CharField(max_length=100, null=True, blank=False)
@@ -50,16 +64,10 @@ class Request_Sample(models.Model):
     unit = models.CharField(max_length=100, null=True, blank=True)
     desired_start_date = models.DateField(null=True, blank=False) 
 
-class Research_Project(models.Model):
-    request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE)
-
-    title = models.CharField(max_length=300, null=True, blank=False)
-    principal_investigator = models.CharField(max_length=300, null=True, blank=False)
-    description = models.CharField(max_length=300, null=True, blank=False)
-    anticipated_initiation_date = models.DateField(null=True, blank=False) 
-    anticipated_completion_date = models.DateField(null=True, blank=False) 
-    erb_number = models.CharField(max_length=300, null=True, blank=False)
-    funding_source = models.CharField(max_length=300, null=True, blank=False)
+    #Fields for Usage History
+    requested_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE)  # Add the requested_by field
+    created_at = models.DateTimeField(auto_now_add=True)  # Captures request date automatically
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='pending')
 
 class RS_Comorbidities(models.Model):
     # Parent

@@ -11,6 +11,7 @@ from .models import Request_Sample, Research_Project, RS_Comorbidities, RS_Lab_T
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.contrib import messages 
+from django.db.models import Prefetch
 
 # Create your views here.
 
@@ -441,26 +442,14 @@ def request_sample(request):
             clinical_diagnosis=clinical_diagnosis,
             amount=amount,
             unit=unit,
-            desired_start_date=desired_start_date
+            desired_start_date=desired_start_date,
+            requested_by=request.user,
+            research_project=selected_project
         )
         request_sample.save()
 
-        # If an existing project was selected, create a duplicate with a new FK
-        if selected_project:
-            # Copy existing project data and associate it with the new request_sample
-            Research_Project.objects.create(
-                request_sample=request_sample,
-                title=selected_project.title,
-                principal_investigator=selected_project.principal_investigator,
-                description=selected_project.description,
-                anticipated_initiation_date=selected_project.anticipated_initiation_date,
-                anticipated_completion_date=selected_project.anticipated_completion_date,
-                erb_number=selected_project.erb_number,
-                funding_source=selected_project.funding_source
-            )
-
-        else:
-            # Collect Research Project data
+        if not selected_project:
+            # Create a new project if no existing one was selected
             title = request.POST.get('title')
             principal_investigator = request.POST.get('investigator')
             description = request.POST.get('description')
@@ -486,9 +475,8 @@ def request_sample(request):
             else:
                 anticipated_completion_date = None
 
-            # Create and save a new Research Project instance with the new request_sample FK
-            Research_Project.objects.create(
-                request_sample=request_sample,
+            # Create and associate the new project with the request sample
+            new_project = Research_Project.objects.create(
                 title=title,
                 principal_investigator=principal_investigator,
                 description=description,
@@ -497,6 +485,10 @@ def request_sample(request):
                 erb_number=erb_number,
                 funding_source=funding_source
             )
+
+            # Link the new project to the request sample
+            request_sample.research_project = new_project
+            request_sample.save()
 
         # Collect and save Comorbidities
         comorbidities = request.POST.get('comorbidities')
@@ -644,7 +636,266 @@ def request_sample(request):
 def request_sample_step7(request, sample_id):
     # Fetch the request sample from the database using the sample_id
     request_sample = get_object_or_404(Request_Sample, id=sample_id)
-    research_project = Research_Project.objects.filter(request_sample=request_sample).first()
+    research_project = request_sample.research_project  # Access the single related project
+    comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
+    lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
+    step4_data = RS_Step4.objects.filter(request_sample=request_sample).first()
+    step5_data = RS_Step5.objects.filter(request_sample=request_sample).first()
+
+    # Prepare context with all the fetched data
+    context = {
+        'request_sample': request_sample,
+        'research_project': research_project,  # Pass the single related project
+        'comorbidities': comorbidities,
+        'lab_tests': lab_tests,
+        'step4': step4_data,
+        'step5': step5_data
+    }
+    
+    return render(request, 'request_sample_step7.html', context)
+
+def request_sample_ty(request):
+    return render(request, 'request_sample_ty.html')
+
+def edit_request_sample(request, sample_id):
+    # Fetch the existing Request Sample and its associated project
+    request_sample = get_object_or_404(Request_Sample, id=sample_id)
+    research_projects = Research_Project.objects.all()  
+
+    existing_comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
+    existing_comorbidities_list = [comorbidity.comorbidity for comorbidity in existing_comorbidities]
+
+    existing_lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
+    existing_lab_tests_list = [lab_test.labtest for lab_test in existing_lab_tests]
+
+    rs_step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
+    rs_step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
+    
+    if request.method == 'POST':
+        # Check if the user selected to create a new project or select an existing one
+        project_option = request.POST.get('project')  # 'existing' or 'new'
+        selected_project_id = request.POST.get('existing-project')  # Get the selected existing project ID
+
+        if project_option == 'existing' and selected_project_id:
+            # Associate the selected existing project with the sample
+            selected_project = get_object_or_404(Research_Project, id=selected_project_id)
+            request_sample.research_project = selected_project  # Set the ForeignKey to the selected project
+            request_sample.save()
+
+        elif project_option == 'new':
+            # Collect new project data from the form
+            title = request.POST.get('title')
+            principal_investigator = request.POST.get('investigator')
+            description = request.POST.get('description')
+            initiation_date = request.POST.get('initiation-date')
+            completion_date = request.POST.get('completion-date')
+            erb_number = request.POST.get('erb')
+            funding_source = request.POST.get('funding')
+
+            # Validate and convert dates if provided
+            if initiation_date:
+                try:
+                    initiation_date = datetime.strptime(initiation_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            if completion_date:
+                try:
+                    completion_date = datetime.strptime(completion_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
+
+            # Create a new Research_Project instance
+            new_project = Research_Project.objects.create(
+                title=title,
+                principal_investigator=principal_investigator,
+                description=description,
+                anticipated_initiation_date=initiation_date,
+                anticipated_completion_date=completion_date,
+                erb_number=erb_number,
+                funding_source=funding_source
+            )
+
+            # Associate the new project with the request sample
+            request_sample.research_project = new_project  # Set the ForeignKey to the new project
+
+        erb_approval = request.FILES.get('erb_approval')  # New file if uploaded
+        type_selected = request.POST.get('typeValue')
+        sex = request.POST.get('sex')
+        age = request.POST.get('age')
+        clinical_diagnosis = request.POST.get('clinical_diagnosis')
+        amount = request.POST.get('amount')
+        unit = request.POST.get('unit')
+        desired_start_date = request.POST.get('desired_start_date')
+
+        # Convert the desired_start_date to a date format if it's provided
+        if desired_start_date:
+            try:
+                desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            desired_start_date = None
+
+        # Convert empty string fields to None
+        age = None if age == '' else int(age)
+        amount = None if amount == '' else int(amount)
+
+        # Update the Request Sample instance fields
+        if erb_approval:
+            request_sample.erb_approval = erb_approval  # Only update if a new file is uploaded
+
+        request_sample.type = type_selected
+        request_sample.sex = sex
+        request_sample.age = age
+        request_sample.clinical_diagnosis = clinical_diagnosis
+        request_sample.amount = amount
+        request_sample.unit = unit
+        request_sample.desired_start_date = desired_start_date
+        
+        request_sample.save()
+
+        # Handle comorbidities
+        new_comorbidities = request.POST.get('comorbidities') 
+
+        # Add new comorbidities to the request_sample if provided
+        if new_comorbidities:
+            for comorbidity in new_comorbidities.split(','):
+                comorbidity = comorbidity.strip()  # Remove any extra spaces
+                if comorbidity:  # Check if it's not empty
+                    RS_Comorbidities.objects.create(
+                        request_sample=request_sample,
+                        comorbidity=comorbidity
+                    )   
+
+        # Handle lab tests
+        new_lab_tests = request.POST.get('lab_tests')
+        RS_Lab_Test.objects.filter(request_sample=request_sample).delete()
+
+        if new_lab_tests:
+            for lab_test in new_lab_tests.split(','):
+                lab_test = lab_test.strip()  # Remove any extra spaces
+                if lab_test:  # Ensure it's not empty
+                    RS_Lab_Test.objects.create(
+                        request_sample=request_sample,
+                        labtest=lab_test
+                    )
+
+        # Handle Step4 data
+        multiple_samples = request.POST.get('multiple_samples')
+        time_points = request.POST.get('time_points')
+        interval = request.POST.get('interval')
+        interval_unit = request.POST.get('interval_unit')
+        start_date_ddmmyyyy = request.POST.get('start_date_ddmmyyyy')
+        start_date_mmyyyy = request.POST.get('start_date_mmyyyy')
+        start_date_yyyy = request.POST.get('start_date_yyyy')
+
+        # Validate and parse start_date_ddmmyyyy
+        if start_date_ddmmyyyy:
+            try:
+                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            start_date_ddmmyyyy = None
+
+        # Convert fields to None if empty
+        time_points = int(time_points) if time_points else None
+        interval = int(interval) if interval else None
+        start_date_yyyy = int(start_date_yyyy) if start_date_yyyy else None
+
+        # Update or create RS_Step4 instance
+        rs_step4, created = RS_Step4.objects.update_or_create(
+            request_sample=request_sample,
+            defaults={
+                'multiple_samples': multiple_samples,
+                'time_points': time_points,
+                'interval': interval,
+                'interval_unit': interval_unit,
+                'start_date_ddmmyyyy': start_date_ddmmyyyy,
+                'start_date_mmyyyy': start_date_mmyyyy,
+                'start_date_yyyy': start_date_yyyy,
+            }
+        )
+
+        # Collect Step5 data
+        different_sources = request.POST.get('different_sources')
+        num_participants = request.POST.get('num_participants')
+        multiple_timepoints_each = request.POST.get('multiple_timepoints_each')
+        time_points = request.POST.get('time_points')
+        interval = request.POST.get('interval')
+        interval_unit = request.POST.get('interval_unit')
+        start_date_ddmmyyyy = request.POST.get('start_date_ddmmyyyy')
+        start_date_mmyyyy = request.POST.get('start_date_mmyyyy')
+        start_date_yyyy = request.POST.get('start_date_yyyy')
+        collection_date_ddmmyyyy = request.POST.get('collection_date_ddmmyyyy')
+        collection_date_mmyyyy = request.POST.get('collection_date_mmyyyy')
+        collection_date_yyyy = request.POST.get('collection_date_yyyy')
+
+        # Validate and parse the start_date_ddmmyyyy
+        if start_date_ddmmyyyy:
+            try:
+                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            start_date_ddmmyyyy = None
+
+        # Validate and parse the collection_date_ddmmyyyy
+        if collection_date_ddmmyyyy:
+            try:
+                collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+        else:
+            collection_date_ddmmyyyy = None
+
+        # Convert empty strings to None
+        num_participants = int(num_participants) if num_participants else None
+        time_points = int(time_points) if time_points else None
+        interval = int(interval) if interval else None
+        start_date_yyyy = int(start_date_yyyy) if start_date_yyyy else None
+        collection_date_yyyy = int(collection_date_yyyy) if collection_date_yyyy else None
+
+        # Handle the time_points field based on multiple_timepoints_each
+        if multiple_timepoints_each == 'no':
+            time_points = None  # Set time_points to None if "No" for multiple time points
+
+        # Update or create RS_Step5 instance
+        rs_step5, created = RS_Step5.objects.update_or_create(
+            request_sample=request_sample,  # Match the request_sample
+            defaults={
+                'different_sources': different_sources,
+                'num_participants': num_participants,
+                'multiple_timepoints_each': multiple_timepoints_each,
+                'time_points': time_points,
+                'interval': interval,
+                'interval_unit': interval_unit,
+                'start_date_ddmmyyyy': start_date_ddmmyyyy,
+                'start_date_mmyyyy': start_date_mmyyyy,
+                'start_date_yyyy': start_date_yyyy,
+                'collection_date_ddmmyyyy': collection_date_ddmmyyyy,
+                'collection_date_mmyyyy': collection_date_mmyyyy,
+                'collection_date_yyyy': collection_date_yyyy,
+            }
+        )   
+
+        # Redirect after handling the project
+        return redirect('request_sample_step7', sample_id=request_sample.id)
+
+    # Render the form for editing with existing project data
+    return render(request, 'edit_request_sample.html', {
+        'request_sample': request_sample,
+        'research_projects': research_projects,
+        'existing_comorbidities': existing_comorbidities_list,
+        'existing_lab_tests': existing_lab_tests_list,
+        'rs_step4': rs_step4,
+        'rs_step5': rs_step5,
+    })
+
+def view_request_sample(request, sample_id):
+# Fetch the request sample from the database using the sample_id
+    request_sample = get_object_or_404(Request_Sample, id=sample_id)
+    research_project = request_sample.research_project
     comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
     lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
     step4_data = RS_Step4.objects.filter(request_sample=request_sample).first()
@@ -660,7 +911,17 @@ def request_sample_step7(request, sample_id):
         'step5': step5_data
     }
     
-    return render(request, 'request_sample_step7.html', context)
+    return render(request, 'view_request_sample.html', context)
 
-def request_sample_ty(request):
-    return render(request, 'request_sample_ty.html')
+
+def my_requests(request):
+    user = request.user
+    if user.is_authenticated:  
+        # Retrieve all samples requested by the user, including their related research project
+        sample_requests = Request_Sample.objects.filter(requested_by=request.user).select_related('research_project')
+        return render(request, 'my_requests.html', {'sample_requests': sample_requests})
+    else:
+        return redirect('login')
+    
+
+

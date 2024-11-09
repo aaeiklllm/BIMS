@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import *
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib import messages 
 from django.contrib.auth import get_user_model
 from datetime import datetime
@@ -359,7 +359,7 @@ def delete_users(request):
         'active_tab': 'creation_requests'
     })
 
-def login(request):
+def custom_login(request):
     print(f"Request path: {request.path}")
     print(f"GET parameters: {request.GET}")
 
@@ -407,6 +407,8 @@ def login(request):
             if ubj is None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 return redirect(request.path)
+            
+            login(request, ubj)
 
             q = User.objects.filter(username=email).filter
             table1_data = UserroleMap.objects.filter(user_id=ubj.id).first()
@@ -449,6 +451,8 @@ def login_admin(request):
             if ubj == None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 return redirect(request.path)
+            
+            login(request, ubj)
 
             q = User.objects.filter(username=email).filter
             table1_data= UserroleMap.objects.filter(user_id=ubj.id).first()
