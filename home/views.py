@@ -317,8 +317,13 @@ def edit_sample(request, sample_id):
         unit = request.POST.get('unit', sample.unit)
         date_collected = request.POST.get('date_collected', sample.date_collected)
         consent_form = request.FILES.get('consent_form')
+        # Retrieve form values from POST request
+        freezer_num = request.POST.get('freezer_num')
+        shelf_num = request.POST.get('shelf_num')
+        rack_num = request.POST.get('rack_num')
+        box_num = request.POST.get('box_num')
 
-        # Update the existing sample instance instead of creating a new one
+        # Update the sample instance's fields
         sample.type = type_selected
         sample.sex = sex
         sample.age = age
@@ -326,13 +331,24 @@ def edit_sample(request, sample_id):
         sample.amount = amount
         sample.unit = unit
         sample.date_collected = date_collected
-        
+
+        storage_instance = sample.storage_set.first()  # Use .first() to get a single instance
+
+        # Check if a storage instance exists before trying to update it
+        if storage_instance:
+            # Update the storage attributes
+            storage_instance.freezer_num = freezer_num
+            storage_instance.shelf_num = shelf_num
+            storage_instance.rack_num = rack_num
+            storage_instance.box_num = box_num
+            storage_instance.save()  # Save changes to storage instance
+
         # Update the consent form only if a new file is uploaded
         if consent_form:
             sample.consent_form = consent_form
 
-        # Save the updated sample instance
-        sample.save()
+        sample.save()              # Save changes in sample
+
 
         # Update Comorbidities
         comorbidities = request.POST.get('comorbidities', '')

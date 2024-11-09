@@ -127,6 +127,13 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .sample-count {
+            font-size: 1rem;
+            margin-left: 10px;
+            color: #555;
+        }
+
     </style>
 </head>
 
@@ -138,6 +145,11 @@
         <div class="search-filter">
             <input type="text" id="search" placeholder="Search for samples..." />
             <button id="filter-button" type="button">Filter</button>
+            
+        </div>
+
+        <div class="search-filter">
+            <span id="sample-count">Showing {{ samples.count }} samples</span>
         </div>
 
         <!-- Filter Modal -->
@@ -150,7 +162,19 @@
                     <label for="type">By Type:</label>
                     <select id="type" name="type">
                         <option value="">Select Type</option>
-                        <!-- Add your options here -->
+                        <option value="molecular - dna">Molecular - DNA</option>
+                        <option value="molecular - rna">Molecular - RNA</option>
+                        <option value="molecular - cdna">Molecular - cDNA</option>
+
+                        <!-- Blood or Derivatives options -->
+                        <option value="blood - plasma">Blood - Plasma</option>
+                        <option value="blood - serum">Blood - Serum</option>
+                        <option value="blood - pbmc">Blood - PBMC</option>
+                        <option value="blood - whole blood">Blood - Whole Blood</option>
+
+                        <!-- Tissue options -->
+                        <option value="tissue - lung">Tissue - Lung</option>
+                        <option value="tissue - heart">Tissue - Heart</option>
                     </select>
                     
                     <br>
@@ -158,7 +182,6 @@
                     <label for="sex">By Sex:</label>
                     <input type="radio" id="male" name="sex" value="male"> Male
                     <input type="radio" id="female" name="sex" value="female"> Female
-                    <input type="radio" id="either" name="sex" value="either"> Either
                     
                     <br>
 
@@ -185,21 +208,160 @@
                     <label for="clinical-diagnosis">By Clinical Diagnosis:</label>
                     <select id="clinical-diagnosis" name="clinical-diagnosis">
                         <option value="">Select Diagnosis</option>
-                        <!-- Add options -->
+                        <option value="Alzheimer's Disease">Alzheimer's Disease</option>
+                        <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
+                        <option value="Asthma">Asthma</option>
+                        <option value="Atrial Fibrillation">Atrial Fibrillation</option>
+                        <option value="Breast Cancer">Breast Cancer</option>
+                        <option value="Cerebral Palsy">Cerebral Palsy</option>
+                        <option value="Chronic Kidney Disease">Chronic Kidney Disease</option>
+                        <option value="Chronic Obstructive Pulmonary Disease (COPD)">Chronic Obstructive Pulmonary Disease (COPD)</option>
+                        <option value="Chronic Pain (e.g., arthritis, fibromyalgia)">Chronic Pain (e.g., arthritis, fibromyalgia)</option>
+                        <option value="Colon Cancer">Colon Cancer</option>
+                        <option value="Congenital Heart Defects">Congenital Heart Defects</option>
+                        <option value="Coronary Artery Disease">Coronary Artery Disease</option>
+                        <option value="Cystic Fibrosis">Cystic Fibrosis</option>
+                        <option value="Diabetes Mellitus Type 1">Diabetes Mellitus Type 1</option>
+                        <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
+                        <option value="Down Syndrome">Down Syndrome</option>
+                        <option value="Dyslipidemia">Dyslipidemia</option>
+                        <option value="Epilepsy">Epilepsy</option>
+                        <option value="G6PD Deficiency">G6PD Deficiency</option>
+                        <option value="Gaucher Disease">Gaucher Disease</option>
+                        <option value="Hemophilia">Hemophilia</option>
+                        <option value="Hepatitis B">Hepatitis B</option>
+                        <option value="Hepatitis C">Hepatitis C</option>
+                        <option value="HIV/AIDS">HIV/AIDS</option>
+                        <option value="Huntington's Disease">Huntington's Disease</option>
+                        <option value="Hypertension">Hypertension</option>
+                        <option value="Leukemia">Leukemia</option>
+                        <option value="Liver Cirrhosis">Liver Cirrhosis</option>
+                        <option value="Lymphoma">Lymphoma</option>
+                        <option value="Multiple Sclerosis">Multiple Sclerosis</option>
+                        <option value="Obesity">Obesity</option>
+                        <option value="Osteoporosis">Osteoporosis</option>
+                        <option value="Parkinson's Disease">Parkinson's Disease</option>
+                        <option value="Peripheral Neuropathy">Peripheral Neuropathy</option>
+                        <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
+                        <option value="Psoriasis">Psoriasis</option>
+                        <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
+                        <option value="Sickle Cell Disease">Sickle Cell Disease</option>
+                        <option value="Sleep Apnea">Sleep Apnea</option>
+                        <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
+                        <option value="Systemic Lupus Erythematosus (SLE)">Systemic Lupus Erythematosus (SLE)</option>
+                        <option value="Thalassemia">Thalassemia</option>
+                        <option value="Tuberculosis">Tuberculosis</option>
+                        <option value="Viral Hepatitis">Viral Hepatitis</option>
+                        <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
+                        <option value="Other">Others</option>
                     </select>
                     <br>
 
                     <!-- Filter by Comorbidities (Multiple) -->
                     <label for="comorbidities">By Comorbidities:</label>
                     <select id="comorbidities" name="comorbidities" multiple>
-                        <!-- Add options -->
+                        <option value="Alzheimer's Disease">Alzheimer's Disease</option>
+                        <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
+                        <option value="Asthma">Asthma</option>
+                        <option value="Atrial Fibrillation">Atrial Fibrillation</option>
+                        <option value="Breast Cancer">Breast Cancer</option>
+                        <option value="Cerebral Palsy">Cerebral Palsy</option>
+                        <option value="Chronic Kidney Disease">Chronic Kidney Disease</option>
+                        <option value="Chronic Obstructive Pulmonary Disease (COPD)">Chronic Obstructive Pulmonary Disease (COPD)</option>
+                        <option value="Chronic Pain (e.g., arthritis, fibromyalgia)">Chronic Pain (e.g., arthritis, fibromyalgia)</option>
+                        <option value="Colon Cancer">Colon Cancer</option>
+                        <option value="Congenital Heart Defects">Congenital Heart Defects</option>
+                        <option value="Coronary Artery Disease">Coronary Artery Disease</option>
+                        <option value="Cystic Fibrosis">Cystic Fibrosis</option>
+                        <option value="Diabetes Mellitus Type 1">Diabetes Mellitus Type 1</option>
+                        <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
+                        <option value="Down Syndrome">Down Syndrome</option>
+                        <option value="Dyslipidemia">Dyslipidemia</option>
+                        <option value="Epilepsy">Epilepsy</option>
+                        <option value="G6PD Deficiency">G6PD Deficiency</option>
+                        <option value="Gaucher Disease">Gaucher Disease</option>
+                        <option value="Hemophilia">Hemophilia</option>
+                        <option value="Hepatitis B">Hepatitis B</option>
+                        <option value="Hepatitis C">Hepatitis C</option>
+                        <option value="HIV/AIDS">HIV/AIDS</option>
+                        <option value="Huntington's Disease">Huntington's Disease</option>
+                        <option value="Hypertension">Hypertension</option>
+                        <option value="Leukemia">Leukemia</option>
+                        <option value="Liver Cirrhosis">Liver Cirrhosis</option>
+                        <option value="Lymphoma">Lymphoma</option>
+                        <option value="Multiple Sclerosis">Multiple Sclerosis</option>
+                        <option value="Obesity">Obesity</option>
+                        <option value="Osteoporosis">Osteoporosis</option>
+                        <option value="Parkinson's Disease">Parkinson's Disease</option>
+                        <option value="Peripheral Neuropathy">Peripheral Neuropathy</option>
+                        <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
+                        <option value="Psoriasis">Psoriasis</option>
+                        <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
+                        <option value="Sickle Cell Disease">Sickle Cell Disease</option>
+                        <option value="Sleep Apnea">Sleep Apnea</option>
+                        <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
+                        <option value="Systemic Lupus Erythematosus (SLE)">Systemic Lupus Erythematosus (SLE)</option>
+                        <option value="Thalassemia">Thalassemia</option>
+                        <option value="Tuberculosis">Tuberculosis</option>
+                        <option value="Viral Hepatitis">Viral Hepatitis</option>
+                        <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
                     </select>
                     <br>
 
                     <!-- Filter by Lab Tests (Multiple) -->
                     <label for="lab-tests">By Lab Tests:</label>
                     <select id="lab-tests" name="lab-tests" multiple>
-                        <!-- Add options -->
+                        <option value="Complete Blood Count (CBC)">Complete Blood Count (CBC)</option>
+                        <option value="Glucose">Glucose</option>
+                        <option value="Blood Urea Nitrogen (BUN)">Blood Urea Nitrogen (BUN)</option>
+                        <option value="Creatinine">Creatinine</option>
+                        <option value="Electrolytes (Sodium, Potassium, Chloride)">Electrolytes (Sodium, Potassium, Chloride)</option>
+                        <option value="Calcium">Calcium</option>
+                        <option value="Albumin">Albumin</option>
+                        <option value="Total Cholesterol">Total Cholesterol</option>
+                        <option value="HDL (High-Density Lipoprotein)">HDL (High-Density Lipoprotein)</option>
+                        <option value="LDL (Low-Density Lipoprotein)">LDL (Low-Density Lipoprotein)</option>
+                        <option value="Triglycerides">Triglycerides</option>
+                        <option value="Hemoglobin A1c (HbA1c)">Hemoglobin A1c (HbA1c)</option>
+                        <option value="Fasting Blood Sugar (FBS)">Fasting Blood Sugar (FBS)</option>
+                        <option value="Oral Glucose Tolerance Test (OGTT)">Oral Glucose Tolerance Test (OGTT)</option>
+                        <option value="T3 (Triiodothyronine)">T3 (Triiodothyronine)</option>
+                        <option value="T4 (Thyroxine)">T4 (Thyroxine)</option>
+                        <option value="TSH (Thyroid Stimulating Hormone)">TSH (Thyroid Stimulating Hormone)</option>
+                        <option value="Serum Creatinine">Serum Creatinine</option>
+                        <option value="Estimated Glomerular Filtration Rate (eGFR)">Estimated Glomerular Filtration Rate (eGFR)</option>
+                        <option value="Urinalysis">Urinalysis</option>
+                        <option value="ALT (Alanine Aminotransferase)">ALT (Alanine Aminotransferase)</option>
+                        <option value="AST (Aspartate Aminotransferase)">AST (Aspartate Aminotransferase)</option>
+                        <option value="ALP (Alkaline Phosphatase)">ALP (Alkaline Phosphatase)</option>
+                        <option value="Bilirubin">Bilirubin</option>
+                        <option value="Troponin">Troponin</option>
+                        <option value="Creatine Kinase-MB (CK-MB)">Creatine Kinase-MB (CK-MB)</option>
+                        <option value="Prothrombin Time (PT)">Prothrombin Time (PT)</option>
+                        <option value="Partial Thromboplastin Time (PTT)">Partial Thromboplastin Time (PTT)</option>
+                        <option value="INR (International Normalized Ratio)">INR (International Normalized Ratio)</option>
+                        <option value="Electrocardiogram (ECG/EKG)">Electrocardiogram (ECG/EKG)</option>
+                        <option value="Echocardiogram">Echocardiogram</option>
+                        <option value="Chest X-ray">Chest X-ray</option>
+                        <option value="Abdominal Ultrasound">Abdominal Ultrasound</option>
+                        <option value="Bone Mineral Density Test (DEXA)">Bone Mineral Density Test (DEXA)</option>
+                        <option value="CT Scan (Computed Tomography)">CT Scan (Computed Tomography)</option>
+                        <option value="MRI (Magnetic Resonance Imaging)">MRI (Magnetic Resonance Imaging)</option>
+                        <option value="Blood Culture">Blood Culture</option>
+                        <option value="Sputum Culture">Sputum Culture</option>
+                        <option value="Stool Analysis">Stool Analysis</option>
+                        <option value="Pap Smear">Pap Smear</option>
+                        <option value="Prostate-Specific Antigen (PSA)">Prostate-Specific Antigen (PSA)</option>
+                        <option value="HIV Test">HIV Test</option>
+                        <option value="Hepatitis B Test">Hepatitis B Test</option>
+                        <option value="Hepatitis C Test">Hepatitis C Test</option>
+                        <option value="Tuberculosis Skin Test (Mantoux Test)">Tuberculosis Skin Test (Mantoux Test)</option>
+                        <option value="Dengue NS1 Antigen Test">Dengue NS1 Antigen Test</option>
+                        <option value="Blood Typing and Crossmatching">Blood Typing and Crossmatching</option>
+                        <option value="C-Reactive Protein (CRP)">C-Reactive Protein (CRP)</option>
+                        <option value="Erythrocyte Sedimentation Rate (ESR)">Erythrocyte Sedimentation Rate (ESR)</option>
+                        <option value="Antinuclear Antibody (ANA)">Antinuclear Antibody (ANA)</option>
+                        <option value="Rheumatoid Factor (RF)">Rheumatoid Factor (RF)</option>
                     </select>
                     <br>
 
@@ -249,7 +411,7 @@
                         <b>Age:</b> <span class="age highlight">{{ sample.age }}</span>
                     </div>
                     <div class="grid-item">
-                        <b>Clinical Diagnosis:</b> <span class="highlight">{{ sample.clinical_diagnosis }}</span>
+                        <b>Clinical Diagnosis:</b> <span class="clinical highlight">{{ sample.clinical_diagnosis }}</span>
                     </div>
                 </div>
 
@@ -265,7 +427,7 @@
                 </div>
 
                 <div class="section-header">Lab Tests</div>
-                <div class="grid-item">
+                <div class="lab grid-item">
                     {% if sample.lab_test_set.all %}
                         {% for lab_test in sample.lab_test_set.all %}
                             <span>{{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}</span>
@@ -329,146 +491,100 @@
             document.getElementById("age-range-container").style.display = "block";
         });
 
-        // JavaScript for filter functionality
         document.addEventListener('DOMContentLoaded', function() {
             const filterButton = document.getElementById('filter-button');
             const modal = document.getElementById('filter-modal');
             const closeButton = document.querySelector('.close-button');
+            const searchInput = document.getElementById('search');
+            const sampleCount = document.getElementById('sample-count');
 
-            // Open the filter modal
-            filterButton.addEventListener('click', function() {
-                modal.style.display = 'block';
-            });
+            function updateSampleCount() {
+                const visibleSamples = document.querySelectorAll('.sample-details:not([style*="display: none"])').length;
+                sampleCount.textContent = `Showing ${visibleSamples} samples`;
+            }
 
-            // Close the filter modal
-            closeButton.addEventListener('click', function() {
-                modal.style.display = 'none';
-            });
-
-            // Close the modal if the user clicks outside of it
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                }
-            });
+            // Open and close modal
+            filterButton.addEventListener('click', function() { modal.style.display = 'block'; });
+            closeButton.addEventListener('click', function() { modal.style.display = 'none'; });
+            window.addEventListener('click', function(event) { if (event.target === modal) modal.style.display = 'none'; });
 
             // Search functionality
-            const searchInput = document.getElementById('search');
             searchInput.addEventListener('input', function() {
                 const filter = searchInput.value.toLowerCase();
                 const sampleDetails = document.querySelectorAll('.sample-details');
+
                 sampleDetails.forEach(sample => {
                     const text = sample.textContent.toLowerCase();
-
-                    if (text.includes(filter)) {
-                        sample.style.display = '';
-                    } else {
-                        sample.style.display = 'none';
-                    }
+                    sample.style.display = text.includes(filter) ? '' : 'none';
                 });
-            });
-        });
 
-             // Apply filters
-        document.getElementById("apply-filters").addEventListener("click", function(event) {
-                event.preventDefault();  // Prevent form from submitting
+                updateSampleCount();
+            });
+
+            // Apply filters
+            document.getElementById("apply-filters").addEventListener("click", function(event) {
+                event.preventDefault();
                 const modal = document.getElementById('filter-modal');
-                // Collecting filter values
                 const type = document.getElementById("type").value.toLowerCase();
                 const sex = document.querySelector('input[name="sex"]:checked')?.value.toLowerCase();
-                // Check if exact age or range is selected
                 const clinicalDiagnosis = document.getElementById("clinical-diagnosis").value.toLowerCase();
                 const comorbidities = Array.from(document.getElementById("comorbidities").selectedOptions).map(opt => opt.value.toLowerCase());
+                console.log("Selected Comorbidities:", comorbidities);
                 const labTests = Array.from(document.getElementById("lab-tests").selectedOptions).map(opt => opt.value.toLowerCase());
-                // Get the value from the input (which is usually in 'YYYY-MM-DD' format)
                 const collectionDateValue = document.getElementById("collection-date").value;
-                // Initialize formattedDate
                 let formattedDate = '';
 
                 if (collectionDateValue) {
-                    // Parse the collection date
                     const collectionDate = new Date(collectionDateValue);
-                    
-                    // Get the month abbreviation with a period (e.g., "Oct.")
                     const monthsWithPeriods = ["Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
-                    const month = monthsWithPeriods[collectionDate.getMonth()]; // getMonth() returns 0-based index
-
-                    // Format the day and year
+                    const month = monthsWithPeriods[collectionDate.getMonth()];
                     const day = collectionDate.getDate();
                     const year = collectionDate.getFullYear();
-
-                    // Create the final formatted date
                     formattedDate = `${month} ${day}, ${year}`;
-                    console.log(formattedDate); // Output: Oct. 16, 2024
                 }
 
                 const researchProject = document.getElementById("research-project").value.toLowerCase();
+                const ageFilterType = document.querySelector('input[name="age-filter"]:checked').value;
+                const exactAge = document.getElementById("exact-age").value;
+                const ageFrom = document.getElementById("age-from").value;
+                const ageTo = document.getElementById("age-to").value;
+                const samples = document.querySelectorAll('.sample-details');
 
-                // Get all samples
-                let samples = document.querySelectorAll('.sample-details');
-
-                // Loop through samples and apply filters
                 samples.forEach(sample => {
-                    let typeMatch = !type || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(type);
-                    let sexMatch = !sex || sample.querySelector('.grid-item span.sex').innerText.toLowerCase() === sex;
-                    console.log(sample.querySelector('.grid-item span.sex').innerText.toLowerCase())
-                    let ageMatch = true;  // Default to true if no age filter
-                    let clinicalDiagnosisMatch = !clinicalDiagnosis || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(clinicalDiagnosis);
-                    let comorbiditiesMatch = comorbidities.length === 0 || comorbidities.every(c => sample.querySelector('.section-header + .grid-item').innerText.toLowerCase().includes(c));
-                    let labTestsMatch = labTests.length === 0 || labTests.every(l => sample.querySelector('.section-header + .grid-item').innerText.toLowerCase().includes(l));
-                    let dateMatch = !formattedDate || sample.querySelector('.grid-item span.date').innerText === formattedDate;
-                    console.log(sample.querySelector('.grid-item span.date').innerText)
-                    console.log(formattedDate)
-                    let projectMatch = !researchProject || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(researchProject);
-                    let ageFilterType = document.querySelector('input[name="age-filter"]:checked').value;
-                    let exactAge = document.getElementById("exact-age").value;
-                    let ageFrom = document.getElementById("age-from").value;
-                    let ageTo = document.getElementById("age-to").value;
+                    const typeMatch = !type || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(type);
+                    const sexMatch = !sex || sample.querySelector('.grid-item span.sex').innerText.toLowerCase() === sex;
+                    const clinicalDiagnosisMatch = !clinicalDiagnosis || sample.querySelector('.grid-item span.clinical').innerText.toLowerCase().includes(clinicalDiagnosis);
+                    const comorbiditiesMatch = comorbidities.length === 0 || comorbidities.every(c => sample.querySelector('.section-header + .grid-item').innerText.toLowerCase().includes(c));
+                    const labTestsMatch = labTests.length === 0 || labTests.every(l => sample.querySelector('.section-header + .lab').innerText.toLowerCase().includes(l));
+                    const dateMatch = !formattedDate || sample.querySelector('.grid-item span.date').innerText === formattedDate;
+                    const projectMatch = !researchProject || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(researchProject);
 
-                    // Get the sample's age
-                    let sampleAge = parseInt(sample.querySelector('.grid-item span.age').innerText);
-                    console.log(sampleAge)
-                    // Handle exact age or range filtering
-                    if (ageFilterType === "exact") {
-                        if (exactAge) {
-                            ageMatch = sampleAge === parseInt(exactAge);
-                        }
+                    let ageMatch = true;
+                    const sampleAge = parseInt(sample.querySelector('.grid-item span.age').innerText);
+
+                    if (ageFilterType === "exact" && exactAge) {
+                        ageMatch = sampleAge === parseInt(exactAge);
                     } else if (ageFilterType === "range") {
-                        if (ageFrom && ageTo) {
-                            ageMatch = sampleAge >= parseInt(ageFrom) && sampleAge <= parseInt(ageTo);
-                        } else if (ageFrom) {
-                            ageMatch = sampleAge >= parseInt(ageFrom);
-                        } else if (ageTo) {
-                            ageMatch = sampleAge <= parseInt(ageTo);
-                        }
+                        ageMatch = (ageFrom ? sampleAge >= parseInt(ageFrom) : true) && (ageTo ? sampleAge <= parseInt(ageTo) : true);
                     }
 
-                    // Show or hide based on matches
-                    if (typeMatch && sexMatch && ageMatch && clinicalDiagnosisMatch && comorbiditiesMatch && labTestsMatch && dateMatch && projectMatch) {
-                        sample.style.display = "";
-                    } else {
-                        sample.style.display = "none";
-                    }
+                    sample.style.display = (typeMatch && sexMatch && ageMatch && clinicalDiagnosisMatch && comorbiditiesMatch && labTestsMatch && dateMatch && projectMatch) ? "" : "none";
                 });
 
-                // Close modal after applying filters
+                updateSampleCount();
                 modal.style.display = "none";
             });
 
-    // Reset filters
-    document.getElementById("reset-filters").addEventListener("click", function(event) {
-        // Reset form fields
-        document.getElementById("filter-form").reset();
-
-        // Show all samples
-        let samples = document.querySelectorAll('.sample-details');
-        samples.forEach(sample => {
-            sample.style.display = "";
+            // Reset filters
+            document.getElementById("reset-filters").addEventListener("click", function(event) {
+                document.getElementById("filter-form").reset();
+                const samples = document.querySelectorAll('.sample-details');
+                samples.forEach(sample => sample.style.display = "");
+                updateSampleCount();
+                modal.style.display = "none";
+            });
         });
 
-        // Close modal after resetting filters
-        modal.style.display = "none";
-    });
     </script>
 
     <style>
@@ -485,43 +601,60 @@
             margin-right: 10px;
         }
 
-        #filter-modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        /* Modal Styles */
+        .modal {
+        display: none; /* Initially hidden */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0,0,0,0.4);
         }
 
         .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
         }
 
         .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 25px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #000;
+        cursor: pointer;
         }
 
         .close-button:hover,
         .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+        color: #f00;
         }
 
-        .filter-group {
-            margin-bottom: 15px;
+        /* Form Styles (Optional) */
+        /* .filter-form {
+
+        } */
+
+        /* Age Range Container Styles */
+        #age-range-container {
+        display: none; /* Initially hidden */
+        }
+
+        /* Show/hide age range container based on radio button selection */
+        #exact-age-option:checked ~ #age-range-container,
+        #age-range-option:checked ~ #exact-age-container {
+        display: none;
+        }
+
+        #age-range-option:checked ~ #age-range-container {
+        display: block;
         }
 
         /* Add any additional styles as needed */
