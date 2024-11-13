@@ -74,7 +74,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bims',        # DB_DATABASE
         'USER': 'postgres',         # DB_USERNAME
-        'PASSWORD': 'antoninofamily', # DB_PASSWORD
+        'PASSWORD': 'abrampostgres', # DB_PASSWORD
         'HOST': '127.0.0.1',        # DB_HOST
         'PORT': '5432',             # DB_PORT
     }

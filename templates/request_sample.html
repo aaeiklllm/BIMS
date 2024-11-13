@@ -547,15 +547,16 @@
             <div id="added_comorbidities" class="mt-2"></div>
         </div>
 
-        <!-- Comorbidities -->
         <div id="added_comorbidities" class="mt-2"></div>
         <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
 
+        <!-- Lab Test -->
         <div class="mb-3">
             <label for="lab_tests" class="form-label">Lab Tests:</label>
             <div class="d-flex align-items-center">
                 <select class="form-select me-2" id="lab_test_select">
                     <option value="">Select Lab Test</option>
+                    <option value="Complete Blood Count (CBC)">Complete Blood Count (CBC)</option>
                     <option value="Blood Test">Blood Test</option>
                     <option value="CT Scan">CT Scan</option>
                     <option value="MRI">MRI</option>
@@ -567,11 +568,11 @@
             <div id="added_lab_tests" class="mt-2"></div>
         </div>
 
-        <!-- Lab Tests -->
         <div id="added_lab_tests" class="mt-2"></div>
         <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
 
         <div class="row">
+            <label>Quantity Volume</label>
             <div class="col-md-6">
                 <label for="amount" class="form-label">Amount:</label>
                 <input type="number" class="form-control" id="amount" name="amount" step="0.01">
@@ -608,7 +609,9 @@
         <div id="timePointsSection" style="display:none;">
             <div class="form-group-4">
                 <label># of time points:</label>
-                <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number">
+                <input type="number" class="form-control" name="time_points1" id="time_points1" min="2" placeholder="Enter number" oninput="validateTimePoints()">
+                <small class="form-text text-muted">Please enter a value of 2 or above.</small>
+                <span id="time_points_error" style="color: red; display: none;">The number must be 2 or greater.</span>
             </div>
     
             <div class="form-group-4">
@@ -665,7 +668,7 @@
     
         <!-- If Yes is selected: # of sources/participants -->
         <div id="num_sources" style="display:none;">
-            <label for="num_participants"># of sources/participants:</label>
+            <label for="num_participants"># of additional sources/participants:</label>
             <input type="number" class="form-control" name="num_participants" min="1" placeholder="Enter number of participants">
     
             <!-- Indented section for multiple time points per source -->
@@ -673,10 +676,10 @@
                 <label>Do you need multiple samples with multiple time points from each source/participant?</label>
                 <div class="radio-buttons">
                     <label>
-                        <input type="radio" name="multiple_timepoints_each" value="yes"> Yes
+                        <input type="radio" name="multiple_timepoints_each" value="yes" onclick="toggleTimepointDetails(true)"> Yes
                     </label>
                     <label>
-                        <input type="radio" name="multiple_timepoints_each" value="no"> No
+                        <input type="radio" name="multiple_timepoints_each" value="no" onclick="toggleTimepointDetails(false)"> No
                     </label>
                 </div>
     
@@ -685,7 +688,9 @@
                     <br>
                     <div class="form-group-4">
                         <label># of time points:</label>
-                        <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number">
+                        <input type="number" class="form-control" name="time_points2" id="step5_time_points" min="2" placeholder="Enter number" oninput="validateStep5TimePoints()">
+                        <small class="form-text text-muted">Please enter a value of 2 or above.</small>
+                        <span id="step5_time_points_error" style="color: red; display: none;">The number must be 2 or greater.</span>
                     </div>
             
                     <div class="form-group-4">
@@ -910,8 +915,9 @@
 
     // Function to select an option and update units dynamically
     function selectOption(option, category) {
-        document.getElementById("selectedOption").value = option;
-        document.getElementById('typeValue').value = option; 
+        category = category.charAt(0).toUpperCase() + category.slice(1);
+        document.getElementById("selectedOption").value = category + ' - ' + option;
+        document.getElementById('typeValue').value = category + ' - ' + option;
         updateUnitOptions(category, option);
         document.getElementById("type-dropdown").classList.remove("show");
     }
@@ -919,13 +925,15 @@
 
     // Capture the input in the "Other" field and update the display
     function captureOtherInput(type) {
-        const otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
+        let otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
         const selectedType = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize the first letter of the type
         if (otherValue) {
+            otherValue = otherValue.charAt(0).toUpperCase() + otherValue.slice(1);
             // Combine the type and the specified other value
             document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
             document.getElementById("typeValue").value = selectedType + " - " + otherValue; // Set the hidden input value as well
         }
+        updateUnitOptions(selectedType, otherValue);
     }
 
     // Function to show the "Other" input field
@@ -941,16 +949,16 @@
         const amountUnitSelect = document.getElementById('unit');
         amountUnitSelect.innerHTML = ''; // Clear existing options
 
-        if (category === 'molecular') {
+        if (category === 'Molecular') {
             amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
-        } else if (category === 'blood') {
+        } else if (category === 'Blood') {
             if (option === 'Whole Blood') {
                 amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
             } else {
                 amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
                 amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
             }
-        } else if (category === 'tissue') {
+        } else if (category === 'Tissue') {
             amountUnitSelect.innerHTML += '<option value="slides">Slides</option>';
             amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
         }
@@ -1009,6 +1017,36 @@
             timepointDetails.style.display = this.value === 'yes' ? 'block' : 'none';
         });
     });
+
+    function validateTimePoints() {
+        const timePointsInput = document.getElementById('time_points1');
+        const errorMessage = document.getElementById('time_points_error');
+
+        if (timePointsInput.value < 2) {
+            errorMessage.style.display = 'inline';
+            timePointsInput.setCustomValidity("The number of time points must be 2 or greater.");
+        } else {
+            errorMessage.style.display = 'none';
+            timePointsInput.setCustomValidity("");
+        }
+    }
+
+    function toggleTimepointDetails(show) {
+        document.getElementById("timepoint_details").style.display = show ? "block" : "none";
+    }
+
+    function validateStep5TimePoints() {
+        const timePointsInput = document.getElementById('step5_time_points');
+        const errorMessage = document.getElementById('step5_time_points_error');
+
+        if (timePointsInput.value < 2) {
+            errorMessage.style.display = 'inline';
+            timePointsInput.setCustomValidity("The number of time points must be 2 or greater.");
+        } else {
+            errorMessage.style.display = 'none';
+            timePointsInput.setCustomValidity("");
+        }
+    }
 
 </script>
 

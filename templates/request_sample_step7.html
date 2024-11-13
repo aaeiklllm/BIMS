@@ -108,6 +108,9 @@
         .request-summary p, .request-summary ul {
             margin: 10px -20px 10px 50px; /* Adds consistent spacing between elements inside the box */
         }
+        .highlight {
+            color: red;
+        }
     </style>
    
 </head>
@@ -177,7 +180,8 @@
                 </ul>
 
                 <p><strong>Desired Start Date:</strong> {{ request_sample.desired_start_date }}</p>
-                <p><strong>Total number of sample requests:</strong> Not Sure</p>
+                <p><strong>Total number of sample requests:</strong> <span class="highlight">{{ total_samples }}</span></p>
+
             </div>
         </div>
 

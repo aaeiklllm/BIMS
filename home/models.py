@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import UserProfile  # Import the UserProfile model
 
 # Biobank Manager -------------------------------------------------------------------------
 class Samples(models.Model):
@@ -39,6 +40,7 @@ class Storage(models.Model):
     box_num = models.IntegerField(null=True, blank=True)
     container = models.CharField(max_length=100, blank=True)
 
+
 # Researcher ----------------------------------------------------------------------------------
 class Request_Sample(models.Model):
     erb_approval = models.FileField(blank=True, null=True)
@@ -49,6 +51,11 @@ class Request_Sample(models.Model):
     amount = models.IntegerField(null=True, blank=True)
     unit = models.CharField(max_length=100, null=True, blank=True)
     desired_start_date = models.DateField(null=True, blank=False) 
+
+    requested_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE)  # Add the requested_by field
+    created_at = models.DateTimeField(auto_now_add=True)  # Captures request date automatically
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='pending')
+    updated_at = models.DateTimeField(auto_now=True)  # Automatically updates on modification
 
 class Research_Project(models.Model):
     request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE)
@@ -78,7 +85,7 @@ class RS_Step4(models.Model):
     request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE)
 
     multiple_samples = models.CharField(max_length=255, null=True, blank=False)
-    time_points = models.IntegerField(null=True, blank=True)
+    time_points1 = models.IntegerField(null=True, blank=True)
     interval = models.IntegerField(null=True, blank=True)
     interval_unit = models.CharField(max_length=100, blank=True)
     start_date_ddmmyyyy = models.DateField(null=True, blank=False) 
@@ -92,7 +99,7 @@ class RS_Step5(models.Model):
     different_sources = models.CharField(max_length=255, null=True, blank=False)
     num_participants = models.IntegerField(null=True, blank=True)
     multiple_timepoints_each = models.CharField(max_length=255, null=True, blank=False)
-    time_points = models.IntegerField(null=True, blank=True)
+    time_points2 = models.IntegerField(null=True, blank=True)
     interval = models.IntegerField(null=True, blank=True)
     interval_unit = models.CharField(max_length=100, blank=True)
     start_date_ddmmyyyy = models.DateField(null=True, blank=False) 
@@ -102,32 +109,23 @@ class RS_Step5(models.Model):
     collection_date_mmyyyy = models.CharField(max_length=7, blank=True, null=True)  # e.g., "2024-10"
     collection_date_yyyy = models.IntegerField(blank=True, null=True)  # Store only the year as an integer
 
-class Approve_Reject_Request(models.Model):
-    # Parent
-    request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE)
-
-    attach_file = models.FileField(blank=True, null=True)
-    reject_reason = models.CharField(max_length=300, null=True, blank=False)
-    no_available_samples = models.BooleanField(default=False, null=True, blank=False)
-
-class Acknowledgement_Receipt(models.Model):
-    # Parent
-    approve = models.ForeignKey(Approve_Reject_Request, on_delete=models.CASCADE)
-
-    name = models.CharField(max_length=300, null=True, blank=False)
-    ack_unit = models.CharField(max_length=100, null=True, blank=False)
-    ack_position = models.CharField(max_length=300, null=True, blank=False)
-    ack_sample_id = models.IntegerField(null=True, blank=True)
-    sample_type = models.CharField(max_length=300, null=True, blank=False)
-    ack_quantity_volume = models.IntegerField(null=True, blank=True)
-    officer_name = models.CharField(max_length=300, null=True, blank=False)
-    officer_position = models.CharField(max_length=300, null=True, blank=False)
+class Create_Ack_Receipt(models.Model):
     officer_signature = models.FileField(blank=True, null=True)
 
-class Acknowledgement_Storage(models.Model):
+class Approve_Reject_Request(models.Model):
     # Parent
-    acknowledgement_receipt = models.ForeignKey(Acknowledgement_Receipt, on_delete=models.CASCADE)
+    create_ack_receipt = models.ForeignKey(Create_Ack_Receipt, on_delete=models.CASCADE, null=True, blank=True)
 
-    ack_box_num = models.IntegerField(null=True, blank=True)
-    ack_container_num = models.IntegerField(null=True, blank=True)
+    approve_reject = models.CharField(max_length=100, null=True, blank=False)
+    attach_file = models.FileField(blank=True, null=True)
+    reject_reason = models.CharField(max_length=300, null=True, blank=False)
+    no_available_samples = models.CharField(max_length=100, null=True, blank=False)
 
+class Ack_Sample(models.Model):
+    # Parent
+    create_ack_receipt = models.ForeignKey(Create_Ack_Receipt, on_delete=models.CASCADE, null=True, blank=True)
+
+    sample_id = models.IntegerField(null=True, blank=True)
+    sample_type = models.CharField(max_length=100, null=True, blank=False)
+    quantity_volume = models.CharField(max_length=100, null=True, blank=False)
+    container_location = models.CharField(max_length=100, null=True, blank=False)
