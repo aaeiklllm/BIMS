@@ -1,207 +1,282 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>View Request Sample</title> 
     <style>
-
+         body, html {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
         .container {
-            width: 60%;
-            margin: 0 auto;
-            background-color: #fff;
+            flex: 1; 
+            width: 100%;
+            max-width: 1280px;
+            margin: 20px auto;
+            margin-bottom: 40px;
             padding: 20px;
+            background-color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
         }
-
-        .form-buttons {
-            display: flex;
-            justify-content: flex-end;
+        h1 {
             margin-top: 20px;
-            gap: 10px;
+            text-align: center;
         }
-
-        .radio-buttons label {
-            margin-right: 20px;
-            font-size: 18px;
-        }
-
-        .form-group {
+        .tabs {
             display: flex;
-            align-items: center;
-            margin: 10px 0;
-        }
-
-        .form-group label {
-            flex: 1;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-
-        .form-group input, .form-group select {
-            flex: 2;
-            padding: 5px;
-            font-size: 16px;
-        }
-
-        .date-pickers {
-            display: flex;
-            gap: 10px;
-        }
-
-        .date-pickers input {
-            width: 150px;
-        }
-
-        .form-buttons {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-            gap: 10px;
-        }
-
-        .btn-back {
-            background-color: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .btn-next {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .btn {
             cursor: pointer;
-            font-size: 16px;
+        }
+        .tab {
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-color: blue;
+            color: blue;
+        }
+        
+        .table-container {
+            display: none;
         }
 
-        .date-picker-wrapper {
-            margin-bottom: 15px; /* Adds space between each input */
+        .table-container.active {
+            display: block;
         }
 
-        .form-text {
-            font-size: 12px;
-            color: #6c757d;
-            margin-left: 5px;
-            display: block; /* Forces small text to appear on its own line */
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        /* Box styling for request-summary */
-        .request-summary {
-            border: 1px solid #ddd; /* Adds a subtle border */
-            background-color: #f9f9f9; /* Slight background color */
-            padding: 20px 20px 30px 0px; /* Adds padding inside the box */
-            border-radius: 8px; /* Rounds the corners of the box */
-            margin-bottom: 10px; /* Adds space between the box and other elements */
-            width: calc(100% + 5px); /* Expands width beyond the container’s normal padding */
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            position: relative;
         }
-
-        .request-summary p, .request-summary ul {
-            margin: 10px -20px 10px 50px; /* Adds consistent spacing between elements inside the box */
-        }
-
-        h4{
-            margin: 10px -20px 10px 50px;
-        }
-
-        .back-icon {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: gray; 
-            font-size: 24px; 
-            text-decoration: none;
+        th {
+            background-color: #f2f2f2;
+        }   
+        .icon-button {
+        text-decoration: none;
+        color: inherit;
+        display: inline-block;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f2f2f2;
+        cursor: pointer;
+        transition: background-color 0.2s;
         }
 
-        .back-icon:hover {
-            color: #e6a20e; 
+        .icon-button:hover {
+            background-color: #e0e0e0;
+        }
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .hover-details {
+            visibility: hidden;
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 8px;
+        }
+        tr:hover .hover-details {
+            visibility: visible;
+        }
+        .highlight-approved {
+            background-color: rgb(203, 255, 203);
+        }
+        .highlight-rejected {
+            background-color: rgb(255, 207, 207);
         }
     </style>
-   
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="form-group">
-            <div class="request-summary">
-                <p>
-                    <a href="/myrequests" class="back-icon">
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
-                </p>
-                <h4><strong>Research Project ID: {{ research_project.id|stringformat:"05d" }}</strong></h4>
-                <p><strong>Research Project:</strong> {{ research_project.title }}</p>
-                <p><strong>Research Ethics Boards Approval (ERB):</strong> {{ request_sample.erb_approval }}</p>
-                <p><strong>Sample Information:</strong></p>
-                <ul>
-                    <li>Type: {{ request_sample.type }}</li>
-                    <li>Source
-                        <ul>
-                            <li>Sex: {{ request_sample.sex }}</li>
-                            <li>Age: {{ request_sample.age }}</li>
-                            <li>Clinical Diagnosis: {{ request_sample.clinical_diagnosis }}</li>
-                            <li>Comorbidities: 
-                                {% if comorbidities %}
-                                    {% for comorbidity in comorbidities %}
-                                        {{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    None
-                                {% endif %}
-                            </li>
-                            <li>Lab Tests: 
-                                {% if lab_tests %}
-                                    {% for lab_test in lab_tests %}
-                                        {{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    None
-                                {% endif %}
-                            </li>
-                        </ul>
-                    </li>
-                    <li style="margin-left: 20px;">Quantity Volume: {{ request_sample.amount }} {{ request_sample.unit }}</li>
-                </ul>
-
-                <p><strong>Multiple samples from the same source/participant with multiple time points:</strong> 
-                    {% if step4 and step4.multiple_samples == 'yes' %}
-                        YES - {{ step4.time_points }} time points - {{ step4.interval }} {{ step4.interval_unit }} interval
-                    {% else %}
-                        NO
-                    {% endif %}
-                </p>
-                
-                <p><strong>Same sample request from different sources/participants:</strong>
-                    {% if step5 and step5.different_sources == 'yes' %}
-                        YES - {{ step5.num_participants }} sources/participants
-                    {% else %}
-                        NO
-                    {% endif %}
-                </p>
-                <ul style="margin-left: 70px;">
-                    {% if step5 and step5.multiple_timepoints_each == 'yes' %}
-                        <li>Multiple samples with multiple time points from each source/participant: 
-                            YES - {{ step5.time_points }} time points - {{ step5.interval }} {{ step5.interval_unit }} interval
-                        </li>
-                    {% else %}
-                        NO
-                    {% endif %}
-                </ul>
-
-                <p><strong>Desired Start Date:</strong> {{ request_sample.desired_start_date }}</p>
-                <p><strong>Total number of sample requests:</strong> Not Sure</p>
-            </div>
+    <h1><b>View Request Sample</b></h1>
+    
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('all')">All</div>
+            <div class="tab" onclick="showTab('pending')">Pending</div>
+            <div class="tab" onclick="showTab('approved')">Approved</div>
+            <div class="tab" onclick="showTab('rejected')">Rejected</div>
         </div>
     </div>
+    <br>
+    <div class="table-container active" id="all">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <!-- <tr class="{% if project.status == 'approved' %}highlight-approved{% elif project.status == 'rejected' %}highlight-rejected{% endif %}"> -->
+                    <td>
+                        <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                    </td>                        
+                    <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
+                    <td>{{ project.title }}</td>
+                    <td>{{ project.request_sample.requested_by.username }}</td>
+                    <td>{{ project.request_sample.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container" id="pending">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                    {% if project.request_sample.status == 'pending' %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                        </td>                        
+                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.request_sample.requested_by.username }}</td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="4">No pending research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container" id="approved">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                    <th>Response Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                    {% if project.request_sample.status == 'approved' %}
+                    <!-- <tr class="highlight-approved"> -->
+                        <td>
+                            <a href="{% url 'update_view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                        </td>                        
+                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.request_sample.requested_by.username }}</td>
+                        <td>{{ project.request_sample.updated_at|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="5">No approved research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container" id="rejected">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                    <th>Response Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                    {% if project.request_sample.status == 'rejected' %}
+                    <!-- <tr class="highlight-rejected"> -->
+                        <td>
+                            <a href="{% url 'update_view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                        </td>                        
+                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.request_sample.requested_by.username }}</td>
+                        <td>{{ project.request_sample.updated_at|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="5">No rejected research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll(".tab");
+            const tables = document.querySelectorAll(".table-container");
+
+            tabs.forEach(tab => {
+                if (tab.textContent.toLowerCase() === tabId) {
+                    tab.classList.add("active");
+                } else {
+                    tab.classList.remove("active");
+                }
+            });
+
+            tables.forEach(table => {
+                if (table.id === tabId) {
+                    table.classList.add("active");
+                } else {
+                    table.classList.remove("active");
+                }
+            });
+        }
+    </script>
+
 </body>
 
-</html>
-
 {% endblock %}
+

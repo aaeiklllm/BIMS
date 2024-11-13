@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Acknowledgment Receipt</title>
+    <style>
+        body, html {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            flex: 1; 
+            width: 100%;
+            max-width: 1280px;
+            margin: 20px auto;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .sub-section {
+            margin-left: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            color: red;
+        }
+        .file-input {
+            display: inline-block;
+            margin-left: 5px;
+        }
+        .note {
+            color: red;
+            margin-left: 20px;
+            font-size: 12px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn.submit {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .btn.cancel {
+            background-color: #ddd;
+            color: #333;
+        }
+        .remove-signature {
+            background: none;
+            border: none;
+            color: #007bff; /* Link color */
+            padding: 0;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .remove-signature:hover {
+            color: #0056b3; /* Darker color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="section-title">Create Acknowledgment Receipt</h1>
+        <form method="post" action="{% url 'create_ack_receipt' project.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Recipient Information Section -->
+            <div class="section-title">Recipient Information</div>
+            <div class="sub-section">
+                <p><strong>Name:</strong> {{ researcher.first_name }} {{ researcher.last_name }}</p>
+                <p><strong>Unit:</strong> {{ researcher.unit }}</p>
+                <p><strong>Position:</strong> {{ researcher.position }}</p>
+            </div>
+
+            <!-- Sample Information Section -->
+            <div class="section-title">Sample Information</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Sample ID</th>
+                        <th>Sample Type</th>
+                        <th>Quality Volume</th>
+                        <th>Container Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in sample_range %}
+                    <tr>
+                        <td>Sample {{ i }}</td>
+                        <td>
+                            <!-- Drop-down menu for Sample ID -->
+                            <select name="sample_id_{{ i }}" id="sample_id_{{ i }}" onchange="handleChange('{{ i }}')">
+                                <option value="" disabled selected>Select sample</option>
+                                {% for sample in matching_samples %}
+                                <option value="{{ sample.id }}">
+                                    {{ sample.id }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="hidden" name="sample_type_{{ i }}" value="{{ matching_samples.0.type }}">
+                            {{ matching_samples.0.type }}
+                        </td>
+                        <td>
+                            <input type="hidden" name="quantity_volume_{{ i }}" value="{{ matching_samples.0.amount }} {{ matching_samples.0.unit }}">
+                            {{ matching_samples.0.amount }} {{ matching_samples.0.unit }}
+                        </td>
+                        <td>
+                            <input type="hidden" name="container_location_{{ i }}" id="container_location_input_{{ i }}">
+                            <span id="container_location_{{ i }}"></span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+            
+            <!-- Issuing Officer Information Section -->
+            <div class="section-title">Issuing Officer Information</div>
+            <div class="sub-section">
+                {% if biobank_manager %}
+                    <p><strong>Name:</strong> {{ biobank_manager.first_name }} {{ biobank_manager.last_name }}</p>
+                    <p><strong>Position:</strong> {{ biobank_manager.position }}</p>
+                    <p><strong>Signature:</strong></p>
+                    <div class="signature-input-wrapper">
+                        <input type="file" id="signature-file" name="signature-file" class="file-input" accept=".png" onchange="displayRemoveButton()">
+                        <div id="signature-info" style="display: none;">
+                            <button type="button" class="remove-signature" onclick="removeSignature()">Remove</button>
+                        </div>       
+                        <span class="note">*PNG file only</span>
+                    </div>
+                {% else %}
+                    <p>No biobank manager information available.</p>
+                {% endif %}
+            </div>
+
+            <!-- Buttons -->
+            <div class="buttons">
+                <button class="btn submit" type="submit">Submit</button>
+                <a href="{% url 'view_details' project.id %}">
+                    <button class="btn cancel" type="button">Cancel</button>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function displayRemoveButton() {
+            const fileInput = document.getElementById('signature-file');
+            const signatureInfo = document.getElementById('signature-info');
+            if (fileInput.files.length > 0) {
+                signatureInfo.style.display = 'inline-block';
+            }
+        }
+
+        function removeSignature() {
+            const fileInput = document.getElementById('signature-file');
+            const signatureInfo = document.getElementById('signature-info');
+            fileInput.value = '';
+            signatureInfo.style.display = 'none';
+        }
+
+        function generateContainerLocation(index) {
+            const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+            const cols = 10;
+            const boxNumber = Math.floor(index / (rows.length * cols)) + 1;
+            const position = index % (rows.length * cols);
+            const row = rows[Math.floor(position / cols)];
+            const col = (position % cols) + 1;
+            return `Box ${boxNumber}/${row}${col}`;
+        }
+
+        function setContainerLocations() {
+            const sampleRows = document.querySelectorAll("tbody tr");
+            sampleRows.forEach((row, index) => {
+                const containerLocation = generateContainerLocation(index);
+                const containerCell = row.querySelector(`#container_location_${index + 1}`);
+                const containerInput = row.querySelector(`#container_location_input_${index + 1}`);
+                containerCell.innerText = containerLocation; // Displayed in the table
+                containerInput.value = containerLocation; // Hidden input for form submission
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setContainerLocations();
+        });
+
+        function updateSelections() {
+            const allDropdowns = document.querySelectorAll("select[id^='sample_id_']");
+            const selectedSamples = Array.from(allDropdowns).map(dropdown => dropdown.value).filter(value => value);
+            allDropdowns.forEach(dropdown => {
+                Array.from(dropdown.options).forEach(option => {
+                    if (selectedSamples.includes(option.value) && option.value !== dropdown.value) {
+                        option.style.display = 'none';
+                    } else {
+                        option.style.display = '';
+                    }
+                });
+            });
+        }
+
+        function handleChange(index) {
+            updateSelections();
+        }
+    </script>
+</body>
+
+{% endblock %}
