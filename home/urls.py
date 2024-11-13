@@ -32,7 +32,7 @@ urlpatterns = [
     path('requestsample/ty', views.request_sample_ty, name='request_sample_ty'),
 
     path('myrequests', views.my_requests, name='myrequests'),
-    path('viewrequestsample/<int:sample_id>/', views.view_request_sample, name='viewrequestsample'),
+    path('viewrequestsampledetails/<int:sample_id>/', views.view_request_sample_details, name='viewrequestsampledetails'),
     path('editrequestsample/<int:sample_id>/', views.edit_request_sample, name='editrequestsample'),
 
 

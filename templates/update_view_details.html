@@ -124,7 +124,7 @@
 <body>
     <div class="container">
         <h1><strong>Update Details</strong></h1>
-        {% if research_project.status == 'approved' or research_project.status == 'rejected' %}
+        {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %}
         <form method="post" enctype="multipart/form-data" action="{% url 'update_view_details' research_project.id %}">
             {% csrf_token %}
             <p style="color: #007bff; font-size: 22px;"><b>Research Project ID: <span class="project-id">{{ research_project.id }}</span></b></p>
@@ -199,7 +199,7 @@
             <p><b>Desired Start Date:</b> {{ request_sample.desired_start_date }}</p>
             <p><b>Total number of sample requests:</b> <span class="highlight">{{ total_number_of_samples }}</span></p>
 
-            {% if research_project.status == 'approved' %}
+            {% if request_sample.status == 'approved' %}
             <div class="radio-group">   
                 <label>
                     <input type="radio" name="approval" value="approve" onclick="toggleSections('approve')"> Approve
@@ -232,7 +232,7 @@
                     <p style="color: red; margin-left: 20px;">Note: By selecting this option, the system will automatically reject the request on the desired start date if you have not made a response by then.</p>
                 </div>
                 <div class="buttons">  
-                    {% if research_project.status == 'approved' %}
+                    {% if request_sample.status == 'approved' %}
                     <button type="submit" class="btn submit">Save Changes</button>
                     {% endif %}
                     <a href="{% url 'view_request_sample' %}" class="btn back">Back</a>

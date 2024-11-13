@@ -965,16 +965,19 @@ def my_requests(request):
         return redirect('login')
     
 
-
-
 def view_request_sample(request):
+
     # Fetch all research projects with their related request sample data
-    projects = Research_Project.objects.select_related('request_sample__requested_by').all()
-    return render(request, 'view_request_sample.html', {'projects': projects})
+    # projects = Research_Project.objects.select_related('request_sample__requested_by').all()
+    sample_requests = Request_Sample.objects.select_related('research_project').all()
+    return render(request, 'view_request_sample.html', {'sample_requests': sample_requests})
+
 
 def view_details(request, id):
-    research_project = get_object_or_404(Research_Project, id=id)
-    request_sample = research_project.request_sample
+    #research_project = get_object_or_404(Research_Project, id=id)
+    #request_sample = research_project.request_sample
+    request_sample = get_object_or_404(Request_Sample, id=id)
+    research_project = request_sample.research_project
     comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
     lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
     step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
@@ -1034,8 +1037,10 @@ def view_details(request, id):
 
 def update_view_details(request, id):
     # Fetch the research project and associated request sample
-    research_project = get_object_or_404(Research_Project, id=id)
-    request_sample = research_project.request_sample
+    # research_project = get_object_or_404(Research_Project, id=id)
+    # request_sample = research_project.request_sample
+    request_sample = get_object_or_404(Request_Sample, id=id)
+    research_project = request_sample.research_project
 
     # Get or create the approval record related to this request sample
     approval_record, created = Approve_Reject_Request.objects.get_or_create(
@@ -1089,8 +1094,10 @@ def update_view_details(request, id):
     return render(request, 'update_view_details.html', context)
 
 def create_ack_receipt(request, id):
-    project = get_object_or_404(Research_Project, id=id)
-    request_sample = project.request_sample
+    # project = get_object_or_404(Research_Project, id=id)
+    # request_sample = project.request_sample
+    request_sample = get_object_or_404(Request_Sample, id=id)
+    research_project = request_sample.research_project
     researcher = request_sample.requested_by
 
     user_id = request.session.get("user_id")
@@ -1158,7 +1165,7 @@ def create_ack_receipt(request, id):
             return redirect('view_request_sample')
 
     context = {
-        'project': project,
+        'project': research_project,
         'sample_range': range(1, total_samples + 1),
         'researcher': researcher,
         'biobank_manager': biobank_manager,

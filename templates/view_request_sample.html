@@ -135,15 +135,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for project in projects %}
+                {% for sample in sample_requests %}
                 <!-- <tr class="{% if project.status == 'approved' %}highlight-approved{% elif project.status == 'rejected' %}highlight-rejected{% endif %}"> -->
                     <td>
-                        <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                        <a href="{% url 'view_details' sample.research_project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ sample.research_project.id|stringformat:"05d" }}
                     </td>                        
-                    <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
-                    <td>{{ project.title }}</td>
-                    <td>{{ project.request_sample.requested_by.username }}</td>
-                    <td>{{ project.request_sample.status }}</td>
+                    <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                    <td>{{ sample.research_project.title }}</td>
+                    <td>{{ sample.requested_by.username }}</td>
+                    <td>{{ sample.status }}</td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -165,15 +165,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for project in projects %}
-                    {% if project.request_sample.status == 'pending' %}
+                {% for sample in sample_requests %}
+                    {% if sample.status == 'pending' %}
                     <tr>
                         <td>
-                            <a href="{% url 'view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                            <a href="{% url 'view_details' sample.research_project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ sample.research_project.id|stringformat:"05d" }}
                         </td>                        
-                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
-                        <td>{{ project.title }}</td>
-                        <td>{{ project.request_sample.requested_by.username }}</td>
+                        <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        <td>{{ sample.research_project.title }}</td>
+                        <td>{{ sample.requested_by.username }}</td>
                     </tr>
                     {% endif %}
                 {% empty %}
@@ -197,16 +197,16 @@
                 </tr>
             </thead>
             <tbody>
-                {% for project in projects %}
-                    {% if project.request_sample.status == 'approved' %}
+                {% for sample in sample_requests %}
+                    {% if sample.status == 'approved' %}
                     <!-- <tr class="highlight-approved"> -->
                         <td>
-                            <a href="{% url 'update_view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                            <a href="{% url 'update_view_details' sample.research_project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ sample.research_project.id|stringformat:"05d" }}
                         </td>                        
-                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
-                        <td>{{ project.title }}</td>
-                        <td>{{ project.request_sample.requested_by.username }}</td>
-                        <td>{{ project.request_sample.updated_at|date:"d/m/Y" }}</td>
+                        <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        <td>{{ sample.research_project.title }}</td>
+                        <td>{{ sample.requested_by.username }}</td>
+                        <td>{{ sample.updated_at|date:"m/d/Y" }}</td>
                     </tr>
                     {% endif %}
                 {% empty %}
@@ -230,16 +230,16 @@
                 </tr>
             </thead>
             <tbody>
-                {% for project in projects %}
-                    {% if project.request_sample.status == 'rejected' %}
+                {% for sample in sample_requests %}
+                    {% if sample.status == 'rejected' %}
                     <!-- <tr class="highlight-rejected"> -->
                         <td>
-                            <a href="{% url 'update_view_details' project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ project.id }}
+                            <a href="{% url 'update_view_details' sample.research_project.id %}" class="icon-button" title="View Details">&#9776;</a> {{ sample.research_project.id|stringformat:"05d" }}
                         </td>                        
-                        <td>{{ project.request_sample.created_at|date:"d/m/Y" }}</td>
-                        <td>{{ project.title }}</td>
-                        <td>{{ project.request_sample.requested_by.username }}</td>
-                        <td>{{ project.request_sample.updated_at|date:"d/m/Y" }}</td>
+                        <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        <td>{{ sample.research_project.title }}</td>
+                        <td>{{ sample.requested_by.username }}</td>
+                        <td>{{ sample.updated_at|date:"m/d/Y" }}</td>
                     </tr>
                     {% endif %}
                 {% empty %}

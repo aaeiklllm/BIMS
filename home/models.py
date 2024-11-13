@@ -43,7 +43,6 @@ class Storage(models.Model):
 
 # Researcher ----------------------------------------------------------------------------------
 class Research_Project(models.Model):
-    # request_samples = models.ManyToManyField('Request_Sample', related_name='research_projects')
     title = models.CharField(max_length=300, null=True, blank=False)
     principal_investigator = models.CharField(max_length=300, null=True, blank=False)
     description = models.CharField(max_length=300, null=True, blank=False)
@@ -54,6 +53,7 @@ class Research_Project(models.Model):
     
 class Request_Sample(models.Model):
     research_project = models.ForeignKey(Research_Project, on_delete=models.CASCADE, related_name='request_samples', null=True, blank=True)
+
     erb_approval = models.FileField(blank=True, null=True)
     type = models.CharField(max_length=300, null=True, blank=False)
     sex = models.CharField(max_length=100, null=True, blank=False)
@@ -66,17 +66,6 @@ class Request_Sample(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)  # Captures request date automatically
     status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='pending')
     updated_at = models.DateTimeField(auto_now=True)  # Automatically updates on modification
-
-class Research_Project(models.Model):
-    request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE)
-
-    title = models.CharField(max_length=300, null=True, blank=False)
-    principal_investigator = models.CharField(max_length=300, null=True, blank=False)
-    description = models.CharField(max_length=300, null=True, blank=False)
-    anticipated_initiation_date = models.DateField(null=True, blank=False) 
-    anticipated_completion_date = models.DateField(null=True, blank=False) 
-    erb_number = models.CharField(max_length=300, null=True, blank=False)
-    funding_source = models.CharField(max_length=300, null=True, blank=False)
 
 class RS_Comorbidities(models.Model):
     # Parent
