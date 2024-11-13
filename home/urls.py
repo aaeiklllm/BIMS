@@ -30,4 +30,10 @@ urlpatterns = [
     path('requestsample', views.request_sample, name='requestsample'),
     path('requestsample/step7/<int:sample_id>/', views.request_sample_step7, name='request_sample_step7'),
     path('requestsample/ty', views.request_sample_ty, name='request_sample_ty'),
+
+    path('myrequests', views.my_requests, name='myrequests'),
+    path('viewrequestsample/<int:sample_id>/', views.view_request_sample, name='viewrequestsample'),
+    path('editrequestsample/<int:sample_id>/', views.edit_request_sample, name='editrequestsample'),
+
+
 ]
