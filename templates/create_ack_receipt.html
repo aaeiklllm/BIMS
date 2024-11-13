@@ -7,9 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Acknowledgment Receipt</title>
     <style>
+        body, html {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
         .container {
-            margin: 20px;
-            font-family: Arial, sans-serif;
+            flex: 1; 
+            width: 100%;
+            max-width: 1280px;
+            margin: 20px auto;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
         }
         .section-title {
             font-size: 18px;
@@ -108,28 +126,31 @@
                         <td>Sample {{ i }}</td>
                         <td>
                             <!-- Drop-down menu for Sample ID -->
-                            <select name="sample_id_{{ i }}" id="sample_id_{{ i }}" onchange="updateContainerLocation('{{ i }}')">
+                            <select name="sample_id_{{ i }}" id="sample_id_{{ i }}" onchange="handleChange('{{ i }}')">
+                                <option value="" disabled selected>Select sample</option>
                                 {% for sample in matching_samples %}
-                                <option value="{{ sample.id }}" data-container="{{ sample.storage_set.first.box_num }} / {{ sample.storage_set.first.container }}">
+                                <option value="{{ sample.id }}">
                                     {{ sample.id }}
                                 </option>
                                 {% endfor %}
                             </select>
                         </td>
-                        <td>{{ matching_samples.0.type }}</td>
-                        <td>{{ matching_samples.0.amount }} {{ matching_samples.0.unit }}</td>
-                        <td id="container_location_{{ i }}">
-                            <!-- Default container location -->
-                            {% if matching_samples %}
-                            {{ matching_samples.0.storage_set.first.box_num }} /
-                            {{ matching_samples.0.storage_set.first.container }}
-                            {% else %}
-                            No storage information available
-                            {% endif %}
+                        <td>
+                            <input type="hidden" name="sample_type_{{ i }}" value="{{ matching_samples.0.type }}">
+                            {{ matching_samples.0.type }}
+                        </td>
+                        <td>
+                            <input type="hidden" name="quantity_volume_{{ i }}" value="{{ matching_samples.0.amount }} {{ matching_samples.0.unit }}">
+                            {{ matching_samples.0.amount }} {{ matching_samples.0.unit }}
+                        </td>
+                        <td>
+                            <input type="hidden" name="container_location_{{ i }}" id="container_location_input_{{ i }}">
+                            <span id="container_location_{{ i }}"></span>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
+                
             </table>
             
             <!-- Issuing Officer Information Section -->
@@ -140,13 +161,12 @@
                     <p><strong>Position:</strong> {{ biobank_manager.position }}</p>
                     <p><strong>Signature:</strong></p>
                     <div class="signature-input-wrapper">
-                            <input type="file" id="signature-file" name="signature-file" class="file-input" accept=".png" onchange="displayRemoveButton()">
+                        <input type="file" id="signature-file" name="signature-file" class="file-input" accept=".png" onchange="displayRemoveButton()">
                         <div id="signature-info" style="display: none;">
                             <button type="button" class="remove-signature" onclick="removeSignature()">Remove</button>
                         </div>       
                         <span class="note">*PNG file only</span>
                     </div>
-
                 {% else %}
                     <p>No biobank manager information available.</p>
                 {% endif %}
@@ -162,33 +182,63 @@
         </form>
     </div>
 
-
     <script>
-        function updateContainerLocation(rowNumber) {
-            // Get the selected option for the current row's dropdown
-            var selectElement = document.getElementById('sample_id_' + rowNumber);
-            var selectedOption = selectElement.options[selectElement.selectedIndex];
-            
-            // Get the container location data from the selected option
-            var containerLocation = selectedOption.getAttribute('data-container');
-            
-            // Update the container location cell for the current row
-            document.getElementById('container_location_' + rowNumber).innerText = containerLocation || 'No storage information available';
-        }
         function displayRemoveButton() {
             const fileInput = document.getElementById('signature-file');
             const signatureInfo = document.getElementById('signature-info');
-
             if (fileInput.files.length > 0) {
-                signatureInfo.style.display = 'inline-block'; // Show the remove button
+                signatureInfo.style.display = 'inline-block';
             }
         }
+
         function removeSignature() {
             const fileInput = document.getElementById('signature-file');
             const signatureInfo = document.getElementById('signature-info');
+            fileInput.value = '';
+            signatureInfo.style.display = 'none';
+        }
 
-            fileInput.value = ''; // Clear the file input
-            signatureInfo.style.display = 'none'; // Hide the remove button
+        function generateContainerLocation(index) {
+            const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+            const cols = 10;
+            const boxNumber = Math.floor(index / (rows.length * cols)) + 1;
+            const position = index % (rows.length * cols);
+            const row = rows[Math.floor(position / cols)];
+            const col = (position % cols) + 1;
+            return `Box ${boxNumber}/${row}${col}`;
+        }
+
+        function setContainerLocations() {
+            const sampleRows = document.querySelectorAll("tbody tr");
+            sampleRows.forEach((row, index) => {
+                const containerLocation = generateContainerLocation(index);
+                const containerCell = row.querySelector(`#container_location_${index + 1}`);
+                const containerInput = row.querySelector(`#container_location_input_${index + 1}`);
+                containerCell.innerText = containerLocation; // Displayed in the table
+                containerInput.value = containerLocation; // Hidden input for form submission
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setContainerLocations();
+        });
+
+        function updateSelections() {
+            const allDropdowns = document.querySelectorAll("select[id^='sample_id_']");
+            const selectedSamples = Array.from(allDropdowns).map(dropdown => dropdown.value).filter(value => value);
+            allDropdowns.forEach(dropdown => {
+                Array.from(dropdown.options).forEach(option => {
+                    if (selectedSamples.includes(option.value) && option.value !== dropdown.value) {
+                        option.style.display = 'none';
+                    } else {
+                        option.style.display = '';
+                    }
+                });
+            });
+        }
+
+        function handleChange(index) {
+            updateSelections();
         }
     </script>
 </body>

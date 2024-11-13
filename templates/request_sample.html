@@ -609,7 +609,9 @@
         <div id="timePointsSection" style="display:none;">
             <div class="form-group-4">
                 <label># of time points:</label>
-                <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number">
+                <input type="number" class="form-control" name="time_points1" id="time_points1" min="2" placeholder="Enter number" oninput="validateTimePoints()">
+                <small class="form-text text-muted">Please enter a value of 2 or above.</small>
+                <span id="time_points_error" style="color: red; display: none;">The number must be 2 or greater.</span>
             </div>
     
             <div class="form-group-4">
@@ -666,7 +668,7 @@
     
         <!-- If Yes is selected: # of sources/participants -->
         <div id="num_sources" style="display:none;">
-            <label for="num_participants"># of sources/participants:</label>
+            <label for="num_participants"># of additional sources/participants:</label>
             <input type="number" class="form-control" name="num_participants" min="1" placeholder="Enter number of participants">
     
             <!-- Indented section for multiple time points per source -->
@@ -674,10 +676,10 @@
                 <label>Do you need multiple samples with multiple time points from each source/participant?</label>
                 <div class="radio-buttons">
                     <label>
-                        <input type="radio" name="multiple_timepoints_each" value="yes"> Yes
+                        <input type="radio" name="multiple_timepoints_each" value="yes" onclick="toggleTimepointDetails(true)"> Yes
                     </label>
                     <label>
-                        <input type="radio" name="multiple_timepoints_each" value="no"> No
+                        <input type="radio" name="multiple_timepoints_each" value="no" onclick="toggleTimepointDetails(false)"> No
                     </label>
                 </div>
     
@@ -686,7 +688,9 @@
                     <br>
                     <div class="form-group-4">
                         <label># of time points:</label>
-                        <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number">
+                        <input type="number" class="form-control" name="time_points2" id="step5_time_points" min="2" placeholder="Enter number" oninput="validateStep5TimePoints()">
+                        <small class="form-text text-muted">Please enter a value of 2 or above.</small>
+                        <span id="step5_time_points_error" style="color: red; display: none;">The number must be 2 or greater.</span>
                     </div>
             
                     <div class="form-group-4">
@@ -1013,6 +1017,36 @@
             timepointDetails.style.display = this.value === 'yes' ? 'block' : 'none';
         });
     });
+
+    function validateTimePoints() {
+        const timePointsInput = document.getElementById('time_points1');
+        const errorMessage = document.getElementById('time_points_error');
+
+        if (timePointsInput.value < 2) {
+            errorMessage.style.display = 'inline';
+            timePointsInput.setCustomValidity("The number of time points must be 2 or greater.");
+        } else {
+            errorMessage.style.display = 'none';
+            timePointsInput.setCustomValidity("");
+        }
+    }
+
+    function toggleTimepointDetails(show) {
+        document.getElementById("timepoint_details").style.display = show ? "block" : "none";
+    }
+
+    function validateStep5TimePoints() {
+        const timePointsInput = document.getElementById('step5_time_points');
+        const errorMessage = document.getElementById('step5_time_points_error');
+
+        if (timePointsInput.value < 2) {
+            errorMessage.style.display = 'inline';
+            timePointsInput.setCustomValidity("The number of time points must be 2 or greater.");
+        } else {
+            errorMessage.style.display = 'none';
+            timePointsInput.setCustomValidity("");
+        }
+    }
 
 </script>
 
