@@ -52,6 +52,8 @@ class Research_Project(models.Model):
     funding_source = models.CharField(max_length=300, null=True, blank=False)
     
 class Request_Sample(models.Model):
+    #Parent
+    sample = models.ManyToManyField(Samples, related_name="request_of_sample", blank=True)
     research_project = models.ForeignKey(Research_Project, on_delete=models.CASCADE, related_name='request_samples', null=True, blank=True)
 
     erb_approval = models.FileField(blank=True, null=True)
@@ -113,6 +115,7 @@ class Create_Ack_Receipt(models.Model):
 
 class Approve_Reject_Request(models.Model):
     # Parent
+    request_sample = models.ForeignKey(Request_Sample, on_delete=models.CASCADE, null=True, blank=True)
     create_ack_receipt = models.ForeignKey(Create_Ack_Receipt, on_delete=models.CASCADE, null=True, blank=True)
 
     approve_reject = models.CharField(max_length=100, null=True, blank=False)

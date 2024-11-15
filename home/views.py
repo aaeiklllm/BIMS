@@ -288,25 +288,25 @@ def view_sample(request):
     samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
     return render(request, 'view_sample.html', {'samples': samples})
 
-def sample_detail(request, sample_id):
-    # Fetch the specific sample, prefetching related comorbidities, lab tests, aliquots, and storage
-    sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
+# def sample_detail(request, sample_id):
+#     # Fetch the specific sample, prefetching related comorbidities, lab tests, aliquots, and storage
+#     sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
 
-    # Get all related storage details
-    first_storage_info = sample.storage_set.first()
+#     # Get all related storage details
+#     first_storage_info = sample.storage_set.first()
     
-    # Get total number of aliquots for the sample
-    total_aliquots = sample.aliquot_set.count()
+#     # Get total number of aliquots for the sample
+#     total_aliquots = sample.aliquot_set.count()
     
-    # Get individual aliquots and their associated storage
-    aliquots = sample.aliquot_set.prefetch_related('storage_set').all()
+#     # Get individual aliquots and their associated storage
+#     aliquots = sample.aliquot_set.prefetch_related('storage_set').all()
 
-    return render(request, 'sample_detail.html', {
-        'sample': sample,
-        'first_storage_info': first_storage_info,
-        'total_aliquots': total_aliquots,
-        'aliquots': aliquots,
-    })
+#     return render(request, 'sample_detail.html', {
+#         'sample': sample,
+#         'first_storage_info': first_storage_info,
+#         'total_aliquots': total_aliquots,
+#         'aliquots': aliquots,
+#     })
 
 def edit_sample(request, sample_id):
     # Fetch the existing sample and its related data
@@ -969,7 +969,7 @@ def view_request_sample(request):
 
     # Fetch all research projects with their related request sample data
     # projects = Research_Project.objects.select_related('request_sample__requested_by').all()
-    sample_requests = Request_Sample.objects.select_related('research_project').all()
+    sample_requests = Request_Sample.objects.select_related('research_project').prefetch_related('approve_reject_request_set').all()
     return render(request, 'view_request_sample.html', {'sample_requests': sample_requests})
 
 
@@ -995,6 +995,7 @@ def view_details(request, id):
         # Check if an acknowledgment receipt should be created
         if approval == 'approve' and attach_file:
             approval_record = Approve_Reject_Request.objects.create(
+                request_sample=request_sample,  # Associate the request_sample here
                 approve_reject=approval,
                 attach_file=attach_file,
                 reject_reason=reject_reason,
@@ -1003,6 +1004,7 @@ def view_details(request, id):
             )
         else:
             approval_record = Approve_Reject_Request.objects.create(
+                request_sample=request_sample,  # Associate the request_sample here
                 approve_reject=approval,
                 attach_file=attach_file,
                 reject_reason=reject_reason,
@@ -1148,6 +1150,7 @@ def create_ack_receipt(request, id):
 
             # Create a related Approve_Reject_Request instance
             approval_record = Approve_Reject_Request.objects.create(
+                request_sample=request_sample,  # Associate the request_sample here
                 create_ack_receipt=ack_receipt,
                 approve_reject='approve',  # Set the status as 'Approved'
                 attach_file=None,
@@ -1172,3 +1175,33 @@ def create_ack_receipt(request, id):
         'matching_samples': matching_samples,
     }
     return render(request, 'create_ack_receipt.html', context)
+
+def sample_detail(request, sample_id):
+    # Fetch the specific sample by ID
+    sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
+
+    # Retrieve all Ack_Sample entries related to this sample ID
+    ack_samples = Ack_Sample.objects.filter(sample_id=sample_id)
+
+    # Retrieve corresponding Request_Sample entries for these Ack_Samples
+    request_sample_ids = Approve_Reject_Request.objects.filter(create_ack_receipt__in=ack_samples.values_list('create_ack_receipt', flat=True)).values_list('request_sample', flat=True)
+    request_samples = Request_Sample.objects.filter(id__in=request_sample_ids)
+
+    # Get all related storage details
+    first_storage_info = sample.storage_set.first()
+
+    # Get total number of aliquots for the sample
+    total_aliquots = sample.aliquot_set.count()
+
+    # Get individual aliquots and their associated storage
+    aliquots = sample.aliquot_set.prefetch_related('storage_set').all()
+
+    return render(request, 'sample_detail.html', {
+        'sample': sample,
+        'ack_samples': ack_samples,
+        'request_samples': request_samples,  # Pass request samples to the template
+        'first_storage_info': first_storage_info,
+        'total_aliquots': total_aliquots,
+        'aliquots': aliquots,
+    })
+

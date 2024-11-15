@@ -239,19 +239,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for request in request_samples %}
-                                            <tr>
-                                                <td>
-                                                    {{ request.requested_by.get_full_name }} 
-                                                    ({{ request.requested_by.username }}) - 
-                                                    {{ request.requested_by.position }}
-                                                </td>
-                                                <td>{{ request.date_of_request }}</td>
-                                                <td>{{ request.research_project.id }}</td>
-                                                <td>{{ request.research_project.title }}</td>
-                                                <td>{{ request.status }}</td>
-                                            </tr>
-                                        {% endfor %}
+                                    {% for request in request_samples %}
+                                        <tr>
+                                            <td>
+                                                {{ request.requested_by.get_full_name }} 
+                                                ({{ request.requested_by.username }}) - 
+                                                {{ request.requested_by.position }}
+                                            </td>
+                                            <td>{{ request.created_at|date:"Y-m-d" }}</td>
+                                            <td>{{ request.research_project.id }}</td>
+                                            <td>{{ request.research_project.title }}</td>
+                                            <td>{{ request.status }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5">No request history found for this sample.</td>
+                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
