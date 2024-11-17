@@ -108,6 +108,9 @@
         .request-summary p, .request-summary ul {
             margin: 10px -20px 10px 50px; /* Adds consistent spacing between elements inside the box */
         }
+        .highlight {
+            color: red;
+        }
     </style>
    
 </head>
@@ -118,7 +121,11 @@
 
         <div class="form-group">
             <div class="request-summary">
-                <p><strong>Research Project:</strong> {{ research_project.title }} (Research Project ID: {{ research_project.id }})</p>
+                {% if research_project %}
+                    <p><strong>Research Project:</strong> {{ research_project.title }} (Research Project ID: {{ research_project.id }})</p>
+                {% else %}
+                    <p>No research project linked.</p>
+                {% endif %}
                 <p><strong>Research Ethics Boards Approval (ERB):</strong> {{ request_sample.erb_approval }}</p>
                 <p><strong>Sample Information:</strong></p>
                 <ul>
@@ -177,7 +184,8 @@
                 </ul>
 
                 <p><strong>Desired Start Date:</strong> {{ request_sample.desired_start_date }}</p>
-                <p><strong>Total number of sample requests:</strong> Not Sure</p>
+                <p><strong>Total number of sample requests:</strong> <span class="highlight">{{ total_samples }}</span></p>
+
             </div>
         </div>
 

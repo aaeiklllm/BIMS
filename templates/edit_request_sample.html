@@ -1,0 +1,1071 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Sample</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .option {
+            margin-top: 20px;
+        }
+        .projects-container {
+            margin-left: 30px;
+        }
+        .projects-container label {
+            display: block;
+        }
+        .project-details, .new-project {
+            display: none;
+            margin-left: 40px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .project-details p {
+            margin: 5px 0;
+        }
+        .underline-link {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        input[type="text"], textarea, input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* Add space between the buttons */
+            margin-top: 20px; /* Adjust as needed */
+        }
+
+        .btn-back {
+            background-color: #6c757d; /* Gray color for the 'Back' button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn-next {
+            background-color: #007bff; /* Blue color for the 'Next' button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+
+        .added-item {
+            display: inline-flex;
+            align-items: center;
+            margin: 5px;
+            padding: 5px 10px;
+            background: #eeeeee;
+            border-radius: 5px;
+        }
+
+        .added-item span {
+            margin-right: 5px;
+        }
+
+        .added-item .remove-btn {
+            margin-left: 5px;
+            cursor: pointer;
+            color: red;
+        }
+
+        .free-text-input {
+            display: none;
+            margin-left: 10px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            left: 100%;
+            top: 0;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Nested Dropdown */
+        .nested-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .nested-dropdown-content {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        .nested-dropdown:hover .nested-dropdown-content {
+            display: block;
+        }
+
+        /* Hide the "Other" text input field by default */
+        .hidden {
+            display: none;
+        }
+
+        /* Add focus styles */
+        .dropdown-input:focus {
+            outline: none;
+            border-color: blue; /* Border color change on focus */
+        }
+
+        /* Dropdown input styling with border */
+        .dropdown-input {
+            border: 1px solid #ced4da; /* Add a border */
+            padding: .375rem 2.25rem .375rem .75rem; /* Padding for the input */
+            width: 200px; /* Width of the input */
+            appearance: none; /* Remove default input styling */
+            cursor: pointer; /* Cursor style */
+            border-radius: 5px; /* Add rounded edges */
+        }
+
+        /* Dropdown content styling */
+        .dropdown-content {
+            display: none; /* Hidden by default */
+            position: absolute; /* Absolute positioning */
+            background-color: white; /* Background color */
+            z-index: 1; /* Make sure it appears above other elements */
+            margin-top: 5px; /* Space between input and dropdown */
+            width: 200px; /* Width of dropdown */
+        }
+
+        /* Show dropdown when active */
+        .show {
+            display: block; /* Show dropdown */
+        }
+
+        /* Nested dropdown content */
+        .nested-dropdown-content {
+            display: none; /* Hidden by default */
+            padding-left: 20px; /* Indent for nested items */
+        }
+
+        /* Nested dropdown visibility on hover */
+        .nested-dropdown:hover .nested-dropdown-content {
+            display: block; /* Show nested dropdown on hover */
+        }
+
+        /* Hide input by default */
+        .hidden {
+            display: none; /* Hidden */
+        }
+
+        /* Focus styles for the input */
+        .dropdown-input:focus {
+            outline: none; /* Remove outline */
+            border-color: blue; /* Change border color on focus */
+        }    
+
+        .date-pickers {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-pickers input {
+            width: 150px;
+        }
+
+        .form-group-4 {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .form-group-4 label {
+            flex: 1;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .form-group-4 input, .form-group-4 select {
+            flex: 2;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .date-picker-wrapper {
+            margin-bottom: 15px; /* Adds space between each input */
+        }
+
+        .form-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-left: 5px;
+            display: block; /* Forces small text to appear on its own line */
+        }
+        
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><b>Edit Details</b></h1>
+    <form method="post" enctype="multipart/form-data" action="{% url 'editrequestsample' sample_id=request_sample.id %}">
+    {% csrf_token %}
+    <!-- Step 1 -->
+    <div id="step1" class="step">
+        <h4><b>Step 1:</b> For what Research Project is this sample request?</h4>
+        <div class="option">
+            <label>
+                <input type="radio" name="project" value="existing" onclick="toggleSelection('existing')"
+                    {% if request_sample.research_project %}checked{% endif %}>
+                Select Existing Research Project
+            </label>
+        
+            <!-- Projects List -->
+            <div id="existing-project" class="projects-container" style="display: {% if request_sample.research_project %}block{% else %}none{% endif %};">
+                {% for project in research_projects %}
+                    <label>
+                        <input type="radio" name="existing-project" value="{{ project.id }}"
+                            {% if request_sample.research_project and project.id == request_sample.research_project.id %}checked{% endif %}>
+                        Project ID {{ project.id|stringformat:"05d" }}: {{ project.title }}
+                        <span class="underline-link" onclick="toggleProjectDetails('{{ project.id }}')">View details</span>
+                    </label>
+        
+                    <!-- Project details -->
+                    <div id="project-details-{{ project.id }}" class="project-details"
+                         style="display: {% if request_sample.research_project and project.id == request_sample.research_project.id %}block{% else %}none{% endif %};">
+                        <h3>Research Project Details</h3>
+                        <p><strong>Title:</strong> {{ project.title }}</p>
+                        <p><strong>Principal Investigator:</strong> {{ project.principal_investigator }}</p>
+                        <p><strong>Description:</strong> {{ project.description }}</p>
+                        <p><strong>Anticipated Initiation Date:</strong> {{ project.anticipated_initiation_date|date:"m/d/Y" }}</p>
+                        <p><strong>Anticipated Completion Date:</strong> {{ project.anticipated_completion_date|date:"m/d/Y" }}</p>
+                        <p><strong>ERB #:</strong> {{ project.erb_number }}</p>
+                        <p><strong>Funding source:</strong> {{ project.funding_source }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        
+        <div class="option">
+            <label>
+                <input type="radio" name="project" value="new" onclick="toggleSelection('new')">
+                Create a New Research Project
+            </label>
+    
+            <!-- New Research Project Form -->
+        <div id="new-project-form" class="new-project" style="display: none;">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" value="">
+            </div>
+            <div class="form-group">
+                <label for="investigator">Principal Investigator:</label>
+                <input type="text" id="investigator" name="investigator" value="">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="initiation-date">Anticipated Initiation Date:</label>
+                <input type="date" id="initiation-date" name="initiation-date" value="">
+            </div>
+            <div class="form-group">
+                <label for="completion-date">Anticipated Completion Date:</label>
+                <input type="date" id="completion-date" name="completion-date" value="">
+            </div>
+            <div class="form-group">
+                <label for="erb">ERB #:</label>
+                <input type="text" id="erb" name="erb" value="">
+            </div>
+            <div class="form-group">
+                <label for="funding">Funding source:</label>
+                <input type="text" id="funding" name="funding" value="">
+            </div>
+    
+                <div class="button-container">
+                    <button class="btn-back" type="button" onclick="resetForm()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="btn btn-next" type="button" onclick="showStep('step2')">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="step2" class="step">
+        <h4><b>Step 2: </b>Upload Research Ethics Boards Approval (ERB) (.pdf)</h4>
+
+        <div class="mb-3">
+            <!-- File input for uploading the file -->
+            <input type="file" class="form-control" id="erb_approval" name="erb_approval" accept=".pdf" onchange="handleFileChange()">
+                
+            <!-- Area to display the selected file name and action buttons -->
+            <div id="file-info" class="mt-2" style="display: {% if request_sample.erb_approval %}block{% else %}none{% endif %};">
+                <!-- Display the existing file name or a placeholder if no file -->
+                {% if request_sample.erb_approval %}
+                    <span id="file-name">
+                        <a href="{{ request_sample.erb_approval.url }}" target="_blank">{{ request_sample.erb_approval.name }}</a>
+                    </span>
+                {% else %}
+                    <span id="file-name">No file uploaded</span>
+                {% endif %}
+                <button type="button" class="btn btn-link" onclick="removeFile()">Remove</button>
+            </div>     
+        </div>
+
+        <div class="button-container">
+            <button class="btn btn-back" type="button" onclick="showStep('step1')">Back</button>
+            <button class="btn btn-next" type="button" onclick="showStep('step3')">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="step3" class="step">
+        <h4><b>Step 3: </b>What kind of sample are you requesting?</h4>
+        <div class="dropdown mb-2">
+            <label for="type" class="form-label">Type:</label>
+            <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" value="{{ request_sample.type }}" readonly onclick="toggleDropdown()">
+            
+            <input type="hidden" id="typeValue" name="typeValue" value="{{ request_sample.type }}">
+
+            <div id="type-dropdown" class="dropdown-content">
+                <!-- Molecular Options -->
+                <div class="nested-dropdown">
+                    <a href="#">Molecular (specify):</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectOption('DNA', 'molecular')" id="molecular-DNA">DNA</a>
+                        <a href="#" onclick="selectOption('RNA', 'molecular')" id="molecular-RNA">RNA</a>
+                        <a href="#" onclick="selectOption('cDNA', 'molecular')" id="molecular-cDNA">cDNA</a>
+                        <a href="#" onclick="showOtherInput('molecular')">Other (specify)</a>
+                        <input type="text" id="molecular-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('molecular')">
+                    </div>
+                </div>
+            
+                <!-- Blood Options -->
+                <div class="nested-dropdown">
+                    <a href="#">Blood or Derivatives (specify):</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectOption('Plasma', 'blood')" id="blood-Plasma">Plasma</a>
+                        <a href="#" onclick="selectOption('Serum', 'blood')" id="blood-Serum">Serum</a>
+                        <a href="#" onclick="selectOption('PBMC', 'blood')" id="blood-PBMC">PBMC</a>
+                        <a href="#" onclick="selectOption('Whole Blood', 'blood')" id="blood-Whole-Blood">Whole Blood</a>
+                        <a href="#" onclick="showOtherInput('blood')">Other (specify)</a>
+                        <input type="text" id="blood-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('blood')">
+                    </div>
+                </div>
+            
+                <!-- Tissue Options -->
+                <div class="nested-dropdown">
+                    <a href="#">Tissue (specify location):</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectOption('Lung', 'tissue')" id="tissue-Lung">Lung</a>
+                        <a href="#" onclick="selectOption('Heart', 'tissue')" id="tissue-Heart">Heart</a>
+                        <a href="#" onclick="showOtherInput('tissue')">Other (specify)</a>
+                        <input type="text" id="tissue-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('tissue')">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3 d-flex align-items-center">
+            <label class="form-label me-2">Sex:</label>
+            <div class="form-check me-2">
+                <input class="form-check-input" type="radio" name="sex" id="male" value="Male" 
+                       {% if request_sample.sex == 'Male' %}checked{% endif %}>
+                <label class="form-check-label" for="male">Male</label>
+            </div>
+            <div class="form-check me-2">
+                <input class="form-check-input" type="radio" name="sex" id="female" value="Female" 
+                       {% if request_sample.sex == 'Female' %}checked{% endif %}>
+                <label class="form-check-label" for="female">Female</label>
+            </div>
+            <label class="form-label" style="margin-left: 100px">Age:</label>
+            <input type="number" class="form-control" id="age" name="age" min="0" value="{{ request_sample.age }}" style="width: 80px; margin-left: 10px;">
+        </div>
+
+        <div class="mb-3">
+            <label for="clinical_diagnosis" class="form-label">Clinical Diagnosis:</label>
+            <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis">
+                <option value="" {% if request_sample.clinical_diagnosis == "" %}selected{% endif %}>Select Clinical Diagnosis</option>
+                <option value="Alzheimer's Disease" {% if request_sample.clinical_diagnosis == "Alzheimer's Disease" %}selected{% endif %}>Alzheimer's Disease</option>
+                <option value="Amyotrophic Lateral Sclerosis (ALS)" {% if request_sample.clinical_diagnosis == "Amyotrophic Lateral Sclerosis (ALS)" %}selected{% endif %}>Amyotrophic Lateral Sclerosis (ALS)</option>
+                <option value="Asthma" {% if request_sample.clinical_diagnosis == "Asthma" %}selected{% endif %}>Asthma</option>
+                <option value="Atrial Fibrillation" {% if request_sample.clinical_diagnosis == "Atrial Fibrillation" %}selected{% endif %}>Atrial Fibrillation</option>
+                <option value="Breast Cancer" {% if request_sample.clinical_diagnosis == "Breast Cancer" %}selected{% endif %}>Breast Cancer</option>
+                <option value="Cerebral Palsy" {% if request_sample.clinical_diagnosis == "Cerebral Palsy" %}selected{% endif %}>Cerebral Palsy</option>
+                <option value="Chronic Kidney Disease" {% if request_sample.clinical_diagnosis == "Chronic Kidney Disease" %}selected{% endif %}>Chronic Kidney Disease</option>
+                <option value="Chronic Obstructive Pulmonary Disease (COPD)" {% if request_sample.clinical_diagnosis == "Chronic Obstructive Pulmonary Disease (COPD)" %}selected{% endif %}>Chronic Obstructive Pulmonary Disease (COPD)</option>
+                <option value="Chronic Pain (e.g., arthritis, fibromyalgia)" {% if request_sample.clinical_diagnosis == "Chronic Pain (e.g., arthritis, fibromyalgia)" %}selected{% endif %}>Chronic Pain (e.g., arthritis, fibromyalgia)</option>
+                <option value="Colon Cancer" {% if request_sample.clinical_diagnosis == "Colon Cancer" %}selected{% endif %}>Colon Cancer</option>
+                <option value="Congenital Heart Defects" {% if request_sample.clinical_diagnosis == "Congenital Heart Defects" %}selected{% endif %}>Congenital Heart Defects</option>
+                <option value="Coronary Artery Disease" {% if request_sample.clinical_diagnosis == "Coronary Artery Disease" %}selected{% endif %}>Coronary Artery Disease</option>
+                <option value="Cystic Fibrosis" {% if request_sample.clinical_diagnosis == "Cystic Fibrosis" %}selected{% endif %}>Cystic Fibrosis</option>
+                <option value="Diabetes Mellitus Type 1" {% if request_sample.clinical_diagnosis == "Diabetes Mellitus Type 1" %}selected{% endif %}>Diabetes Mellitus Type 1</option>
+                <option value="Diabetes Mellitus Type 2" {% if request_sample.clinical_diagnosis == "Diabetes Mellitus Type 2" %}selected{% endif %}>Diabetes Mellitus Type 2</option>
+                <option value="Down Syndrome" {% if request_sample.clinical_diagnosis == "Down Syndrome" %}selected{% endif %}>Down Syndrome</option>
+                <option value="Dyslipidemia" {% if request_sample.clinical_diagnosis == "Dyslipidemia" %}selected{% endif %}>Dyslipidemia</option>
+                <option value="Epilepsy" {% if request_sample.clinical_diagnosis == "Epilepsy" %}selected{% endif %}>Epilepsy</option>
+                <option value="G6PD Deficiency" {% if request_sample.clinical_diagnosis == "G6PD Deficiency" %}selected{% endif %}>G6PD Deficiency</option>
+                <option value="Gaucher Disease" {% if request_sample.clinical_diagnosis == "Gaucher Disease" %}selected{% endif %}>Gaucher Disease</option>
+                <option value="Hemophilia" {% if request_sample.clinical_diagnosis == "Hemophilia" %}selected{% endif %}>Hemophilia</option>
+                <option value="Hepatitis B" {% if request_sample.clinical_diagnosis == "Hepatitis B" %}selected{% endif %}>Hepatitis B</option>
+                <option value="Hepatitis C" {% if request_sample.clinical_diagnosis == "Hepatitis C" %}selected{% endif %}>Hepatitis C</option>
+                <option value="HIV/AIDS" {% if request_sample.clinical_diagnosis == "HIV/AIDS" %}selected{% endif %}>HIV/AIDS</option>
+                <option value="Huntington's Disease" {% if request_sample.clinical_diagnosis == "Huntington's Disease" %}selected{% endif %}>Huntington's Disease</option>
+                <option value="Hypertension" {% if request_sample.clinical_diagnosis == "Hypertension" %}selected{% endif %}>Hypertension</option>
+                <option value="Leukemia" {% if request_sample.clinical_diagnosis == "Leukemia" %}selected{% endif %}>Leukemia</option>
+                <option value="Liver Cirrhosis" {% if request_sample.clinical_diagnosis == "Liver Cirrhosis" %}selected{% endif %}>Liver Cirrhosis</option>
+                <option value="Lymphoma" {% if request_sample.clinical_diagnosis == "Lymphoma" %}selected{% endif %}>Lymphoma</option>
+                <option value="Multiple Sclerosis" {% if request_sample.clinical_diagnosis == "Multiple Sclerosis" %}selected{% endif %}>Multiple Sclerosis</option>
+                <option value="Obesity" {% if request_sample.clinical_diagnosis == "Obesity" %}selected{% endif %}>Obesity</option>
+                <option value="Osteoporosis" {% if request_sample.clinical_diagnosis == "Osteoporosis" %}selected{% endif %}>Osteoporosis</option>
+                <option value="Parkinson's Disease" {% if request_sample.clinical_diagnosis == "Parkinson's Disease" %}selected{% endif %}>Parkinson's Disease</option>
+                <option value="Peripheral Neuropathy" {% if request_sample.clinical_diagnosis == "Peripheral Neuropathy" %}selected{% endif %}>Peripheral Neuropathy</option>
+                <option value="Phenylketonuria (PKU)" {% if request_sample.clinical_diagnosis == "Phenylketonuria (PKU)" %}selected{% endif %}>Phenylketonuria (PKU)</option>
+                <option value="Psoriasis" {% if request_sample.clinical_diagnosis == "Psoriasis" %}selected{% endif %}>Psoriasis</option>
+                <option value="Rheumatoid Arthritis" {% if request_sample.clinical_diagnosis == "Rheumatoid Arthritis" %}selected{% endif %}>Rheumatoid Arthritis</option>
+                <option value="Sickle Cell Disease" {% if request_sample.clinical_diagnosis == "Sickle Cell Disease" %}selected{% endif %}>Sickle Cell Disease</option>
+                <option value="Sleep Apnea" {% if request_sample.clinical_diagnosis == "Sleep Apnea" %}selected{% endif %}>Sleep Apnea</option>
+                <option value="Spinal Muscular Atrophy" {% if request_sample.clinical_diagnosis == "Spinal Muscular Atrophy" %}selected{% endif %}>Spinal Muscular Atrophy</option>
+                <option value="Systemic Lupus Erythematosus (SLE)" {% if request_sample.clinical_diagnosis == "Systemic Lupus Erythematosus (SLE)" %}selected{% endif %}>Systemic Lupus Erythematosus (SLE)</option>
+                <option value="Thalassemia" {% if request_sample.clinical_diagnosis == "Thalassemia" %}selected{% endif %}>Thalassemia</option>
+                <option value="Tuberculosis" {% if request_sample.clinical_diagnosis == "Tuberculosis" %}selected{% endif %}>Tuberculosis</option>
+                <option value="Viral Hepatitis" {% if request_sample.clinical_diagnosis == "Viral Hepatitis" %}selected{% endif %}>Viral Hepatitis</option>
+                <option value="X-linked Dystonia Parkinsonism (XDP)" {% if request_sample.clinical_diagnosis == "X-linked Dystonia Parkinsonism (XDP)" %}selected{% endif %}>X-linked Dystonia Parkinsonism (XDP)</option>
+                <option value="Others" {% if request_sample.clinical_diagnosis == "Others" %}selected{% endif %}>Others (specify):</option>
+            </select>
+            
+            <!-- Free text input for 'Others' option -->
+            <input type="text" id="other_diagnosis" name="other_diagnosis" class="form-control mt-2" 
+            placeholder="Specify if Others" 
+            style="display: {% if request_sample.clinical_diagnosis == 'Others' %}block{% else %}none{% endif %};"
+            value="{% if request_sample.clinical_diagnosis == 'Others' %}{{ request_sample.other_diagnosis_value }}{% endif %}">
+        </div>
+
+        <div class="mb-3">
+            <label for="comorbidities" class="form-label">Comorbidities:</label>
+            <div class="d-flex align-items-center">
+                <select class="form-select me-2" id="comorbidity_select">
+                    <option value="">Select Comorbidity</option>
+                    <option value="Alzheimer's Disease">Alzheimer's Disease</option>
+                    <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
+                    <option value="Asthma">Asthma</option>
+                    <option value="Atrial Fibrillation">Atrial Fibrillation</option>
+                    <option value="Breast Cancer">Breast Cancer</option>
+                    <option value="Cerebral Palsy">Cerebral Palsy</option>
+                    <option value="Chronic Kidney Disease">Chronic Kidney Disease</option>
+                    <option value="Chronic Obstructive Pulmonary Disease (COPD)">Chronic Obstructive Pulmonary Disease (COPD)</option>
+                    <option value="Chronic Pain (e.g., arthritis, fibromyalgia)">Chronic Pain (e.g., arthritis, fibromyalgia)</option>
+                    <option value="Colon Cancer">Colon Cancer</option>
+                    <option value="Congenital Heart Defects">Congenital Heart Defects</option>
+                    <option value="Coronary Artery Disease">Coronary Artery Disease</option>
+                    <option value="Cystic Fibrosis">Cystic Fibrosis</option>
+                    <option value="Diabetes Mellitus Type 1">Diabetes Mellitus Type 1</option>
+                    <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
+                    <option value="Down Syndrome">Down Syndrome</option>
+                    <option value="Dyslipidemia">Dyslipidemia</option>
+                    <option value="Epilepsy">Epilepsy</option>
+                    <option value="G6PD Deficiency">G6PD Deficiency</option>
+                    <option value="Gaucher Disease">Gaucher Disease</option>
+                    <option value="Hemophilia">Hemophilia</option>
+                    <option value="Hepatitis B">Hepatitis B</option>
+                    <option value="Hepatitis C">Hepatitis C</option>
+                    <option value="HIV/AIDS">HIV/AIDS</option>
+                    <option value="Huntington's Disease">Huntington's Disease</option>
+                    <option value="Hypertension">Hypertension</option>
+                    <option value="Leukemia">Leukemia</option>
+                    <option value="Liver Cirrhosis">Liver Cirrhosis</option>
+                    <option value="Lymphoma">Lymphoma</option>
+                    <option value="Multiple Sclerosis">Multiple Sclerosis</option>
+                    <option value="Obesity">Obesity</option>
+                    <option value="Osteoporosis">Osteoporosis</option>
+                    <option value="Parkinson's Disease">Parkinson's Disease</option>
+                    <option value="Peripheral Neuropathy">Peripheral Neuropathy</option>
+                    <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
+                    <option value="Psoriasis">Psoriasis</option>
+                    <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
+                    <option value="Sickle Cell Disease">Sickle Cell Disease</option>
+                    <option value="Sleep Apnea">Sleep Apnea</option>
+                    <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
+                    <option value="Systemic Lupus Erythematosus (SLE)">Systemic Lupus Erythematosus (SLE)</option>
+                    <option value="Thalassemia">Thalassemia</option>
+                    <option value="Tuberculosis">Tuberculosis</option>
+                    <option value="Viral Hepatitis">Viral Hepatitis</option>
+                    <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
+                    <option value="Others">Other (specify)</option>
+                </select>
+                <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
+                <button type="button" class="btn btn-dark" id="add_comorbidity">Add</button>
+            </div>
+            <div id="added_comorbidities" class="mt-2">
+                {% for comorbidity in existing_comorbidities %}
+                    <div class="added-item">
+                        <span>{{ comorbidity }}</span>
+                        <span class="remove-btn">X</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Comorbidities -->
+        <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
+
+        <div class="mb-3">
+            <label for="lab_tests" class="form-label">Lab Tests:</label>
+            <div class="d-flex align-items-center">
+                <select class="form-select me-2" id="lab_test_select">
+                    <option value="">Select Lab Test</option>
+                    <option value="Blood Test">Blood Test</option>
+                    <option value="CT Scan">CT Scan</option>
+                    <option value="MRI">MRI</option>
+                    <option value="Others">Other (specify)</option>
+                </select>
+                <input type="text" class="form-control free-text-input" id="lab_test_other" placeholder="Specify other" style="display: none;">
+                <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
+            </div>
+            <div id="added_lab_tests" class="mt-2">
+                {% for lab_test in existing_lab_tests %}
+                    <div class="added-item">
+                        <span>{{ lab_test }}</span>
+                        <span class="remove-btn">X</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Lab Tests -->
+        <input type="hidden" id="lab_tests_input" name="lab_tests" value="{{ existing_lab_tests|join:',' }}">
+
+        <div class="row">
+            <div class="col-md-6">
+                <label for="amount" class="form-label">Amount:</label>
+                <input type="number" class="form-control" id="amount" name="amount" step="0.01" value="{% if request_sample.amount is not None %}{{ request_sample.amount }}{% endif %}">
+
+            </div>
+            <div class="col-md-6">
+                <label for="unit" class="form-label">Unit:</label>
+                <select class="form-select" id="unit" name="unit">
+                    <option value="mL" {% if request_sample.unit == "mL" %}selected{% endif %}>mL</option>
+                    <option value="uL" {% if request_sample.unit == "uL" %}selected{% endif %}>µL</option>
+                    <option value="slides" {% if request_sample.unit == "slides" %}selected{% endif %}>Slides</option>
+                </select>                
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="btn btn-back" type="button" onclick="showStep('step2')">Back</button>
+            <button class="btn btn-next" type="button" onclick="showStep('step4')">Next</button>
+        </div>
+    </div>
+
+     <!-- Step 4 -->
+     <div id="step4" class="step">
+        <h4><b>Step 4:</b> Do you need multiple samples from the same source/participant with multiple time points?</h4>
+        
+        <div class="radio-buttons">
+            <label>
+                <input type="radio" name="multiple_samples" value="yes" id="yesOption" onclick="checkConditions()" 
+                    {% if rs_step4 and rs_step4.multiple_samples == "yes" %}checked{% endif %}> Yes
+            </label>
+            <label>
+                <input type="radio" name="multiple_samples" value="no" id="noOption" onclick="checkConditions()" 
+                    {% if rs_step4 and rs_step4.multiple_samples == "no" %}checked{% endif %}> No
+            </label>           
+        </div>
+    
+        <div id="timePointsSection" style="display: {% if rs_step4.multiple_samples == 'yes' %}block{% else %}none{% endif %};">
+            <div class="form-group-4">
+                <label># of time points:</label>
+                <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number" value="{{ rs_step4.time_points }}">
+            </div>
+    
+            <div class="form-group-4">
+                <label>Time point interval:</label>
+                <!-- Interval input -->
+                <input type="number" class="form-control" name="interval" min="1" placeholder="Interval" 
+                value="{{ rs_step4.interval }}">
+
+                <!-- Interval unit dropdown -->
+                <select class="form-control" name="interval_unit">
+                <option value="days" {% if rs_step4.interval_unit == "days" %}selected{% endif %}>Days</option>
+                <option value="weeks" {% if rs_step4.interval_unit == "weeks" %}selected{% endif %}>Weeks</option>
+                <option value="months" {% if rs_step4.interval_unit == "months" %}selected{% endif %}>Months</option>
+                <option value="years" {% if rs_step4.interval_unit == "years" %}selected{% endif %}>Years</option>
+                </select>
+            </div>
+    
+            <div class="form-group-4">
+                <label>Is there a specific start date? (optional):</label>
+                
+                <!-- Full date picker -->
+                <div class="date-picker-wrapper">
+                    <input type="date" class="form-control" name="start_date_ddmmyyyy" placeholder="dd-mm-yyyy" value="{{ rs_step4.start_date_ddmmyyyy|date:'Y-m-d' }}">
+                    <small class="form-text text-muted">if day, month, and year</small>
+                </div>
+
+                <!-- Month and year picker -->
+                <div class="date-picker-wrapper">
+                    <input type="month" class="form-control" name="start_date_mmyyyy" placeholder="mm-yyyy" value="{{ rs_step4.start_date_mmyyyy|date:'Y-m' }}">
+                    <small class="form-text text-muted">if month and year only</small>
+                </div>
+
+                <!-- Year only picker -->
+                <div class="date-picker-wrapper">
+                    <input type="number" class="form-control" name="start_date_yyyy" placeholder="yyyy" min="1900" max="2100" value="{{ rs_step4.start_date_yyyy }}">
+                    <small class="form-text text-muted">if year only</small>
+                </div>
+            </div>
+        </div>
+    
+        <div class="button-container">
+            <button class="btn btn-back" type="button" onclick="showStep('step3')">Back</button>
+            <button class="btn btn-next" type="button" onclick="showStep('step5')">Next</button>
+        </div>
+     </div>
+
+    <!-- Step 5 -->
+    <div id="step5" class="step">
+        <h4><b>Step 5: </b>Do you need the same sample request from different sources/participants?</h4>   
+        <div class="radio-buttons">
+            <label>
+                <input type="radio" name="different_sources" value="yes" onclick="checkConditions()" 
+                    {% if rs_step5 and rs_step5.different_sources == "yes" %}checked{% endif %}> Yes
+            </label>
+            <label>
+                <input type="radio" name="different_sources" value="no" onclick="checkConditions()" 
+                    {% if rs_step5 and rs_step5.different_sources == "no" %}checked{% endif %}> No
+            </label>
+        </div>
+    
+        <!-- If Yes is selected: # of sources/participants -->
+        <div id="num_sources" style="display: {% if rs_step5 and rs_step5.different_sources == 'yes' %}block{% else %}none{% endif %};">
+            <label for="num_participants"># of sources/participants:</label>
+            <input type="number" class="form-control" name="num_participants" min="1" 
+           placeholder="Enter number of participants" 
+           value="{% if rs_step5.num_participants %}{{ rs_step5.num_participants }}{% endif %}">
+    
+            <!-- Indented section for multiple time points per source -->
+            <div class="form-group" style="margin-left: 30px;">
+                <label>Do you need multiple samples with multiple time points from each source/participant?</label>
+                <div class="radio-buttons">
+                    <label>
+                        <input type="radio" name="multiple_timepoints_each" value="yes" 
+                               {% if rs_step5.multiple_timepoints_each == 'yes' %}checked{% endif %}> Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="multiple_timepoints_each" value="no" 
+                               {% if rs_step5.multiple_timepoints_each == 'no' %}checked{% endif %}> No
+                    </label>
+                </div>
+    
+                <!-- If yes is selected: Indented section for time point details -->
+                <div id="timepoint_details" style="display: {% if rs_step5 and rs_step5.multiple_timepoints_each == 'yes' %}block{% else %}none{% endif %};">
+                    <br>
+                    <div class="form-group-4">
+                        <label># of time points:</label>
+                        <input type="number" class="form-control" name="time_points" min="1" 
+                        placeholder="Enter number" 
+                        value="{% if rs_step5.time_points %}{{ rs_step5.time_points }}{% endif %}">
+                    </div>
+            
+                    <div class="form-group-4">
+                        <label>Time point interval:</label>
+                        <input type="number" class="form-control" name="interval" min="1" placeholder="Interval"
+                            value="{% if rs_step5.interval %}{{ rs_step5.interval }}{% endif %}">
+
+                        <select class="form-control" name="interval_unit">
+                            <option value="days" {% if rs_step5.interval_unit == 'days' %}selected{% endif %}>Days</option>
+                            <option value="weeks" {% if rs_step5.interval_unit == 'weeks' %}selected{% endif %}>Weeks</option>
+                            <option value="months" {% if rs_step5.interval_unit == 'months' %}selected{% endif %}>Months</option>
+                            <option value="years" {% if rs_step5.interval_unit == 'years' %}selected{% endif %}>Years</option>
+                        </select>
+                    </div>
+                    <label>Is there a specific start date? (optional):</label>
+    
+                    <div class="date-pickers">
+                        <div class="date-picker-wrapper">
+                            <input type="date" class="form-control" name="collection_date_ddmmyyyy" 
+                                   value="{% if rs_step5.collection_date_ddmmyyyy %}{{ rs_step5.collection_date_ddmmyyyy|date:'Y-m-d' }}{% endif %}" 
+                                   placeholder="dd-mm-yyyy">
+                        </div>
+                        
+                        <div class="date-picker-wrapper">
+                            <input type="month" class="form-control" name="collection_date_mmyyyy" 
+                                   value="{% if rs_step5.collection_date_mmyyyy %}{{ rs_step5.collection_date_mmyyyy }}{% endif %}" 
+                                   placeholder="mm-yyyy">
+                            <small class="form-text text-muted">if month and year only</small>
+                        </div>
+                        
+                        <div class="date-picker-wrapper">
+                            <input type="number" class="form-control" name="collection_date_yyyy" 
+                                   value="{% if rs_step5.collection_date_yyyy %}{{ rs_step5.collection_date_yyyy }}{% endif %}" 
+                                   placeholder="yyyy" min="1900" max="2100">
+                            <small class="form-text text-muted">if year only</small>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="single_sample_collection" style="display: {% if rs_step5 and rs_step5.different_sources == 'no' %}block{% else %}none{% endif %};">
+            <br>
+            <label>Is there a specific collection date from the single sample request from the same source? (optional):</label>
+    
+            <div class="date-pickers">
+                <div class="date-picker-wrapper">
+                    <input type="date" class="form-control" name="collection_date_ddmmyyyy" placeholder="dd-mm-yyyy" 
+                           value="{% if rs_step5.collection_date_ddmmyyyy %}{{ rs_step5.collection_date_ddmmyyyy|date:'Y-m-d' }}{% endif %}">
+                </div>
+            
+                <div class="date-picker-wrapper">
+                    <input type="month" class="form-control" name="collection_date_mmyyyy" placeholder="mm-yyyy" 
+                           value="{% if rs_step5.start_date_mmyyyy %}{{ rs_step5.start_date_mmyyyy }}{% endif %}">
+                    <small class="form-text text-muted">if month and year only</small>
+                </div>
+            
+                <div class="date-picker-wrapper">
+                    <input type="number" class="form-control" name="collection_date_yyyy" placeholder="yyyy" min="1900" max="2100" 
+                           value="{% if rs_step5.collection_date_yyyy %}{{ rs_step5.collection_date_yyyy }}{% endif %}">
+                    <small class="form-text text-muted">if year only</small>
+                </div>
+            </div>            
+        </div>
+    
+        <div class="button-container">
+            <button class="btn btn-back" type="button" onclick="showStep('step4')">Back</button>
+            <button class="btn btn-next" type="button" onclick="showStep('step6')">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div id="step6" class="step">
+        <h4><b>Step 6:</b> When is the desired start date of the use of the sample(s) requested?</h4>
+        <div class="form-group">
+            <label for="desired_start_date">Desired Start Date:</label>
+            <input type="date" id="desired_start_date" name="desired_start_date" class="form-control" value="{{ request_sample.desired_start_date|date:'Y-m-d' }}">
+        </div>
+
+        <p><i>Note: This date refers to when the samples are needed. If your requested sample(s) is/are not yet available, the biobank manager can choose to wait for it to be available until the desired start date. If the sample request is not available by then, the system will automatically reject your request.</i></p>
+        <div class="button-container">
+            <button class="btn btn-back" type="button" onclick="showStep('step5')">Back</button>
+            <button class="btn btn-next" type="submit">Next</button>
+        </div>
+    </div>
+    </form>
+
+</div>
+
+<script>
+    function toggleSelection(option) {
+        if (option === 'existing') {
+            document.getElementById('existing-project').style.display = 'block';
+            document.getElementById('new-project-form').style.display = 'none';
+        } else {
+            document.getElementById('existing-project').style.display = 'none';
+            document.getElementById('new-project-form').style.display = 'block';
+        }
+    }
+
+    function toggleProjectDetails(projectId) {
+        // Hide all other project details
+        var allProjectDetails = document.querySelectorAll('.project-details');
+        allProjectDetails.forEach(function(details) {
+            details.style.display = 'none';  // Hide all project details
+        });
+
+        // Show only the clicked project details
+        var projectDetails = document.getElementById('project-details-' + projectId);
+        if (projectDetails) {
+            projectDetails.style.display = 'block';  // Show the selected project
+        }
+    }
+
+    function showStep(step) {
+        var steps = document.querySelectorAll('.step');
+        steps.forEach(function(step) {
+            step.style.display = 'none';
+        });
+        document.getElementById(step).style.display = 'block';
+    }
+
+    // On page load, show step 1
+    window.onload = function() {
+        showStep('step1');
+    }
+
+    function handleFileChange() {
+        const fileInput = document.getElementById('erb_approval');
+        const fileInfo = document.getElementById('file-info');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            fileNameDisplay.textContent = fileName; // Display selected file name
+            fileInfo.style.display = 'block'; // Show the file info section
+        }
+    }
+
+    function removeFile() {
+        const fileInput = document.getElementById('erb_approval');
+        const fileInfo = document.getElementById('file-info');
+        
+        fileInput.value = ''; // Clear the file input
+        fileInfo.style.display = 'none'; // Hide the file info section
+        document.getElementById('file-name').textContent = ''; // Clear the file name
+    }
+
+    const clinicalDiagnosis = document.getElementById('clinical_diagnosis');
+    const otherDiagnosisInput = document.getElementById('other_diagnosis');
+
+    // Show or hide the text input based on clinical diagnosis selection
+    clinicalDiagnosis.addEventListener('change', function () {
+        otherDiagnosisInput.style.display = clinicalDiagnosis.value === 'Others' ? 'block' : 'none';
+    });
+
+
+        const addedComorbidities = new Set(); // Set to track added comorbidities
+        const addedLabTests = new Set(); // Set to track added lab tests
+
+        function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
+            const select = document.getElementById(selectId);
+            const otherInput = document.getElementById(otherInputId);
+            const addedItemsContainer = document.getElementById(addedItemsContainerId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const selectedValue = select.value;
+            const otherValue = otherInput.value.trim();
+
+            if (selectedValue === "") {
+                alert("Please select an item.");
+                return;
+            }
+
+            let valueToAdd = selectedValue === 'Others' ? (otherValue === "" ? null : otherValue) : selectedValue;
+
+            if (!valueToAdd) {
+                alert("Please specify the item.");
+                return;
+            }
+
+            // Check if the item already exists
+            const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
+            if (existingValues.includes(valueToAdd)) {
+                alert("This item has already been added.");
+                return;
+            }
+
+            // Add the item to the list
+            const newItem = document.createElement('div');
+            newItem.classList.add('added-item');
+            newItem.innerHTML = `<span>${valueToAdd}</span><span class="remove-btn">X</span>`;
+            addedItemsContainer.appendChild(newItem);
+
+            // Update hidden input field
+            existingValues.push(valueToAdd);
+            hiddenInput.value = existingValues.join(',');
+
+            // Reset fields
+            select.value = '';
+            otherInput.value = '';
+        }
+
+        document.getElementById('add_comorbidity').addEventListener('click', function() {
+            addItem('comorbidity_select', 'comorbidity_other', 'added_comorbidities', 'comorbidities_input');
+        });
+
+        document.getElementById('add_lab_test').addEventListener('click', function() {
+            addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
+        });
+
+
+        // Remove item functionality
+        function removeItem(event) {
+            if (event.target.classList.contains('remove-btn')) {
+                const item = event.target.parentElement;
+                item.remove();
+
+                updateHiddenInput();
+            }
+        }
+
+    document.getElementById('added_comorbidities').addEventListener('click', removeItem);
+    document.getElementById('added_lab_tests').addEventListener('click', removeItem);
+    
+    function updateHiddenInput() {
+      const items = Array.from(document.querySelectorAll('.added-item')).map(i => i.textContent.trim());
+      document.getElementById('hiddenInput').value = items.join(',');
+    }
+    function toggleDropdown() {
+        const dropdown = document.getElementById("type-dropdown");
+        dropdown.classList.toggle("show"); // Toggle show class
+    }
+
+    // Function to select an option and update units dynamically
+    function selectOption(option, category) {
+        document.getElementById("selectedOption").value = option;
+        document.getElementById('typeValue').value = option; 
+        updateUnitOptions(category, option);
+        document.getElementById("type-dropdown").classList.remove("show");
+    }
+
+
+    // Capture the input in the "Other" field and update the display
+    function captureOtherInput(type) {
+        const otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
+        const selectedType = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize the first letter of the type
+        if (otherValue) {
+            // Combine the type and the specified other value
+            document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
+            document.getElementById("typeValue").value = selectedType + " - " + otherValue; // Set the hidden input value as well
+        }
+    }
+
+    // Function to show the "Other" input field
+    function showOtherInput(type) {
+        const otherInputId = type + '-other';
+        const otherInput = document.getElementById(otherInputId);
+        otherInput.classList.remove("hidden");
+        document.getElementById("type-dropdown").classList.remove("show");
+    }
+
+    // Update unit options based on category and selected option
+    function updateUnitOptions(category, option) {
+        const amountUnitSelect = document.getElementById('unit');
+        amountUnitSelect.innerHTML = ''; // Clear existing options
+
+        if (category === 'molecular') {
+            amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
+        } else if (category === 'blood') {
+            if (option === 'Whole Blood') {
+                amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
+            } else {
+                amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
+                amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
+            }
+        } else if (category === 'tissue') {
+            amountUnitSelect.innerHTML += '<option value="slides">Slides</option>';
+            amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
+        }
+    }
+
+    // Close dropdown if clicked outside
+    window.onclick = function(event) {
+        const dropdown = document.getElementById("type-dropdown");
+        if (!event.target.matches('.dropdown-input') && !event.target.closest('.dropdown')) {
+            dropdown.classList.remove("show");
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('title').value = ''; // Clear the title field
+        document.getElementById('investigator').value = ''; // Clear the principal investigator field
+        document.getElementById('description').value = ''; // Clear the description field
+        document.getElementById('initiation-date').value = ''; // Clear the initiation date field
+        document.getElementById('completion-date').value = ''; // Clear the completion date field
+        document.getElementById('erb').value = ''; // Clear the ERB number field
+        document.getElementById('funding').value = ''; // Clear the funding source field
+    }
+
+    const yesOption = document.getElementById('yesOption');
+    const noOption = document.getElementById('noOption');
+    const timePointsSection = document.getElementById('timePointsSection');
+    const nextButton = document.getElementById('nextButton');
+
+    yesOption.addEventListener('change', function() {
+        timePointsSection.style.display = 'block';
+        nextButton.disabled = false;
+    });
+
+    noOption.addEventListener('change', function() {
+        timePointsSection.style.display = 'none';
+        nextButton.disabled = false;
+    });
+
+    document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const numSources = document.getElementById('num_sources');
+        const singleSampleCollection = document.getElementById('single_sample_collection');
+        if (this.value === 'yes') {
+            numSources.style.display = 'block';
+            singleSampleCollection.style.display = 'none'; // Hide single sample section if "Yes" is selected
+        } else if (this.value === 'no') {
+            numSources.style.display = 'none';
+            singleSampleCollection.style.display = 'block'; // Show single sample section if "No" is selected
+        }
+        });
+    });
+
+    document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const timepointDetails= document.getElementById('timepoint_details');
+            timepointDetails.style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+    });
+
+</script>
+
+</body>
+</html>
+{% endblock %}
+
+

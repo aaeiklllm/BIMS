@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+    <title>User Sample Requests</title>
+    <style>
+        body, html {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            margin-top: 20px;
+            text-align: center;
+            color: #644ca4
+        }
+        .tabs {
+            display: flex;
+            cursor: pointer;
+        }
+        .tab {
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-color: blue;
+            color: blue;
+        }
+        .pending, .all, .rejected, .approved, .tabs-container {
+            width: 90%;
+            margin: 20px auto;
+        }
+
+        .pending table, .all table, .rejected table, .approved table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pending th, .pending td, .all th, .all td,  .rejected th, .rejected td,  .approved th, .approved td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+
+        .tabs-container.hidden, .pending.hidden, .all.hidden, .rejected.hidden, .approved.hidden {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            position: relative;
+        }
+        th {
+            background-color: #f2f2f2;
+        }   
+
+        .icon-button {
+        text-decoration: none;
+        color: inherit;
+        display: inline-block;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f2f2f2;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        }
+
+        .icon-button:hover {
+            background-color: #e0e0e0;
+        }
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .hover-details {
+            visibility: hidden;
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 8px;
+        }
+        tr:hover .hover-details {
+            visibility: visible;
+        }
+        .text-rejected {
+            color: rgb(184, 8, 8); /* Red for rejected */
+        }
+        .text-approved {
+            color: rgb(0, 136, 0); /* Green for approved */
+        }
+        .text-pending {
+            color: rgb(221, 164, 9); /* Yellow for pending */
+        }
+
+        .icon-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hover-menu {
+            display: none;
+            position: absolute;
+            top: 100%; /* Positions the menu below the icon */
+            left: 0;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .hover-menu a {
+            display: block;
+            padding: 5px 10px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s;
+        }
+
+        .hover-menu a:hover {
+            background-color: #e0e0e0;
+        }
+
+        .icon-wrapper:hover .hover-menu {
+            display: block;
+        }
+        .container {
+            flex: 1; 
+            width: 100%;
+            max-width: 1280px;
+            margin: 20px auto;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><b>My Requests</b></h1>
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('all')">All</div>
+                <div class="tab" onclick="showTab('pending')">Pending</div>
+                <div class="tab" onclick="showTab('approved')">Approved</div>
+                <div class="tab" onclick="showTab('rejected')">Rejected</div>
+            </div>
+        </div>
+
+        <!-- All -->
+        <div class="all" id="all">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Research Project ID</th>
+                        <th>Research Project</th>
+                        <th>Status</th>
+                        <th>Request Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sample in sample_requests %}
+                        <tr>
+                            <td>
+                                <div class="icon-wrapper">
+                                    <span class="icon-button">&#9776;</span>
+                                    <div class="hover-menu">
+                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                        <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>
+                                    </div>
+                                </div> 
+                                {{sample.research_project.id|stringformat:"05d" }}
+                            </td> 
+                            <td> {{ sample.research_project.title }}</td>
+                            <td class="
+                                {% if sample.status == 'rejected' %}
+                                    text-rejected
+                                {% elif sample.status == 'approved' %}
+                                    text-approved
+                                {% elif sample.status == 'pending' %}
+                                    text-pending
+                                {% endif %}">
+                                {{ sample.status }}
+                            </td>
+                            <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">No research projects found.</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pending -->
+        <div class="pending hidden" id="pending">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Research Project ID</th>
+                        <th>Research Project</th>
+                        <th>Status</th>
+                        <th>Request Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sample in sample_requests %}
+                        {% if sample.status == 'pending' %}
+                        <tr>
+                            <td>
+                                <div class="icon-wrapper">
+                                    <span class="icon-button">&#9776;</span>
+                                    <div class="hover-menu">
+                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                        <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>
+                                    </div>
+                                </div>                            
+                                {{sample.research_project.id|stringformat:"05d" }}
+                            </td>
+                            <td> {{ sample.research_project.title }}</td>
+                            <td class="
+                                {% if sample.status == 'rejected' %}
+                                    text-rejected
+                                {% elif sample.status == 'approved' %}
+                                    text-approved
+                                {% elif sample.status == 'pending' %}
+                                    text-pending
+                                {% endif %}">
+                                {{ sample.status }}
+                            </td>
+                            <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">No pending research projects found.</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Approved -->
+        <div class="approved hidden" id="approved">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Research Project ID</th>
+                        <th>Research Project</th>
+                        <th>Status</th>
+                        <th>Request Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sample in sample_requests %}
+                        {% if sample.status == 'approved' %}
+                        <tr>
+                            <td>
+                                <div class="icon-wrapper">
+                                    <span class="icon-button">&#9776;</span>
+                                    <div class="hover-menu">
+                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                        <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>
+                                    </div>
+                                </div> 
+                                {{sample.research_project.id|stringformat:"05d" }}
+                            </td>
+                            <td> {{ sample.research_project.title }}</td>
+                            <td class="
+                                {% if sample.status == 'rejected' %}
+                                    text-rejected
+                                {% elif sample.status == 'approved' %}
+                                    text-approved
+                                {% elif sample.status == 'pending' %}
+                                    text-pending
+                                {% endif %}">
+                                {{ sample.status }}
+                            </td>
+                            <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">No approved research projects found.</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rejected -->
+        <div class="rejected hidden" id="rejected">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Research Project ID</th>
+                        <th>Research Project</th>
+                        <th>Status</th>
+                        <th>Request Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sample in sample_requests %}
+                        {% if sample.status == 'rejected' %}
+                        <tr>
+                            <td>
+                                <div class="icon-wrapper">
+                                    <span class="icon-button">&#9776;</span>
+                                    <div class="hover-menu">
+                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                        <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>
+                                    </div>
+                                </div> 
+                                {{sample.research_project.id|stringformat:"05d" }}
+                            </td>
+                            <td> {{ sample.research_project.title }}</td>
+                            <td class="
+                                {% if sample.status == 'rejected' %}
+                                    text-rejected
+                                {% elif sample.status == 'approved' %}
+                                    text-approved
+                                {% elif sample.status == 'pending' %}
+                                    text-pending
+                                {% endif %}">
+                                {{ sample.status }}
+                            </td>
+                            <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        </tr>
+                        {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No rejected research projects found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tab) {
+    const allTab = document.getElementById("all");
+    const pendingTab = document.getElementById("pending");
+    const approvedTab = document.getElementById("approved");
+    const rejectedTab = document.getElementById("rejected");
+
+    // Hide all sections
+    allTab.classList.add("hidden");
+    pendingTab.classList.add("hidden");
+    approvedTab.classList.add("hidden");
+    rejectedTab.classList.add("hidden");
+
+    // Remove active class from all tabs
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+    // Show the selected tab and add active class to the corresponding tab
+    if (tab === 'all') {
+        document.querySelector(".tab:nth-child(1)").classList.add("active");
+        allTab.classList.remove("hidden");
+    } else if (tab === 'pending') {
+        document.querySelector(".tab:nth-child(2)").classList.add("active");
+        pendingTab.classList.remove("hidden");
+    } else if (tab === 'approved') {
+        document.querySelector(".tab:nth-child(3)").classList.add("active");
+        approvedTab.classList.remove("hidden");
+    } else if (tab === 'rejected') {
+        document.querySelector(".tab:nth-child(4)").classList.add("active");
+        rejectedTab.classList.remove("hidden");
+    }
+}
+
+    </script>
+</body>
+
+{% endblock %}
