@@ -97,7 +97,7 @@
 <body>
     <div class="container">
         <h1 class="section-title">Create Acknowledgment Receipt</h1>
-        <form method="post" action="{% url 'create_ack_receipt' project.id %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'create_ack_receipt' request_sample.id %}" enctype="multipart/form-data">
             {% csrf_token %}
 
             <!-- Recipient Information Section -->

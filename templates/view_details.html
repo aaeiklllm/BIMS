@@ -124,7 +124,7 @@
     <div class="container">
         <h1 class="header">View Details</h1>
 
-        <form method="post" enctype="multipart/form-data" action="{% url 'view_details' research_project.id %}">
+        <form method="post" enctype="multipart/form-data" action="{% url 'view_details' request_sample.id %}">
             {% csrf_token %}
 
             <p style="color: #007bff; font-size: 22px;"><b>Research Project ID: <span class="project-id">{{ research_project.id }}</span></b></p>
@@ -211,7 +211,7 @@
                     </div>
 
                     <span>or</span>
-                    <a href="{% url 'create_ack_receipt' research_project.id %}" class="btn acknowledgment-receipt">Create Acknowledgment Receipt</a>
+                    <a href="{% url 'create_ack_receipt' request_sample.id %}" class="btn acknowledgment-receipt">Create Acknowledgment Receipt</a>
 
                     <!-- Area to display the selected file name and action buttons -->
                     <div id="file-info" class="mt-2" style="display: none;">

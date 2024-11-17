@@ -638,6 +638,12 @@ def request_sample(request):
             collection_date_yyyy=collection_date_yyyy,
         )
         rs_step5.save()
+
+        approval_record = Approve_Reject_Request.objects.create(
+            request_sample=request_sample,  # Associate the request_sample here
+            approve_reject="pending",
+        )
+        approval_record.save()
            
         # Redirect to step 7 with sample_id after saving
         return redirect('request_sample_step7', sample_id=request_sample.id)
@@ -942,6 +948,9 @@ def view_request_sample_details(request, sample_id):
     step4_data = RS_Step4.objects.filter(request_sample=request_sample).first()
     step5_data = RS_Step5.objects.filter(request_sample=request_sample).first()
 
+    # Calculate the total number of sample requests using the helper function
+    total_number_of_samples = calculate_total_samples(step4_data, step5_data)
+
     # Prepare context with all the fetched data
     context = {
         'request_sample': request_sample,
@@ -949,7 +958,8 @@ def view_request_sample_details(request, sample_id):
         'comorbidities': comorbidities,
         'lab_tests': lab_tests,
         'step4': step4_data,
-        'step5': step5_data
+        'step5': step5_data,
+        'total_number_of_samples': total_number_of_samples,
     }
     
     return render(request, 'view_request_sample_details.html', context)
@@ -974,14 +984,13 @@ def view_request_sample(request):
 
 
 def view_details(request, id):
-    #research_project = get_object_or_404(Research_Project, id=id)
-    #request_sample = research_project.request_sample
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
     comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
     lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
     step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
     step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
+    approval_record = Approve_Reject_Request.objects.filter(request_sample=request_sample).first()
 
     # Calculate the total number of sample requests using the helper function
     total_number_of_samples = calculate_total_samples(step4, step5)
@@ -992,24 +1001,14 @@ def view_details(request, id):
         reject_reason = request.POST.get('reject_reason')
         no_sample = request.POST.get('no_sample')
 
-        # Check if an acknowledgment receipt should be created
+        approval_record.approve_reject = approval
+        approval_record.attach_file = attach_file
+        approval_record.reject_reason = reject_reason
+        approval_record.no_available_samples = no_sample
+
         if approval == 'approve' and attach_file:
-            approval_record = Approve_Reject_Request.objects.create(
-                request_sample=request_sample,  # Associate the request_sample here
-                approve_reject=approval,
-                attach_file=attach_file,
-                reject_reason=reject_reason,
-                no_available_samples=no_sample,
-                create_ack_receipt=None  # Leave as None if no acknowledgment receipt is created
-            )
-        else:
-            approval_record = Approve_Reject_Request.objects.create(
-                request_sample=request_sample,  # Associate the request_sample here
-                approve_reject=approval,
-                attach_file=attach_file,
-                reject_reason=reject_reason,
-                no_available_samples=no_sample,
-            )
+            approval_record.create_ack_receipt = None 
+            
         approval_record.save()
 
         # Logic to handle the approval or rejection
@@ -1032,75 +1031,62 @@ def view_details(request, id):
         'lab_tests': lab_tests,
         'step4': step4,
         'step5': step5,
+        'approval_record': approval_record,
         'total_number_of_samples': total_number_of_samples,
     }
     return render(request, 'view_details.html', context)
 
 
 def update_view_details(request, id):
-    # Fetch the research project and associated request sample
-    # research_project = get_object_or_404(Research_Project, id=id)
-    # request_sample = research_project.request_sample
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
-
-    # Get or create the approval record related to this request sample
-    approval_record, created = Approve_Reject_Request.objects.get_or_create(
-        create_ack_receipt=None,  # Assuming you don't need a specific receipt here
-        defaults={
-            'approve_reject': 'pending',  # Set default status to 'pending' if new
-            'reject_reason': '',
-            'no_available_samples': ''
-        }
-    )
     comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
     lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
     step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
     step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
+    approval_record = Approve_Reject_Request.objects.filter(request_sample=request_sample).first()
 
-    # Calculate the total number of sample requests
+    # Calculate the total number of sample requests using the helper function
     total_number_of_samples = calculate_total_samples(step4, step5)
 
-    # Handle POST request (form submission)
     if request.method == 'POST':
-        # Check for file attachment or removal request
-        remove_attachment = request.POST.get('remove_attachment')
         attach_file = request.FILES.get('attach_file')
-
-        if remove_attachment and approval_record.attach_file:
-            # Remove the current attachment
-            approval_record.attach_file.delete()
-            approval_record.attach_file = None
-
-        if attach_file:
-            # Add or update attachment file
-            approval_record.attach_file = attach_file
-
-        # Save any changes to approval record
+        approval_record.attach_file = attach_file
         approval_record.save()
 
-        # Redirect to the main view after saving
+        # Update the 'updated_at' field to reflect the approval/rejection time
+        request_sample.updated_at = timezone.now()
+        request_sample.save()
+
+        # Redirect to a confirmation page or the same page
         return redirect('view_request_sample')
 
-    # Render context with form data and related project/sample info
     context = {
         'research_project': research_project,
-        'approval_record': approval_record,
         'request_sample': request_sample,
         'comorbidities': comorbidities,
         'lab_tests': lab_tests,
         'step4': step4,
         'step5': step5,
+        'approval_record': approval_record,
         'total_number_of_samples': total_number_of_samples,
     }
     return render(request, 'update_view_details.html', context)
 
 def create_ack_receipt(request, id):
-    # project = get_object_or_404(Research_Project, id=id)
-    # request_sample = project.request_sample
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
     researcher = request_sample.requested_by
+
+    # Retrieve the existing Approve_Reject_Request
+    try:
+        approval_record = Approve_Reject_Request.objects.get(request_sample=request_sample)
+    except Approve_Reject_Request.DoesNotExist:
+        return HttpResponse("No associated approval record exists.", status=400)
+
+    # Prevent creating duplicate acknowledgment receipts
+    if approval_record.create_ack_receipt:
+        return HttpResponse("Acknowledgment receipt already exists for this request sample.", status=400)
 
     user_id = request.session.get("user_id")
     biobank_manager = UserProfile.objects.get(id=user_id) if user_id else None
@@ -1123,7 +1109,7 @@ def create_ack_receipt(request, id):
 
     if request.method == 'POST':
         officer_signature = request.FILES.get('signature-file')
-        
+
         # Start a transaction for atomicity
         with transaction.atomic():
             # Create the main acknowledgment receipt record
@@ -1148,15 +1134,9 @@ def create_ack_receipt(request, id):
                     )
                     ack_sample.save()
 
-            # Create a related Approve_Reject_Request instance
-            approval_record = Approve_Reject_Request.objects.create(
-                request_sample=request_sample,  # Associate the request_sample here
-                create_ack_receipt=ack_receipt,
-                approve_reject='approve',  # Set the status as 'Approved'
-                attach_file=None,
-                reject_reason='',
-                no_available_samples=''
-            )
+            # Link the acknowledgment receipt to the approval record
+            approval_record.create_ack_receipt = ack_receipt
+            approval_record.approve_reject = 'approve'
             approval_record.save()
 
             # Update the status of the associated Request_Sample to 'approved'
@@ -1169,6 +1149,7 @@ def create_ack_receipt(request, id):
 
     context = {
         'project': research_project,
+        'request_sample': request_sample,
         'sample_range': range(1, total_samples + 1),
         'researcher': researcher,
         'biobank_manager': biobank_manager,
@@ -1177,17 +1158,48 @@ def create_ack_receipt(request, id):
     return render(request, 'create_ack_receipt.html', context)
 
 def sample_detail(request, sample_id):
-    # Fetch the specific sample by ID
     sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
+    print(f"Sample fetched: {sample.id}")
 
-    # Retrieve all Ack_Sample entries related to this sample ID
     ack_samples = Ack_Sample.objects.filter(sample_id=sample_id)
 
-    # Retrieve corresponding Request_Sample entries for these Ack_Samples
-    request_sample_ids = Approve_Reject_Request.objects.filter(create_ack_receipt__in=ack_samples.values_list('create_ack_receipt', flat=True)).values_list('request_sample', flat=True)
-    request_samples = Request_Sample.objects.filter(id__in=request_sample_ids)
+    request_samples = []
 
-    # Get all related storage details
+    for ack_sample in ack_samples:
+        print(f"Ack_Sample ID: {ack_sample.id}")
+
+        # Get the related Create_Ack_Receipt
+        ack_receipt = ack_sample.create_ack_receipt
+        if not ack_receipt:
+            print(f"No associated Create_Ack_Receipt found for Ack_Sample ID: {ack_sample.id}")
+            continue 
+
+        print(f"Create Ack Receipt: {ack_receipt.id}")
+
+        # Get the related Approve_Reject_Request
+        approval_record = Approve_Reject_Request.objects.filter(create_ack_receipt=ack_receipt).first()
+        if not approval_record:
+            print(f"No associated Approve_Reject_Request found for Create_Ack_Receipt ID: {ack_receipt.id}")
+            continue  
+
+        print(f"Approval Record: {approval_record.id}")
+
+        # Get the associated Request_Sample
+        request_sample = approval_record.request_sample
+        if not request_sample:
+            print(f"No associated Request_Sample found for Approve_Reject_Request ID: {approval_record.id}")
+            continue 
+
+        print(f"Request Sample: {request_sample.id}")
+
+        if request_sample not in request_samples:
+            request_samples.append(request_sample)
+
+    print("All Associated Request_Samples:")
+    for request_sample in request_samples:
+        print(f"Request_Sample ID: {request_sample.id}")
+
+     # Get all related storage details
     first_storage_info = sample.storage_set.first()
 
     # Get total number of aliquots for the sample
@@ -1199,7 +1211,7 @@ def sample_detail(request, sample_id):
     return render(request, 'sample_detail.html', {
         'sample': sample,
         'ack_samples': ack_samples,
-        'request_samples': request_samples,  # Pass request samples to the template
+        'request_samples': request_samples, 
         'first_storage_info': first_storage_info,
         'total_aliquots': total_aliquots,
         'aliquots': aliquots,

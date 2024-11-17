@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Details</title>
+    <title>View Details</title>
     <style>
         body, html {
             height: 100%;
@@ -19,7 +19,7 @@
         }
         .container {
             flex: 1; 
-            width: 100%;
+            width: 70%;
             max-width: 1280px;
             margin: 20px auto;
             margin-bottom: 40px;
@@ -33,10 +33,10 @@
             margin: 2px; 
         }
         .header {
-            font-size: 32px; 
+            font-size: 32px; /* Increase the font size */
             font-weight: bold;
-            text-align: center; 
-            margin-bottom: 20px;
+            text-align: center; /* Center the text */
+            margin-bottom: 20px; /* Add space below the header */
         }
         .project-id {
             color: #007bff;
@@ -75,9 +75,15 @@
             cursor: pointer;
             background-color: #007bff;
             color: #fff;
+            color: #fff;
         }
-
-        .btn.cancel, .btn.back {
+        .btn.attach-file {
+            background-color: #808080; /* Grey */
+        }
+        .btn.acknowledgment-receipt {
+            background-color: #28a745; /* Green */
+        }
+        .btn.cancel {
             background-color: #ddd;
             color: #333;
         }
@@ -85,7 +91,7 @@
             display: inline-block;
             position: relative;
             cursor: pointer;
-            background-color: #007bff;
+            background-color: #808080; /* Grey */
             color: #fff;
             padding: 10px 20px;
             border-radius: 5px;
@@ -103,31 +109,25 @@
         .remove-link {
             background: none;
             border: none;
-            color: #007bff;
+            color: #007bff; /* Link color */
             padding: 0;
             text-decoration: underline;
             cursor: pointer;
             font-size: 1em;
         }
         .remove-link:hover {
-            color: #0056b3;
+            color: #0056b3; /* Darker color on hover */
         }
-
-        .disabled-link {
-            background: gray;
-            color: white;
-            pointer-events: none; 
-            text-decoration: none;
-        }
-    </style> 
+    </style>    
 </head>
 <body>
     <div class="container">
-        <h1><strong>Update Details</strong></h1>
-        {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %}
-        <form method="post" enctype="multipart/form-data" action="{% url 'update_view_details' research_project.id %}">
+        <h1 class="header">View Details</h1>
+
+        <form method="post" enctype="multipart/form-data" action="{% url 'update_view_details' request_sample.id %}">
             {% csrf_token %}
-            <p style="color: #007bff; font-size: 22px;"><b>Research Project ID: <span class="project-id">{{ research_project.id }}</span></b></p>
+
+            <p style="color: #007bff; font-size: 22px;"><b>Research Project ID: <span class="project-id">{{ research_project.id|stringformat:"05d" }}</span></b></p>
             <p><b>Research Project:</b> {{ research_project.title }}</p>
             <p><b>Research Ethics Boards Approval (ERB):</b> 
                 {% if request_sample.erb_approval %}
@@ -199,52 +199,82 @@
             <p><b>Desired Start Date:</b> {{ request_sample.desired_start_date }}</p>
             <p><b>Total number of sample requests:</b> <span class="highlight">{{ total_number_of_samples }}</span></p>
 
-            {% if request_sample.status == 'approved' %}
             <div class="radio-group">   
                 <label>
-                    <input type="radio" name="approval" value="approve" onclick="toggleSections('approve')"> Approve
+                    <input type="radio" name="approval" value="approve" 
+                           onclick="toggleSections('approve')" 
+                           {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}
+                           {% if request_sample.status == 'approved' %}checked{% endif %}> Approve
                 </label>
                 
-                <div id="approve-options" style="display: none; margin-left: 20px;">
+                <div id="approve-options" style="margin-left: 20px; {% if request_sample.status == 'approved' %}display: block;{% else %}display: none;{% endif %}">
                     <div class="file-input-wrapper">
                         <span>Attach File</span>
                         <input type="file" id="attach_file" name="attach_file" accept=".pdf" onchange="handleFileChange()">
                     </div>
-
+                
                     <span>or</span>
-                    <a class="btn acknowledgment-receipt disabled-link">Create Acknowledgment Receipt</a>
-                    <div id="file-info" class="mt-2" style="display: none;">
-                        <span id="file-name"></span>
-                        <button type="button" class="remove-link" onclick="removeFile()">Remove</button>
+                    <a href="{% url 'create_ack_receipt' request_sample.id %}" 
+                       class="btn acknowledgment-receipt 
+                       {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}">
+                       Create Acknowledgment Receipt
+                    </a>
+                
+                    <!-- Area to display the selected file name and action buttons -->
+                    <div id="file-info" class="mt-2" style="{% if request_sample.status == 'approved' %}display: block;{% else %}display: none;{% endif %}">
+                        <span id="file-name">
+                            {% if approval_record.attach_file %}
+                                {{ approval_record.attach_file.name }}
+                                <button id="remove-button" type="button" class="remove-link" onclick="removeFile()">
+                                    Remove
+                                </button>
+                            {% endif %}
+                        </span>
+                        <button id="remove-button" type="button" class="remove-link" style="display: none;" onclick="removeFile()">
+                            Remove
+                        </button>
                     </div>
-                </div>
+                </div>                
                 <br>
-            {% endif %}
-                <label>
-                    <input type="radio" name="approval" value="reject" onclick="toggleSections('reject')"> Reject
-                </label>
-                <div id="reject-options" style="display: none; margin-left: 20px;">
-                    <label for="reject_reason">Reason <span style="color: red;">*</span></label>
-                    <textarea id="reject_reason" name="reject_reason" rows="3" cols="50"></textarea><br>
-                    <label>
-                        <input type="checkbox" id="no_sample" name="no_sample" value="No" onclick="toggleReasonField()"> No available sample/s for now
-                    </label>
-                    <p style="color: red; margin-left: 20px;">Note: By selecting this option, the system will automatically reject the request on the desired start date if you have not made a response by then.</p>
-                </div>
-                <div class="buttons">  
-                    {% if request_sample.status == 'approved' %}
-                    <button type="submit" class="btn submit">Save Changes</button>
-                    {% endif %}
-                    <a href="{% url 'view_request_sample' %}" class="btn back">Back</a>
-                </div>
-        
-            </div>
 
+                <label>
+                    <input type="radio" name="approval" value="reject" 
+                           onclick="toggleSections('reject')" 
+                           {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}
+                           {% if request_sample.status == 'rejected' %}checked{% endif %}> Reject
+                </label>
+                <div id="reject-options" 
+                     style="margin-left: 20px; {% if request_sample.status == 'rejected' %}display: block;{% else %}display: none;{% endif %}">
+                    <label for="reject_reason">Reason <span style="color: red;">*</span></label>
+                    <textarea id="reject_reason" name="reject_reason" rows="3" cols="50"
+                        {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}>
+                        {% if request_sample.status == 'rejected' %}{{ request_sample.reject_reason }}{% endif %}
+                    </textarea>
+
+                
+                    <label>
+                        <input type="checkbox" id="no_sample" name="no_sample" value="No" 
+                               onclick="toggleReasonField()" 
+                               {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}
+                               {% if approval_record.no_available_samples == 'No' %}checked{% endif %}> No available sample/s for now
+                    </label>
+                    <p style="color: red; margin-left: 20px;">
+                        Note: By selecting this option, the system will automatically reject the request on the desired start date if you have not made a response by then.
+                    </p>
+                </div>                
+            </div>
+            <div class="buttons">
+                <button class="btn submit" type="submit">Submit</button>
+                <a href="{% url 'view_request_sample' %}">
+                    <button class="btn cancel" type="button">Cancel</button>
+                </a>
+            </div>
         </form>
-        {% endif %}
     </div>
+
     <script>
-       function toggleSections(selection) {
+    
+        function toggleSections(selection) {
             const approveOptions = document.getElementById('approve-options');
             const rejectOptions = document.getElementById('reject-options');
 
@@ -257,17 +287,25 @@
             }
         }
         function handleFileChange() {
-            const input = document.getElementById('attach_file');
+            const fileInput = document.getElementById('attach_file');
             const fileInfo = document.getElementById('file-info');
-            if (input.files && input.files[0]) {
-                document.getElementById('file-name').innerText = input.files[0].name;
-                fileInfo.style.display = 'inline';
+            const fileNameDisplay = document.getElementById('file-name');
+            const removeButton = document.getElementById("remove-button");
+
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                fileNameDisplay.textContent = fileName; // Display selected file name
+                fileInfo.style.display = 'block'; // Show the file info section
+                removeButton.style.display = "inline";
             }
         }
         function removeFile() {
-            const input = document.getElementById('attach_file');
-            input.value = '';
-            document.getElementById('file-info').style.display = 'none';
+            const fileInput = document.getElementById('attach_file');
+            const fileInfo = document.getElementById('file-info');
+
+            fileInput.value = ''; // Clear the file input
+            fileInfo.style.display = 'none'; // Hide the file info section
+            document.getElementById('file-name').textContent = ''; // Clear the file name
         }
         function toggleReasonField() {
             const noSampleCheckbox = document.getElementById('no_sample');
