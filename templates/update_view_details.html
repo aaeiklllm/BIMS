@@ -246,9 +246,9 @@
                 <div id="reject-options" 
                      style="margin-left: 20px; {% if request_sample.status == 'rejected' %}display: block;{% else %}display: none;{% endif %}">
                     <label for="reject_reason">Reason <span style="color: red;">*</span></label>
-                    <textarea id="reject_reason" name="reject_reason" rows="3" cols="50"
+                    <textarea id="reject_reason" name="reject_reason" rows="3" cols="50 style="text-align: left;"
                         {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}>
-                        {% if request_sample.status == 'rejected' %}{{ request_sample.reject_reason }}{% endif %}
+                        {% if request_sample.status == 'rejected' %}{{ approval_record.reject_reason }}{% endif %}
                     </textarea>
 
                 
