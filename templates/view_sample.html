@@ -144,7 +144,7 @@
         <!-- Search Bar -->
         <div class="search-filter">
             <input type="text" id="search" placeholder="Search for samples..." />
-            <button id="filter-button" type="button">Filter</button>
+            <button id="filter-button" type="button" style="background-color: #644ca4;">Filter</button>
             
         </div>
 
@@ -504,7 +504,7 @@
             }
 
             // Open and close modal
-            filterButton.addEventListener('click', function() { modal.style.display = 'block'; });
+            filterButton.addEventListener('click', function() { modal.style.display = 'flex'; });
             closeButton.addEventListener('click', function() { modal.style.display = 'none'; });
             window.addEventListener('click', function(event) { if (event.target === modal) modal.style.display = 'none'; });
 
@@ -601,63 +601,161 @@
             margin-right: 10px;
         }
 
+        /* General Reset and Font */
+
         /* Modal Styles */
         .modal {
-        display: none; /* Initially hidden */
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background-color: rgba(0,0,0,0.4);
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.4); /* Background overlay */
+            align-items: center; /* Vertically center */
+            justify-content: center; /* Horizontally center */
         }
 
         .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .close-button {
-        position: absolute;
-        top: 10px;
-        right: 25px;
-        font-size: 24px;
-        font-weight: bold;
-        color: #000;
-        cursor: pointer;
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        .close-button:hover,
-        .close-button:focus {
-        color: #f00;
+        .close-button:hover {
+            color: #333;
         }
 
-        /* Form Styles (Optional) */
-        /* .filter-form {
-
-        } */
-
-        /* Age Range Container Styles */
-        #age-range-container {
-        display: none; /* Initially hidden */
+        /* Form Styling */
+        #filter-form {
+            /* display: flex; */
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        /* Show/hide age range container based on radio button selection */
-        #exact-age-option:checked ~ #age-range-container,
-        #age-range-option:checked ~ #exact-age-container {
-        display: none;
+        label {
+            font-weight: bold;
+            color: #444;
         }
 
-        #age-range-option:checked ~ #age-range-container {
-        display: block;
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.2s;
         }
 
-        /* Add any additional styles as needed */
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #007bff;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .filter-button {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 20px;
+            background-color: #644ca4;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #apply-filters {
+            background-color: #28a745;
+        }
+
+        #reset-filters {
+            background-color: #dc3545;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        /* Sample Details Styling */
+        .sample-details {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .fieldset {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .legend {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .grid-item {
+            margin-bottom: 10px;
+        }
+
+        .section-header {
+            font-weight: bold;
+            margin-top: 20px;
+            color: #444;
+        }
+
+        .no-info {
+            color: #888;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #ddd;
+            margin-top: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
     </style>
 </body>
 
