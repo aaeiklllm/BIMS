@@ -148,7 +148,11 @@
                         </ul>
                     </div>
                     <div class="chart">
-                        <img src="{{ project_chart }}" alt="Project Pie Chart">
+                        {% if project_chart %}
+                            <img src="{{ project_chart }}" alt="Project Pie Chart">
+                        {% else %}
+                            <p>No data available for the type chart.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -174,7 +178,11 @@
                         </ul>
                     </div>
                     <div class="chart">
-                        <img src="{{ type_chart }}" alt="Type Pie Chart">
+                        {% if type_chart %}
+                            <img src="{{ type_chart }}" alt="Type Chart">
+                        {% else %}
+                            <p>No data available for the type chart.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
