@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Details</title>
+    <style>
+        body, html {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            flex: 1; 
+            width: 70%;
+            max-width: 1280px;
+            margin: 20px auto;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
+        }
+        p {
+            margin: 2px; 
+        }
+        .header {
+            font-size: 32px; /* Increase the font size */
+            font-weight: bold;
+            text-align: center; /* Center the text */
+            margin-bottom: 20px; /* Add space below the header */
+        }
+        .project-id {
+            color: #007bff;
+            font-size: 22px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .sample-info {
+            margin-left: 20px;
+        }
+        .highlight {
+            color: red;
+        }
+        .file-link {
+            display: inline-flex;
+            align-items: center;
+        }
+        .file-link a {
+            margin-left: 5px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .radio-group {
+            margin-top: 20px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            color: #fff;
+        }
+        .btn.attach-file {
+            background-color: #808080; /* Grey */
+        }
+        .btn.acknowledgment-receipt {
+            background-color: #28a745; /* Green */
+        }
+        .btn.cancel {
+            background-color: #ddd;
+            color: #333;
+        }
+        .file-input-wrapper {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            background-color: #808080; /* Grey */
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .remove-link {
+            background: none;
+            border: none;
+            color: #007bff; /* Link color */
+            padding: 0;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .remove-link:hover {
+            color: #0056b3; /* Darker color on hover */
+        }
+    </style>    
+</head>
+<body>
+    <div class="container">
+        <h1 class="header">View Details</h1>
+
+        <form method="post" enctype="multipart/form-data" action="{% url 'update_view_details' request_sample.id %}">
+            {% csrf_token %}
+
+            <p style="color: #007bff; font-size: 22px;"><b>Research Project ID: <span class="project-id">{{ research_project.id|stringformat:"05d" }}</span></b></p>
+            <p><b>Research Project:</b> {{ research_project.title }}</p>
+            <p><b>Research Ethics Boards Approval (ERB):</b> 
+                {% if request_sample.erb_approval %}
+                    <span class="file-link">
+                        <input type="text" value="{{ request_sample.erb_approval.name }}" readonly>
+                        <a href="{{ request_sample.erb_approval.url }}" download>&#128229;</a>
+                    </span>
+                {% else %}
+                    No ERB approval available.
+                {% endif %}
+            </p>
+
+            <div class="section-title">Sample Information:</div>
+            <div class="sample-info">
+                <p><b>Type:</b> {{ request_sample.type }}</p>
+                <p><b>Source</b></p>
+                <div class="sample-info">
+                    <p><b>Sex:</b> {{ request_sample.sex }}</p>
+                    <p><b>Age:</b> {{ request_sample.age }}</p>
+                    <p><b>Clinical Diagnosis:</b> {{ request_sample.clinical_diagnosis }}</p>
+                    <p><b>Comorbidities:</b> 
+                        {% if comorbidities %}
+                            {% for comorbidity in comorbidities %}
+                                {{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            None
+                        {% endif %}
+                    </p>
+                    <p><b>Lab Tests:</b> 
+                        {% if lab_tests %}
+                            {% for lab_test in lab_tests %}
+                                {{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            None
+                        {% endif %}
+                    </p>
+                </div>
+                <p><b>Quantity Volume:</b> {{ request_sample.amount }} {{ request_sample.unit }}</p>
+            </div>
+
+            <p><b>Multiple samples from the same source/participant with multiple time points:</b> 
+                {% if step4 and step4.multiple_samples == 'yes' %}
+                    YES - {{ step4.time_points }} time points - {{ step4.interval }} {{ step4.interval_unit }} interval
+                {% else %}
+                    NO
+                {% endif %}
+            </p>
+
+            <p><b>Same sample request from different sources/participants:</b> 
+                {% if step5 and step5.different_sources == 'yes' %}
+                    YES - {{ step5.num_participants }} sources/participants
+                {% else %}
+                    NO
+                {% endif %}
+            </p>
+            <ul style="margin-left: 50px;">
+                {% if step5 and step5.multiple_timepoints_each == 'yes' %}
+                    <li>Multiple samples with multiple time points from each source/participant: 
+                        YES - {{ step5.time_points }} time points - {{ step5.interval }} {{ step5.interval_unit }} interval
+                    </li>
+                {% else %}
+                    <b>Multiple samples with multiple time points from each source/participant: </b>
+                    NO
+                {% endif %}
+            </ul>
+
+            <p><b>Desired Start Date:</b> {{ request_sample.desired_start_date }}</p>
+            <p><b>Total number of sample requests:</b> <span class="highlight">{{ total_number_of_samples }}</span></p>
+
+            <div class="radio-group">   
+                <label>
+                    <input type="radio" name="approval" value="approve" 
+                           onclick="toggleSections('approve')" 
+                           {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}
+                           {% if request_sample.status == 'approved' %}checked{% endif %}> Approve
+                </label>
+                
+                <div id="approve-options" style="margin-left: 20px; {% if request_sample.status == 'approved' %}display: block;{% else %}display: none;{% endif %}">
+                    <div class="file-input-wrapper">
+                        <span>Attach File</span>
+                        <input type="file" id="attach_file" name="attach_file" accept=".pdf" onchange="handleFileChange()">
+                    </div>
+                
+                    <span>or</span>
+                    <a href="{% url 'create_ack_receipt' request_sample.id %}" 
+                       class="btn acknowledgment-receipt 
+                       {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}">
+                       Create Acknowledgment Receipt
+                    </a>
+                
+                    <!-- Area to display the selected file name and action buttons -->
+                    <div id="file-info" class="mt-2" style="{% if request_sample.status == 'approved' %}display: block;{% else %}display: none;{% endif %}">
+                        <span id="file-name">
+                            {% if approval_record.attach_file %}
+                                {{ approval_record.attach_file.name }}
+                                <button id="remove-button" type="button" class="remove-link" onclick="removeFile()">
+                                    Remove
+                                </button>
+                            {% endif %}
+                        </span>
+                        <button id="remove-button" type="button" class="remove-link" style="display: none;" onclick="removeFile()">
+                            Remove
+                        </button>
+                    </div>
+                </div>                
+                <br>
+
+                <label>
+                    <input type="radio" name="approval" value="reject" 
+                           onclick="toggleSections('reject')" 
+                           {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}
+                           {% if request_sample.status == 'rejected' %}checked{% endif %}> Reject
+                </label>
+                <div id="reject-options" 
+                     style="margin-left: 20px; {% if request_sample.status == 'rejected' %}display: block;{% else %}display: none;{% endif %}">
+                    <label for="reject_reason">Reason <span style="color: red;">*</span></label>
+                    <textarea id="reject_reason" name="reject_reason" rows="3" cols="50 style="text-align: left;"
+                        {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}>
+                        {% if request_sample.status == 'rejected' %}{{ approval_record.reject_reason }}{% endif %}
+                    </textarea>
+
+                
+                    <label>
+                        <input type="checkbox" id="no_sample" name="no_sample" value="No" 
+                               onclick="toggleReasonField()" 
+                               {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}
+                               {% if approval_record.no_available_samples == 'No' %}checked{% endif %}> No available sample/s for now
+                    </label>
+                    <p style="color: red; margin-left: 20px;">
+                        Note: By selecting this option, the system will automatically reject the request on the desired start date if you have not made a response by then.
+                    </p>
+                </div>                
+            </div>
+            <div class="buttons">
+                <button class="btn submit" type="submit">Submit</button>
+                <a href="{% url 'view_request_sample' %}">
+                    <button class="btn cancel" type="button">Cancel</button>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    
+        function toggleSections(selection) {
+            const approveOptions = document.getElementById('approve-options');
+            const rejectOptions = document.getElementById('reject-options');
+
+            if (selection === 'approve') {
+                approveOptions.style.display = 'block';
+                rejectOptions.style.display = 'none';
+            } else if (selection === 'reject') {
+                approveOptions.style.display = 'none';
+                rejectOptions.style.display = 'block';
+            }
+        }
+        function handleFileChange() {
+            const fileInput = document.getElementById('attach_file');
+            const fileInfo = document.getElementById('file-info');
+            const fileNameDisplay = document.getElementById('file-name');
+            const removeButton = document.getElementById("remove-button");
+
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                fileNameDisplay.textContent = fileName; // Display selected file name
+                fileInfo.style.display = 'block'; // Show the file info section
+                removeButton.style.display = "inline";
+            }
+        }
+        function removeFile() {
+            const fileInput = document.getElementById('attach_file');
+            const fileInfo = document.getElementById('file-info');
+
+            fileInput.value = ''; // Clear the file input
+            fileInfo.style.display = 'none'; // Hide the file info section
+            document.getElementById('file-name').textContent = ''; // Clear the file name
+        }
+        function toggleReasonField() {
+            const noSampleCheckbox = document.getElementById('no_sample');
+            const reasonField = document.getElementById('reject_reason');
+
+            if (noSampleCheckbox.checked) {
+                reasonField.disabled = true;
+                reasonField.style.backgroundColor = '#e0e0e0'; // Light gray color to indicate it's disabled
+                reasonField.value = ''; // Clear the text when disabled
+            } else {
+                reasonField.disabled = false;
+                reasonField.style.backgroundColor = ''; // Reset to default color
+            }
+        }
+    </script>
+</body>
+
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Request Sample</title> 
+    <style>
+         body, html {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            flex: 1; 
+            width: 100%;
+            max-width: 1280px;
+            margin: 20px auto;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
+        }
+        h1 {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .tabs {
+            display: flex;
+            cursor: pointer;
+        }
+        .tab {
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-color: blue;
+            color: blue;
+        }
+        
+        .table-container {
+            display: none;
+        }
+
+        .table-container.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            position: relative;
+        }
+        th {
+            background-color: #f2f2f2;
+        }   
+        .icon-button {
+        text-decoration: none;
+        color: inherit;
+        display: inline-block;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f2f2f2;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        }
+
+        .icon-button:hover {
+            background-color: #e0e0e0;
+        }
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .hover-details {
+            visibility: hidden;
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 8px;
+        }
+        tr:hover .hover-details {
+            visibility: visible;
+        }
+        .text-rejected {
+            color: rgb(184, 8, 8); /* Red for rejected */
+        }
+        .text-approved {
+            color: rgb(0, 136, 0); /* Green for approved */
+        }
+        .text-pending {
+            color: rgb(221, 164, 9); /* Yellow for pending */
+        }
+    </style>
+    </style>
+</head>
+<body>
+    <div class="container">
+    <h1><b>Sample Requests</b></h1>
+    
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('all')">All</div>
+            <div class="tab" onclick="showTab('pending')">Pending</div>
+            <div class="tab" onclick="showTab('approved')">Approved</div>
+            <div class="tab" onclick="showTab('rejected')">Rejected</div>
+        </div>
+    </div>
+    <br>
+    <div class="table-container active" id="all">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sample in sample_requests %}
+                <!-- <tr class="{% if project.status == 'approved' %}highlight-approved{% elif project.status == 'rejected' %}highlight-rejected{% endif %}"> -->
+                    <td>
+                        <a href="{% if sample.status == 'approved' or sample.status == 'rejected' %}
+                                    {% url 'update_view_details' sample.id %}
+                                {% else %}
+                                    {% url 'view_details' sample.id %}
+                                {% endif %}" 
+                        class="icon-button" 
+                        title="View Details">&#9776;
+                        </a>  {{ sample.research_project.id|stringformat:"05d" }}
+                    </td>                        
+                    <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                    <td>{{ sample.research_project.title }}</td>
+                    <td>{{ sample.requested_by.username }}</td>
+                    <td class="
+                    {% if sample.status == 'rejected' %}
+                        text-rejected
+                    {% elif sample.status == 'approved' %}
+                        text-approved
+                    {% elif sample.status == 'pending' %}
+                        text-pending
+                    {% endif %}">{{ sample.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container" id="pending">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sample in sample_requests %}
+                    {% if sample.status == 'pending' %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'view_details' sample.id %}" class="icon-button" title="View Details">&#9776;</a> {{ sample.research_project.id|stringformat:"05d" }}
+                        </td>                        
+                        <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        <td>{{ sample.research_project.title }}</td>
+                        <td>{{ sample.requested_by.username }}</td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="4">No pending research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container" id="approved">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                    <th>Response Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sample in sample_requests %}
+                    {% if sample.status == 'approved' %}
+                    <!-- <tr class="highlight-approved"> -->
+                        <td>
+                            <a href="{% url 'update_view_details' sample.id %}" class="icon-button" title="View Details">&#9776;</a> {{ sample.research_project.id|stringformat:"05d" }}
+                        </td>                        
+                        <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        <td>{{ sample.research_project.title }}</td>
+                        <td>{{ sample.requested_by.username }}</td>
+                        <td>{{ sample.updated_at|date:"m/d/Y" }}</td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="5">No approved research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container" id="rejected">
+        <table>
+            <thead>
+                <tr>
+                    <th>Research Project ID</th>
+                    <th>Request Date</th>
+                    <th>Research Project</th>
+                    <th>Requested by</th>
+                    <th>Response Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sample in sample_requests %}
+                    {% if sample.status == 'rejected' %}
+                    <!-- <tr class="highlight-rejected"> -->
+                        <td>
+                            <a href="{% url 'update_view_details' sample.id %}" class="icon-button" title="View Details">&#9776;</a> {{ sample.research_project.id|stringformat:"05d" }}
+                        </td>                       
+                        <td>{{ sample.created_at|date:"m/d/Y" }}</td>
+                        <td>{{ sample.research_project.title }}</td>
+                        <td>{{ sample.requested_by.username }}</td>
+                        <td>{{ sample.updated_at|date:"m/d/Y" }}</td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                <tr>
+                    <td colspan="5">No rejected research projects found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll(".tab");
+            const tables = document.querySelectorAll(".table-container");
+
+            tabs.forEach(tab => {
+                if (tab.textContent.toLowerCase() === tabId) {
+                    tab.classList.add("active");
+                } else {
+                    tab.classList.remove("active");
+                }
+            });
+
+            tables.forEach(table => {
+                if (table.id === tabId) {
+                    table.classList.add("active");
+                } else {
+                    table.classList.remove("active");
+                }
+            });
+        }
+    </script>
+
+</body>
+
+{% endblock %}
+

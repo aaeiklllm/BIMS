@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Status</title>
+    <style>
+        body, html{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            color: #644ca4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 30px auto;
+            margin-bottom: 50px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
+        }
+        
+        .header-inv {
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f5f5f5;
+            z-index: 1000;
+            border-bottom: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-inv button {
+            background-color: #644ca4;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap; /* Ensure content wraps within container */
+            gap: 20px;
+        }
+
+        .chart, .sample-list {
+            flex: 1;
+            min-width: 300px; /* Ensure responsive sizing */
+            max-width: 45%; /* Prevent elements from exceeding container width */
+            overflow: hidden;
+        }
+
+        .chart img {
+            width: 100%; /* Fixed size */
+            height: 300px; /* Maintains aspect ratio */
+            object-fit: contain; /* Prevent distortion */
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px; /* Indent bullets */
+            margin: 0;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+
+        ul ul {
+            list-style-type: circle; /* Different style for nested lists */
+            padding-left: 20px; /* Indent nested bullets */
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: blue;
+        }
+
+        ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+     <div class="header-inv">
+        <h1><b>Inventory Status</b></h1>
+        <a href="{% url 'generate_pdf' %}">
+            <button>Download PDF</button>
+        </a>
+    </div>
+    <div class="container">
+
+        <!-- Content Section -->
+        <div class="content">
+            <div class="section">
+                <h3><b>Number of samples in the system: {{ samples.count }}</b></h3>
+            </div>
+
+            <!-- Samples by Project -->
+            <div class="section">
+                <div class="chart-container">
+                    <div class="sample-list">
+                        <h4>Samples based on <b>Research Project</b></h4>
+                        <ul>
+                            {% for project in projects %}
+                            <li>
+                                {{ project.name }}: {{ project.count }} samples
+                                <ul>
+                                    {% for sample in samples %}
+                                        {% if sample.project == project.name %}
+                                            <li>{{ sample.id }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="chart">
+                        <img src="{{ project_chart }}" alt="Project Pie Chart">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Samples by Type -->
+            <div class="section">
+                <div class="chart-container">
+                    <div class="sample-list">
+                        <h4>Samples based on <b>Type</b></h4>
+                        <ul>
+                            {% for type in types %}
+                            <li>
+                                {{ type.type }}: {{ type.count }} sample/s
+                                <ul>
+                                    {% for sample in samples %}
+                                        {% if sample.type == type.type %}
+                                            <li>Sample {{ sample.id }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="chart">
+                        <img src="{{ type_chart }}" alt="Type Pie Chart">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+{% endblock %}
