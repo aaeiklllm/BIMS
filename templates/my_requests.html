@@ -187,8 +187,15 @@
                                 <div class="icon-wrapper">
                                     <span class="icon-button">&#9776;</span>
                                     <div class="hover-menu">
+                                        {% if sample.status == 'rejected' %}
+                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                        {% elif sample.status == 'approved' %}
+                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">Print Acknowledgement Receipt</a>
+                                        {% elif sample.status == 'pending' %}
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
                                         <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>
+                                        {% endif %}
                                     </div>
                                 </div> 
                                 {{sample.research_project.id|stringformat:"05d" }}
