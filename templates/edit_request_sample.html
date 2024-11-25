@@ -569,21 +569,162 @@
         </div>
 
         <!-- Comorbidities -->
-        <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
+        <input type="hidden" id="comorbidities_input" name="comorbidities" value="{{ existing_comorbidities|join:',' }}">
 
         <div class="mb-3">
-            <label for="lab_tests" class="form-label">Lab Tests:</label>
-            <div class="d-flex align-items-center">
-                <select class="form-select me-2" id="lab_test_select">
-                    <option value="">Select Lab Test</option>
-                    <option value="Blood Test">Blood Test</option>
-                    <option value="CT Scan">CT Scan</option>
-                    <option value="MRI">MRI</option>
-                    <option value="Others">Other (specify)</option>
-                </select>
-                <input type="text" class="form-control free-text-input" id="lab_test_other" placeholder="Specify other" style="display: none;">
-                <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
+            <div class="dropdown mb-2">
+            <label for="lab_tests" class="form-label required">Lab Tests:</label>
+            <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+            
+            <div id="lab-tests-dropdown" class="dropdown-content">
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
+                </div>   
+                <div class="nested-dropdown">
+                    <a href="#">Blood Chemistry Panel</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Glucose')">Glucose</a>
+                        <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                        <a href="#" onclick="selectLabTest('Creatinine')">Creatinine</a>
+                        <a href="#" onclick="selectLabTest('Electrolytes (Sodium, Potassium, Chloride)')">Electrolytes (Sodium, Potassium, Chloride)</a>
+                        <a href="#" onclick="selectLabTest('Calcium')">Calcium</a>
+                        <a href="#" onclick="selectLabTest('Albumin')">Albumin</a>
+                    </div>
+                </div>  
+                <div class="nested-dropdown">
+                    <a href="#">Lipid Profile</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Total Cholesterol')">Total Cholesterol</a>
+                        <a href="#" onclick="selectLabTest('HDL (High-Density Lipoprotein)')">HDL (High-Density Lipoprotein)</a>
+                        <a href="#" onclick="selectLabTest('LDL (Low-Density Lipoprotein)')">LDL (Low-Density Lipoprotein)</a>
+                        <a href="#" onclick="selectLabTest('Triglycerides')">Triglycerides</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Hemoglobin A1c (HbA1c)')">Hemoglobin A1c (HbA1c)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Fasting Blood Sugar (FBS)')">Fasting Blood Sugar (FBS)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Oral Glucose Tolerance Test (OGTT)')">Oral Glucose Tolerance Test (OGTT)</a>
+                </div>                    
+                <div class="nested-dropdown">
+                    <a href="#">Thyroid Function Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('T3 (Triiodothyronine)')">T3 (Triiodothyronine)</a>
+                        <a href="#" onclick="selectLabTest('T4 (Thyroxine)')">T4 (Thyroxine)</a>
+                        <a href="#" onclick="selectLabTest('TSH (Thyroid Stimulating Hormone)')">TSH (Thyroid Stimulating Hormone)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Kidney Function Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Serum Creatinine')">Serum Creatinine</a>
+                        <a href="#" onclick="selectLabTest('Estimated Glomerular Filtration Rate (eGFR)')">Estimated Glomerular Filtration Rate (eGFR)</a>
+                        <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                        <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Liver Function Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('ALT (Alanine Aminotransferase)')">ALT (Alanine Aminotransferase)</a>
+                        <a href="#" onclick="selectLabTest('AST (Aspartate Aminotransferase)')">AST (Aspartate Aminotransferase)</a>
+                        <a href="#" onclick="selectLabTest('ALP (Alkaline Phosphatase)')">ALP (Alkaline Phosphatase)</a>
+                        <a href="#" onclick="selectLabTest('Bilirubin')">Bilirubin</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Cardiac Enzyme Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Troponin')">Troponin</a>
+                        <a href="#" onclick="selectLabTest('Creatine Kinase-MB (CK-MB)')">Creatine Kinase-MB (CK-MB)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Coagulation Profile</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Prothrombin Time (PT)')">Prothrombin Time (PT)</a>
+                        <a href="#" onclick="selectLabTest('Partial Thromboplastin Time (PTT)')">Partial Thromboplastin Time (PTT)</a>
+                        <a href="#" onclick="selectLabTest('INR (International Normalized Ratio)')">INR (International Normalized Ratio)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Electrocardiogram (ECG/EKG)')">Electrocardiogram (ECG/EKG)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Echocardiogram')">Echocardiogram</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Chest X-ray')">Chest X-ray</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Abdominal Ultrasound')">Abdominal Ultrasound</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Bone Mineral Density Test (DEXA)')">Bone Mineral Density Test (DEXA)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('CT Scan (Computed Tomography)')">CT Scan (Computed Tomography)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('MRI (Magnetic Resonance Imaging)')">MRI (Magnetic Resonance Imaging)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Blood Culture')">Blood Culture</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Sputum Culture')">Sputum Culture</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Stool Analysis')">Stool Analysis</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Pap Smear')">Pap Smear</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Prostate-Specific Antigen (PSA)')">Prostate-Specific Antigen (PSA)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('HIV Test')">HIV Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Hepatitis B Test')">Hepatitis B Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Hepatitis C Test')">Hepatitis C Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Tuberculosis Skin Test (Mantoux Test)')">Tuberculosis Skin Test (Mantoux Test)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Dengue NS1 Antigen Test')">Dengue NS1 Antigen Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Blood Typing and Crossmatching')">Blood Typing and Crossmatching</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('C-Reactive Protein (CRP)')">C-Reactive Protein (CRP)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Erythrocyte Sedimentation Rate (ESR)')">Erythrocyte Sedimentation Rate (ESR)</a>
+                </div>                    
+                <div class="nested-dropdown">
+                    <a href="#">Immunological Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
+                        <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <input type="text" id="lab_test_other" placeholder="Specify other" onchange="captureOtherInputs()">
+                </div> 
             </div>
+        </div>
             <div id="added_lab_tests" class="mt-2">
                 {% for lab_test in existing_lab_tests %}
                     <div class="added-item">
@@ -666,7 +807,7 @@
 
                 <!-- Month and year picker -->
                 <div class="date-picker-wrapper">
-                    <input type="month" class="form-control" name="start_date_mmyyyy" placeholder="mm-yyyy" value="{{ rs_step4.start_date_mmyyyy|date:'Y-m' }}">
+                    <input type="month" class="form-control" name="start_date_mmyyyy" placeholder="mm-yyyy" value="{{ rs_step4.start_date_mmyyyy }}">
                     <small class="form-text text-muted">if month and year only</small>
                 </div>
 
@@ -883,73 +1024,123 @@
         otherDiagnosisInput.style.display = clinicalDiagnosis.value === 'Others' ? 'block' : 'none';
     });
 
+    // Comorbidities
+    const ComorSelect = document.getElementById('comorbidity_select');
+    const ComorOthers = document.getElementById('comorbidity_other');
+        
+                // Show or hide the text input based on clinical diagnosis selection
+    ComorSelect.addEventListener('change', function () {
+        ComorOthers.style.display = ComorSelect.value === 'Others' ? 'block' : 'none';
+    });
 
-        const addedComorbidities = new Set(); // Set to track added comorbidities
-        const addedLabTests = new Set(); // Set to track added lab tests
 
-        function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
-            const select = document.getElementById(selectId);
-            const otherInput = document.getElementById(otherInputId);
-            const addedItemsContainer = document.getElementById(addedItemsContainerId);
-            const hiddenInput = document.getElementById(hiddenInputId);
-            const selectedValue = select.value;
-            const otherValue = otherInput.value.trim();
+    // Sync hidden input with the current DOM state
+    function updateHiddenInputFromDOM() {
+        const addedItemsContainer = document.getElementById('added_comorbidities');
+        const hiddenInput = document.getElementById('comorbidities_input');
 
-            if (selectedValue === "") {
-                alert("Please select an item.");
-                return;
-            }
+        // Extract all visible comorbidities from the DOM
+        const currentValues = Array.from(addedItemsContainer.querySelectorAll('.added-item span:first-child'))
+            .map(span => span.textContent.trim());
 
-            let valueToAdd = selectedValue === 'Others' ? (otherValue === "" ? null : otherValue) : selectedValue;
+        // Debug log: Current values in the DOM
+        console.log("Current values in the DOM:", currentValues);
 
-            if (!valueToAdd) {
-                alert("Please specify the item.");
-                return;
-            }
+        // Update the hidden input
+        hiddenInput.value = currentValues.join(',');
 
-            // Check if the item already exists
-            const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
-            if (existingValues.includes(valueToAdd)) {
-                alert("This item has already been added.");
-                return;
-            }
+        // Debug log: Updated hidden input value
+        console.log("Updated hidden input value:", hiddenInput.value);
+    }
 
-            // Add the item to the list
-            const newItem = document.createElement('div');
-            newItem.classList.add('added-item');
-            newItem.innerHTML = `<span>${valueToAdd}</span><span class="remove-btn">X</span>`;
-            addedItemsContainer.appendChild(newItem);
+    // Add a new comorbidity
+    function addItem(selectId, otherInputId, addedItemsContainerId, hiddenInputId) {
+        const select = document.getElementById(selectId);
+        const otherInput = document.getElementById(otherInputId);
+        const addedItemsContainer = document.getElementById(addedItemsContainerId);
+        const hiddenInput = document.getElementById(hiddenInputId);
 
-            // Update hidden input field
-            existingValues.push(valueToAdd);
-            hiddenInput.value = existingValues.join(',');
+        // Get the value to add
+        const selectedValue = select.value;
+        const otherValue = otherInput.value.trim();
+        const valueToAdd = selectedValue === 'Others' ? otherValue : selectedValue;
 
-            // Reset fields
-            select.value = '';
-            otherInput.value = '';
+        if (!valueToAdd) {
+            alert("Please select or specify an item.");
+            return;
         }
 
-        document.getElementById('add_comorbidity').addEventListener('click', function() {
-            addItem('comorbidity_select', 'comorbidity_other', 'added_comorbidities', 'comorbidities_input');
-        });
-
-        document.getElementById('add_lab_test').addEventListener('click', function() {
-            addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
-        });
-
-
-        // Remove item functionality
-        function removeItem(event) {
-            if (event.target.classList.contains('remove-btn')) {
-                const item = event.target.parentElement;
-                item.remove();
-
-                updateHiddenInput();
-            }
+        // Check if the item already exists in the DOM
+        const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
+        if (existingValues.includes(valueToAdd)) {
+            alert("This item has already been added.");
+            return;
         }
 
-    document.getElementById('added_comorbidities').addEventListener('click', removeItem);
-    document.getElementById('added_lab_tests').addEventListener('click', removeItem);
+        // Debug log: Adding a new item
+        console.log("Adding new item:", valueToAdd);
+
+        // Add the item to the DOM
+        const newItem = document.createElement('div');
+        newItem.classList.add('added-item');
+        newItem.innerHTML = `
+            <span>${valueToAdd}</span>
+            <span class="remove-btn" style="cursor: pointer; color: red;">X</span>
+        `;
+        addedItemsContainer.appendChild(newItem);
+
+        // Update the hidden input field
+        updateHiddenInputFromDOM();
+
+        // Reset input fields
+        select.value = '';
+        otherInput.value = '';
+    }
+
+    // Remove a comorbidity
+    function removeItem(event) {
+        if (event.target.classList.contains('remove-btn')) {
+            const item = event.target.parentElement; // Parent element of the "X" button
+            const valueToRemove = item.querySelector('span').textContent.trim(); // Get the item value
+
+            // Debug log: Removing an item
+            console.log("Removing item:", valueToRemove);
+
+            // Remove item from the DOM
+            item.remove();
+
+            // Update the hidden input field
+            updateHiddenInputFromDOM();
+        }
+    }
+
+    // Initialize the page with preloaded values
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("Page loaded. Initializing values...");
+
+        updateHiddenInputFromDOM(); // Ensure hidden input is in sync with preloaded DOM values
+
+        // Debug log: Initial hidden input value
+        console.log("Initial hidden input value:", document.getElementById('comorbidities_input').value);
+    });
+
+    // Event listener for adding items
+    document.getElementById('add_comorbidity').addEventListener('click', function () {
+        console.log("Add button clicked.");
+        addItem('comorbidity_select', 'comorbidity_other', 'added_comorbidities', 'comorbidities_input');
+    });
+
+    // Event delegation for removing items
+    document.getElementById('added_comorbidities').addEventListener('click', function (event) {
+        if (event.target.classList.contains('remove-btn')) {
+            console.log("Remove button clicked.");
+            removeItem(event);
+        }
+    });
+
+
+    
+    // End of Comorbidities
     
     function updateHiddenInput() {
       const items = Array.from(document.querySelectorAll('.added-item')).map(i => i.textContent.trim());
@@ -1016,6 +1207,77 @@
         }
     }
 
+    // Lab Tests
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle("show");
+    }
+
+    function selectLabTest(test) {
+        if (selectedLabTests.includes(test)) {
+            alert("This lab test has already been added.");
+        } else {
+            selectedLabTests.push(test);
+            updateAddedLabTests();
+        }
+    }
+
+    let selectedLabTests = [];
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const labTestsInput = document.getElementById('lab_tests_input');
+        const existingLabTests = labTestsInput.value ? labTestsInput.value.split(',') : [];
+        selectedLabTests = [...existingLabTests]; 
+
+        updateAddedLabTests();
+    });
+
+    function updateAddedLabTests() {
+        const addedLabTestsContainer = document.getElementById('added_lab_tests');
+        
+        // Clear the current list in the DOM
+        addedLabTestsContainer.innerHTML = '';
+
+        // Render each test in the list
+        selectedLabTests.forEach(test => {
+            const item = document.createElement('div');
+            item.classList.add('added-item');
+            item.innerHTML = `
+                <span>${test}</span>
+                <span class="remove-btn" style="cursor: pointer; margin-left: 10px; color: red;" onclick="removeLabTest('${test}')">X</span>
+            `;
+            addedLabTestsContainer.appendChild(item);
+        });
+
+        // Update the hidden input field
+        document.getElementById('lab_tests_input').value = selectedLabTests.join(',');
+    }
+
+
+    function captureOtherInputs() {
+        let otherValue = document.getElementById('lab_test_other').value.trim();
+        if (otherValue !== "") {
+            otherValue = otherValue.charAt(0).toUpperCase() + otherValue.slice(1);
+
+            if (selectedLabTests.includes(otherValue)) {
+                alert("This lab test has already been added.");
+            } else {
+                selectedLabTests.push(otherValue);
+                updateAddedLabTests();
+            }
+        }
+    }
+
+    // Function to remove a lab test
+    function removeLabTest(test) {
+        // Filter out the test from the array
+        selectedLabTests = selectedLabTests.filter(item => item.trim() !== test.trim());
+        
+        // Update the DOM and hidden input
+        updateAddedLabTests();
+    }
+
+
     function resetForm() {
         document.getElementById('title').value = ''; // Clear the title field
         document.getElementById('investigator').value = ''; // Clear the principal investigator field
@@ -1061,6 +1323,12 @@
             timepointDetails.style.display = this.value === 'yes' ? 'block' : 'none';
         });
     });
+
+    document.getElementById('comorbidities_form').addEventListener('submit', function (event) {
+        const hiddenInput = document.getElementById('comorbidities_input');
+        console.log("Submitting value:", hiddenInput.value);
+    });
+
 
 </script>
 

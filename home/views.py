@@ -163,10 +163,14 @@ def create_sample(request):
         sex = request.POST.get('sex')
         age = request.POST.get('age')
         clinical_diagnosis = request.POST.get('clinical_diagnosis')
+        other_diagnosis = request.POST.get("other_diagnosis")
         amount = request.POST.get('amount')
         unit = request.POST.get('unit')
         date_collected = request.POST.get('date_collected')
         consent_form = request.FILES.get('consent_form')
+
+        if clinical_diagnosis == "Others":
+            clinical_diagnosis = other_diagnosis
 
         # Create and save Sample instance
         sample = Samples(
@@ -427,9 +431,13 @@ def request_sample(request):
         sex = request.POST.get('sex')
         age = request.POST.get('age')
         clinical_diagnosis = request.POST.get('clinical_diagnosis')
+        other_diagnosis = request.POST.get("other_diagnosis")
         amount = request.POST.get('amount')
         unit = request.POST.get('unit')
         desired_start_date = request.POST.get('desired_start_date')
+
+        if clinical_diagnosis == "Others":
+            clinical_diagnosis = other_diagnosis
 
         # Convert the desired_start_date to a date format if it's provided
         if desired_start_date:
@@ -770,9 +778,13 @@ def edit_request_sample(request, sample_id):
         sex = request.POST.get('sex')
         age = request.POST.get('age')
         clinical_diagnosis = request.POST.get('clinical_diagnosis')
+        other_diagnosis = request.POST.get("other_diagnosis")
         amount = request.POST.get('amount')
         unit = request.POST.get('unit')
         desired_start_date = request.POST.get('desired_start_date')
+
+        if clinical_diagnosis == "Others":
+            clinical_diagnosis = other_diagnosis
 
         # Convert the desired_start_date to a date format if it's provided
         if desired_start_date:
@@ -803,6 +815,7 @@ def edit_request_sample(request, sample_id):
 
         # Handle comorbidities
         new_comorbidities = request.POST.get('comorbidities') 
+        RS_Comorbidities.objects.filter(request_sample=request_sample).delete()
 
         # Add new comorbidities to the request_sample if provided
         if new_comorbidities:

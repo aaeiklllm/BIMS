@@ -382,7 +382,6 @@
                     <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
                     <button type="button" class="btn btn-dark" id="add_comorbidity">Add</button>
                 </div>
-                <div id="added_comorbidities" class="mt-2"></div>
             </div>
 
             <div id="added_comorbidities" class="mt-2"></div>
@@ -929,12 +928,20 @@
         // Remove item functionality
         function removeItem(event) {
             if (event.target.classList.contains('remove-btn')) {
-                const item = event.target.parentElement;
+                const item = event.target.parentElement; // Get the parent div of the clicked "X"
+                const valueToRemove = item.querySelector('span').textContent.trim(); // Extract the value from the first span
+                const hiddenInput = document.getElementById('comorbidities_input'); // Update hidden input field
+
+                // Remove the item from the DOM
                 item.remove();
 
-                updateHiddenInput();
+                // Update the hidden input field
+                const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
+                const updatedValues = existingValues.filter(value => value !== valueToRemove);
+                hiddenInput.value = updatedValues.join(',');
             }
         }
+
 
         document.getElementById('added_comorbidities').addEventListener('click', removeItem);
         document.getElementById('added_lab_tests').addEventListener('click', removeItem);
