@@ -30,14 +30,15 @@ urlpatterns = [
     path('requestsample', views.request_sample, name='requestsample'),
     path('requestsample/step7/<int:sample_id>/', views.request_sample_step7, name='request_sample_step7'),
     path('requestsample/ty', views.request_sample_ty, name='request_sample_ty'),
+    path('request_sample/delete/<int:pk>/', views.delete_request_sample, name='delete_request_sample'),
 
     path('myrequests', views.my_requests, name='myrequests'),
     path('viewrequestsampledetails/<int:sample_id>/', views.view_request_sample_details, name='viewrequestsampledetails'),
     path('editrequestsample/<int:sample_id>/', views.edit_request_sample, name='editrequestsample'),
-
-    # Inventory status
+    path('editrequestsample/step7/<int:sample_id>/', views.edit_request_sample_step7, name='edit_request_sample_step7'),
+  
+  # Inventory status
     path('inventory_status', views.inventory_status, name='inventory_status'),
     path('generate-pdf/', views.generate_pdf, name='generate_pdf'),
-
-
+    
 ]
