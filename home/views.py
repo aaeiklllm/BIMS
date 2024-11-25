@@ -712,6 +712,12 @@ def request_sample_step7(request, sample_id):
 def request_sample_ty(request):
     return render(request, 'request_sample_ty.html')
 
+def delete_request_sample(request, pk):
+    request_sample = get_object_or_404(Request_Sample, pk=pk)
+    request_sample.delete()
+    messages.success(request, "Request sample deleted successfully.")
+    return redirect('')  # Replace with your desired redirect URL
+
 def edit_request_sample(request, sample_id):
     # Fetch the existing Request Sample and its associated project
     request_sample = get_object_or_404(Request_Sample, id=sample_id)
@@ -842,7 +848,7 @@ def edit_request_sample(request, sample_id):
 
         # Handle Step4 data
         multiple_samples = request.POST.get('multiple_samples')
-        time_points = request.POST.get('time_points')
+        time_points1 = request.POST.get('time_points1')
         interval = request.POST.get('interval')
         interval_unit = request.POST.get('interval_unit')
         start_date_ddmmyyyy = request.POST.get('start_date_ddmmyyyy')
@@ -859,7 +865,7 @@ def edit_request_sample(request, sample_id):
             start_date_ddmmyyyy = None
 
         # Convert fields to None if empty
-        time_points = int(time_points) if time_points else None
+        time_points1 = int(time_points1) if time_points1 else None
         interval = int(interval) if interval else None
         start_date_yyyy = int(start_date_yyyy) if start_date_yyyy else None
 
@@ -868,7 +874,7 @@ def edit_request_sample(request, sample_id):
             request_sample=request_sample,
             defaults={
                 'multiple_samples': multiple_samples,
-                'time_points': time_points,
+                'time_points1': time_points1,
                 'interval': interval,
                 'interval_unit': interval_unit,
                 'start_date_ddmmyyyy': start_date_ddmmyyyy,
@@ -881,7 +887,7 @@ def edit_request_sample(request, sample_id):
         different_sources = request.POST.get('different_sources')
         num_participants = request.POST.get('num_participants')
         multiple_timepoints_each = request.POST.get('multiple_timepoints_each')
-        time_points = request.POST.get('time_points')
+        time_points2 = request.POST.get('time_points2')
         interval = request.POST.get('interval')
         interval_unit = request.POST.get('interval_unit')
         start_date_ddmmyyyy = request.POST.get('start_date_ddmmyyyy')
@@ -911,14 +917,14 @@ def edit_request_sample(request, sample_id):
 
         # Convert empty strings to None
         num_participants = int(num_participants) if num_participants else None
-        time_points = int(time_points) if time_points else None
+        time_points2 = int(time_points2) if time_points2 else None
         interval = int(interval) if interval else None
         start_date_yyyy = int(start_date_yyyy) if start_date_yyyy else None
         collection_date_yyyy = int(collection_date_yyyy) if collection_date_yyyy else None
 
-        # Handle the time_points field based on multiple_timepoints_each
+        # Handle the time_points2 field based on multiple_timepoints_each
         if multiple_timepoints_each == 'no':
-            time_points = None  # Set time_points to None if "No" for multiple time points
+            time_points2 = None  # Set time_points2 to None if "No" for multiple time points
 
         # Update or create RS_Step5 instance
         rs_step5, created = RS_Step5.objects.update_or_create(
@@ -927,7 +933,7 @@ def edit_request_sample(request, sample_id):
                 'different_sources': different_sources,
                 'num_participants': num_participants,
                 'multiple_timepoints_each': multiple_timepoints_each,
-                'time_points': time_points,
+                'time_points2': time_points2,
                 'interval': interval,
                 'interval_unit': interval_unit,
                 'start_date_ddmmyyyy': start_date_ddmmyyyy,
@@ -940,7 +946,7 @@ def edit_request_sample(request, sample_id):
         )   
 
         # Redirect after handling the project
-        return redirect('request_sample_step7', sample_id=request_sample.id)
+        return redirect('edit_request_sample_step7', sample_id=request_sample.id)
 
     # Render the form for editing with existing project data
     return render(request, 'edit_request_sample.html', {
@@ -951,6 +957,31 @@ def edit_request_sample(request, sample_id):
         'rs_step4': rs_step4,
         'rs_step5': rs_step5,
     })
+
+def edit_request_sample_step7(request, sample_id):
+    # Fetch the request sample from the database using the sample_id
+    request_sample = get_object_or_404(Request_Sample, id=sample_id)
+    research_project = request_sample.research_project  # Access the single related project
+    comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
+    lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
+    step4_data = RS_Step4.objects.filter(request_sample=request_sample).first()
+    step5_data = RS_Step5.objects.filter(request_sample=request_sample).first()
+
+    # Calculate the total number of sample requests using the helper function
+    total_samples = calculate_total_samples(step4_data, step5_data)
+
+    # Prepare context with all the fetched data
+    context = {
+        'request_sample': request_sample,
+        'research_project': research_project,  # Pass the single related project
+        'comorbidities': comorbidities,
+        'lab_tests': lab_tests,
+        'step4': step4_data,
+        'step5': step5_data,
+        'total_samples': total_samples  # Add this line
+    }
+    
+    return render(request, 'edit_request_sample_step7.html', context)
 
 def view_request_sample_details(request, sample_id):
 # Fetch the request sample from the database using the sample_id

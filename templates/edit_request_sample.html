@@ -259,7 +259,12 @@
             margin-left: 5px;
             display: block; /* Forces small text to appear on its own line */
         }
-        
+
+        .required::after {
+			content: " *";
+			color: rgb(185, 24, 24);
+			font-size: 14px;
+	   }
     </style>
 </head>
 <body>
@@ -272,6 +277,7 @@
     <div id="step1" class="step">
         <h4><b>Step 1:</b> For what Research Project is this sample request?</h4>
         <div class="option">
+            {% if research_projects %}
             <label>
                 <input type="radio" name="project" value="existing" onclick="toggleSelection('existing')"
                     {% if request_sample.research_project %}checked{% endif %}>
@@ -302,6 +308,13 @@
                     </div>
                 {% endfor %}
             </div>
+        {% else %}
+            <!-- Disable the option and gray it out if there are no research projects -->
+            <label style="color: grey; cursor: not-allowed;">
+                <input type="radio" name="project" disabled>
+                Select Research Project (No available research projects)
+            </label>
+        {% endif %}
         </div>
         
         
@@ -324,6 +337,7 @@
             <div class="form-group">
                 <label for="description">Description:</label>
                 <textarea id="description" name="description"></textarea>
+                <small>Note: Should include the scientific background, rationale, study design/methods.</small>
             </div>
             <div class="form-group">
                 <label for="initiation-date">Anticipated Initiation Date:</label>
@@ -385,8 +399,8 @@
     <div id="step3" class="step">
         <h4><b>Step 3: </b>What kind of sample are you requesting?</h4>
         <div class="dropdown mb-2">
-            <label for="type" class="form-label">Type:</label>
-            <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" value="{{ request_sample.type }}" readonly onclick="toggleDropdown()">
+            <label for="type" class="required form-label">Type:</label>
+            <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" value="{{ request_sample.type }}" readonly onclick="toggleDropdown()" required>
             
             <input type="hidden" id="typeValue" name="typeValue" value="{{ request_sample.type }}">
 
@@ -429,24 +443,24 @@
             </div>
         </div>
         <div class="mb-3 d-flex align-items-center">
-            <label class="form-label me-2">Sex:</label>
+            <label class="form-label me-2 required">Sex:</label>
             <div class="form-check me-2">
                 <input class="form-check-input" type="radio" name="sex" id="male" value="Male" 
-                       {% if request_sample.sex == 'Male' %}checked{% endif %}>
+                       {% if request_sample.sex == 'Male' %}checked{% endif %} required>
                 <label class="form-check-label" for="male">Male</label>
             </div>
             <div class="form-check me-2">
                 <input class="form-check-input" type="radio" name="sex" id="female" value="Female" 
-                       {% if request_sample.sex == 'Female' %}checked{% endif %}>
+                       {% if request_sample.sex == 'Female' %}checked{% endif %} required>
                 <label class="form-check-label" for="female">Female</label>
             </div>
-            <label class="form-label" style="margin-left: 100px">Age:</label>
-            <input type="number" class="form-control" id="age" name="age" min="0" value="{{ request_sample.age }}" style="width: 80px; margin-left: 10px;">
+            <label class="form-label required" style="margin-left: 100px">Age:</label>
+            <input type="number" class="form-control" id="age" name="age" min="0" value="{{ request_sample.age }}" style="width: 80px; margin-left: 10px;" required>
         </div>
 
         <div class="mb-3">
-            <label for="clinical_diagnosis" class="form-label">Clinical Diagnosis:</label>
-            <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis">
+            <label for="clinical_diagnosis" class="form-label required">Clinical Diagnosis:</label>
+            <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis" required>
                 <option value="" {% if request_sample.clinical_diagnosis == "" %}selected{% endif %}>Select Clinical Diagnosis</option>
                 <option value="Alzheimer's Disease" {% if request_sample.clinical_diagnosis == "Alzheimer's Disease" %}selected{% endif %}>Alzheimer's Disease</option>
                 <option value="Amyotrophic Lateral Sclerosis (ALS)" {% if request_sample.clinical_diagnosis == "Amyotrophic Lateral Sclerosis (ALS)" %}selected{% endif %}>Amyotrophic Lateral Sclerosis (ALS)</option>
@@ -739,9 +753,10 @@
         <input type="hidden" id="lab_tests_input" name="lab_tests" value="{{ existing_lab_tests|join:',' }}">
 
         <div class="row">
+            <label>Quantity Volume</label>
             <div class="col-md-6">
-                <label for="amount" class="form-label">Amount:</label>
-                <input type="number" class="form-control" id="amount" name="amount" step="0.01" value="{% if request_sample.amount is not None %}{{ request_sample.amount }}{% endif %}">
+                <label for="amount" class="form-label required">Amount:</label>
+                <input type="number" class="form-control" id="amount" name="amount" step="0.01" value="{% if request_sample.amount is not None %}{{ request_sample.amount }}{% endif %}" required>
 
             </div>
             <div class="col-md-6">
@@ -756,7 +771,7 @@
 
         <div class="button-container">
             <button class="btn btn-back" type="button" onclick="showStep('step2')">Back</button>
-            <button class="btn btn-next" type="button" onclick="showStep('step4')">Next</button>
+            <button class="btn btn-next" type="button" onclick="validateStep(3)">Next</button>
         </div>
     </div>
 
@@ -778,7 +793,10 @@
         <div id="timePointsSection" style="display: {% if rs_step4.multiple_samples == 'yes' %}block{% else %}none{% endif %};">
             <div class="form-group-4">
                 <label># of time points:</label>
-                <input type="number" class="form-control" name="time_points" min="1" placeholder="Enter number" value="{{ rs_step4.time_points }}">
+                <input type="number" class="form-control" name="time_points1" min="1" id="time_points1" min="2" placeholder="Enter number" oninput="validateTimePoints()" 
+                value="{{ rs_step4.time_points1 }}">
+                <small class="form-text text-muted">Please enter a value of 2 or above.</small>
+                <span id="time_points_error" style="color: red; display: none;">The number must be 2 or greater.</span>
             </div>
     
             <div class="form-group-4">
@@ -865,9 +883,10 @@
                     <br>
                     <div class="form-group-4">
                         <label># of time points:</label>
-                        <input type="number" class="form-control" name="time_points" min="1" 
-                        placeholder="Enter number" 
-                        value="{% if rs_step5.time_points %}{{ rs_step5.time_points }}{% endif %}">
+                        <input type="number" class="form-control" name="time_points2" id="step5_time_points" min="2" placeholder="Enter number" oninput="validateStep5TimePoints()"
+                        value="{% if rs_step5.time_points2 %}{{ rs_step5.time_points2 }}{% endif %}">
+                        <small class="form-text text-muted">Please enter a value of 2 or above.</small>
+                        <span id="step5_time_points_error" style="color: red; display: none;">The number must be 2 or greater.</span>
                     </div>
             
                     <div class="form-group-4">
@@ -886,21 +905,21 @@
     
                     <div class="date-pickers">
                         <div class="date-picker-wrapper">
-                            <input type="date" class="form-control" name="collection_date_ddmmyyyy" 
-                                   value="{% if rs_step5.collection_date_ddmmyyyy %}{{ rs_step5.collection_date_ddmmyyyy|date:'Y-m-d' }}{% endif %}" 
+                            <input type="date" class="form-control" name="start_date_ddmmyyyy" 
+                                   value="{% if rs_step5.start_date_ddmmyyyy %}{{ rs_step5.start_date_ddmmyyyy|date:'Y-m-d' }}{% endif %}" 
                                    placeholder="dd-mm-yyyy">
                         </div>
                         
                         <div class="date-picker-wrapper">
-                            <input type="month" class="form-control" name="collection_date_mmyyyy" 
-                                   value="{% if rs_step5.collection_date_mmyyyy %}{{ rs_step5.collection_date_mmyyyy }}{% endif %}" 
+                            <input type="month" class="form-control" name="start_date_mmyyyy" 
+                                   value="{% if rs_step5.start_date_mmyyyy %}{{ rs_step5.start_date_mmyyyy }}{% endif %}" 
                                    placeholder="mm-yyyy">
                             <small class="form-text text-muted">if month and year only</small>
                         </div>
                         
                         <div class="date-picker-wrapper">
                             <input type="number" class="form-control" name="collection_date_yyyy" 
-                                   value="{% if rs_step5.collection_date_yyyy %}{{ rs_step5.collection_date_yyyy }}{% endif %}" 
+                                   value="{% if rs_step5.start_date_yyyy %}{{ rs_step5.start_date_yyyy }}{% endif %}" 
                                    placeholder="yyyy" min="1900" max="2100">
                             <small class="form-text text-muted">if year only</small>
                         </div>                        
@@ -943,8 +962,8 @@
     <div id="step6" class="step">
         <h4><b>Step 6:</b> When is the desired start date of the use of the sample(s) requested?</h4>
         <div class="form-group">
-            <label for="desired_start_date">Desired Start Date:</label>
-            <input type="date" id="desired_start_date" name="desired_start_date" class="form-control" value="{{ request_sample.desired_start_date|date:'Y-m-d' }}">
+            <label class="required" for="desired_start_date">Desired Start Date:</label>
+            <input type="date" id="desired_start_date" name="desired_start_date" class="form-control" value="{{ request_sample.desired_start_date|date:'Y-m-d' }}" required>
         </div>
 
         <p><i>Note: This date refers to when the samples are needed. If your requested sample(s) is/are not yet available, the biobank manager can choose to wait for it to be available until the desired start date. If the sample request is not available by then, the system will automatically reject your request.</i></p>
@@ -959,12 +978,18 @@
 
 <script>
     function toggleSelection(option) {
-        if (option === 'existing') {
-            document.getElementById('existing-project').style.display = 'block';
-            document.getElementById('new-project-form').style.display = 'none';
-        } else {
-            document.getElementById('existing-project').style.display = 'none';
-            document.getElementById('new-project-form').style.display = 'block';
+        // Hide both options initially
+        const newProjectForm = document.getElementById('new-project-form');
+        const existingProjectContainer = document.getElementById('existing-project');
+
+        if (newProjectForm) newProjectForm.style.display = 'none';
+        if (existingProjectContainer) existingProjectContainer.style.display = 'none';
+
+        // Show the relevant option
+        if (option === 'existing' && existingProjectContainer) {
+            existingProjectContainer.style.display = 'block';
+        } else if (option === 'new' && newProjectForm) {
+            newProjectForm.style.display = 'block';
         }
     }
 
@@ -1324,11 +1349,70 @@
         });
     });
 
+    function validateTimePoints() {
+        const timePointsInput = document.getElementById('time_points1');
+        const errorMessage = document.getElementById('time_points_error');
+
+        if (timePointsInput.value < 2) {
+            errorMessage.style.display = 'inline';
+            timePointsInput.setCustomValidity("The number of time points must be 2 or greater.");
+        } else {
+            errorMessage.style.display = 'none';
+            timePointsInput.setCustomValidity("");
+        }
+    }
+
+    function toggleTimepointDetails(show) {
+        document.getElementById("timepoint_details").style.display = show ? "block" : "none";
+    }
+
+    function validateStep5TimePoints() {
+        const timePointsInput = document.getElementById('step5_time_points');
+        const errorMessage = document.getElementById('step5_time_points_error');
+
+        if (timePointsInput.value < 2) {
+            errorMessage.style.display = 'inline';
+            timePointsInput.setCustomValidity("The number of time points must be 2 or greater.");
+        } else {
+            errorMessage.style.display = 'none';
+            timePointsInput.setCustomValidity("");
+        }
+    }
+
+    function validateStep(stepNumber) {
+        const step = document.getElementById(`step${stepNumber}`);
+        const requiredFields = step.querySelectorAll('[required]');
+
+        for (const field of requiredFields) {
+            if (!field.value.trim()) {
+                alert(`Please fill out the required field: ${field.previousElementSibling.textContent}`);
+                field.focus();
+                return false; // Stop validation if a required field is empty
+            }
+        }
+
+        // If all validations pass, show the next step
+        const nextStep = stepNumber + 1;
+        showStep(`step${nextStep}`);
+        return true;
+    }
+
+    function showStep(stepId) {
+        // Hide all steps
+        const steps = document.querySelectorAll('.step');
+        steps.forEach(step => step.style.display = 'none');
+
+        // Show the selected step
+        const currentStep = document.getElementById(stepId);
+        if (currentStep) {
+            currentStep.style.display = 'block';
+        }
+    }
+
     document.getElementById('comorbidities_form').addEventListener('submit', function (event) {
         const hiddenInput = document.getElementById('comorbidities_input');
         console.log("Submitting value:", hiddenInput.value);
     });
-
 
 </script>
 
