@@ -36,5 +36,9 @@ urlpatterns = [
     path('viewrequestsampledetails/<int:sample_id>/', views.view_request_sample_details, name='viewrequestsampledetails'),
     path('editrequestsample/<int:sample_id>/', views.edit_request_sample, name='editrequestsample'),
     path('editrequestsample/step7/<int:sample_id>/', views.edit_request_sample_step7, name='edit_request_sample_step7'),
-
+  
+  # Inventory status
+    path('inventory_status', views.inventory_status, name='inventory_status'),
+    path('generate-pdf/', views.generate_pdf, name='generate_pdf'),
+    
 ]

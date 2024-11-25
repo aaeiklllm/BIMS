@@ -17,6 +17,26 @@ from django.db.models import Q
 from django.utils import timezone
 from django.db import transaction
 
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from collections import defaultdict
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
+import textwrap  
+
+import pytz
+from django.db.models import Prefetch
+from accounts.models import UserProfile
+from django.db.models import Q
+from django.utils import timezone
+from django.db import transaction
+
 # Create your views here.
 
 def home(request):
@@ -326,8 +346,13 @@ def edit_sample(request, sample_id):
         unit = request.POST.get('unit', sample.unit)
         date_collected = request.POST.get('date_collected', sample.date_collected)
         consent_form = request.FILES.get('consent_form')
+        # Retrieve form values from POST request
+        freezer_num = request.POST.get('freezer_num')
+        shelf_num = request.POST.get('shelf_num')
+        rack_num = request.POST.get('rack_num')
+        box_num = request.POST.get('box_num')
 
-        # Update the existing sample instance instead of creating a new one
+        # Update the sample instance's fields
         sample.type = type_selected
         sample.sex = sex
         sample.age = age
@@ -335,13 +360,24 @@ def edit_sample(request, sample_id):
         sample.amount = amount
         sample.unit = unit
         sample.date_collected = date_collected
-        
+
+        storage_instance = sample.storage_set.first()  # Use .first() to get a single instance
+
+        # Check if a storage instance exists before trying to update it
+        if storage_instance:
+            # Update the storage attributes
+            storage_instance.freezer_num = freezer_num
+            storage_instance.shelf_num = shelf_num
+            storage_instance.rack_num = rack_num
+            storage_instance.box_num = box_num
+            storage_instance.save()  # Save changes to storage instance
+
         # Update the consent form only if a new file is uploaded
         if consent_form:
             sample.consent_form = consent_form
 
-        # Save the updated sample instance
-        sample.save()
+        sample.save()              # Save changes in sample
+
 
         # Update Comorbidities
         comorbidities = request.POST.get('comorbidities', '')
@@ -1261,3 +1297,181 @@ def sample_detail(request, sample_id):
         'aliquots': aliquots,
     })
 
+
+# Utility function to generate pie charts
+def generate_pie_chart(labels, values, title, max_label_length=15):
+    # Handle empty or invalid inputs
+    if not labels or not values:
+        print(f"Skipping pie chart generation for '{title}': No data provided.")
+        return None
+
+    if sum(values) == 0:
+        print(f"Skipping pie chart generation for '{title}': Values sum to zero.")
+        return None
+
+    try:
+        # Wrap labels to a fixed length
+        wrapped_labels = [textwrap.fill(label, max_label_length) for label in labels]
+
+        # Create a fixed-size figure
+        fig, ax = plt.subplots(figsize=(6, 6))
+        
+        # Generate the pie chart
+        wedges, texts, autotexts = ax.pie(
+            values,
+            labels=wrapped_labels,  # Use wrapped labels
+            autopct='%1.1f%%',
+            startangle=90,
+            textprops={'fontsize': 12},
+            normalize=True  # Ensure data normalization
+        )
+        
+        # Enforce consistent font sizes
+        for text in texts:
+            text.set_fontsize(12)
+        for autotext in autotexts:
+            autotext.set_fontsize(10)
+        
+        # Set equal aspect ratio
+        ax.set_aspect('equal', adjustable='box')
+        
+        # Add title
+        plt.title(title, fontsize=16, pad=20)
+        
+        # Save the plot to a Base64 string
+        with BytesIO() as buffer:
+            plt.savefig(buffer, format="png", bbox_inches="tight")
+            buffer.seek(0)
+            image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        
+        # Clear the plot to free memory
+        plt.close(fig)
+        
+        return f"data:image/png;base64,{image_base64}"
+    except Exception as e:
+        print(f"Error generating pie chart for '{title}': {e}")
+        return None
+
+
+
+# Inventory Status View
+def inventory_status(request):
+    samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
+
+    # Fetch research projects and their associated samples
+    research_projects = Research_Project.objects.prefetch_related(
+        'request_samples__sample'  # Prefetch samples through request_samples
+    ).all()
+
+    # Prepare the project data
+    projects = []
+    for project in research_projects:
+        # Get all sample IDs linked to the project
+        sample_ids = [
+            sample.id
+            for request_sample in project.request_samples.all()
+            for sample in request_sample.sample.all()
+        ]
+        projects.append({"name": project.title, "count": len(sample_ids), "sample_ids": sample_ids})
+
+    # Group samples by type
+    types_dict = defaultdict(list)
+    for sample in samples:
+        types_dict[sample.type].append(sample.id)
+
+    # Convert the grouped data to a list of dictionaries
+    grouped_samples = [
+        {"type": sample_type, "count": len(ids), "ids": ids}
+        for sample_type, ids in types_dict.items()
+    ]
+
+    # Generate pie charts
+    project_labels = [project["name"] for project in projects]
+    project_values = [project["count"] for project in projects]
+    # project_chart = generate_pie_chart(project_labels, project_values, "Samples by Research Project")
+
+    type_labels = [sample_type["type"] for sample_type in grouped_samples]
+    type_values = [sample_type["count"] for sample_type in grouped_samples]
+    # type_chart = generate_pie_chart(type_labels, type_values, "Samples by Type")
+
+    project_chart = generate_pie_chart(project_labels, project_values, "Samples by Research Project")
+    if project_chart is None:
+        print("No project chart generated.")
+
+    type_chart = generate_pie_chart(type_labels, type_values, "Samples by Type")
+    if type_chart is None:
+        print("No type chart generated.")
+
+
+
+    context = {
+        "samples": samples,
+        "projects": projects,
+        "types": grouped_samples,
+        "project_chart": project_chart,
+        "type_chart": type_chart,
+    }
+
+    return render(request, "inventory_status.html", context)
+
+def generate_pdf(request):
+    samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
+
+    projects = [
+        {"name": "Genetic Factors Contributing to Early-Onset Parkinson's Disease in Filipinos", "count": 5},
+        {"name": "Asthma Susceptibility and Genetic Markers in Filipino Children", "count": 5},
+    ]
+
+    # Group samples by type
+    types_dict = defaultdict(list)
+    for sample in samples:
+        types_dict[sample.type].append(sample.id)
+
+    # Convert the grouped data to a list of dictionaries
+    types = [
+        {"type": sample_type, "count": len(ids), "ids": ids}
+        for sample_type, ids in types_dict.items()
+    ]
+
+    # Generate pie charts
+    project_labels = [project["name"] for project in projects]
+    project_values = [project["count"] for project in projects]
+    # project_chart = generate_pie_chart(project_labels, project_values, "Samples by Research Project")
+
+    type_labels = [sample_type["type"] for sample_type in types]
+    type_values = [sample_type["count"] for sample_type in types]
+    # type_chart = generate_pie_chart(type_labels, type_values, "Samples by Type")
+
+    project_chart = generate_pie_chart(project_labels, project_values, "Samples by Research Project")
+    if project_chart is None:
+        print("No project chart generated.")
+
+    type_chart = generate_pie_chart(type_labels, type_values, "Samples by Type")
+    if type_chart is None:
+        print("No type chart generated.")
+
+
+    local_timezone = pytz.timezone('Asia/Manila')  
+
+    context = {
+        "samples": samples,
+        "projects": projects,
+        "types": types,
+        "project_chart": project_chart,
+        "type_chart": type_chart,
+        "generation_date" : datetime.now(local_timezone).strftime('%B %d, %Y %I:%M:%S %p')
+    }
+
+    template_path = "inventory_status_pdf.html"
+    response = HttpResponse(content_type="application/pdf")
+
+    current_date = datetime.now(local_timezone).strftime("%Y-%m-%d")
+    response["Content-Disposition"] = f'attachment; filename="BIMS-{current_date}.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse("Error generating PDF")
+    return response
