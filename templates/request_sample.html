@@ -746,10 +746,10 @@
         
         <div class="radio-buttons">
             <label>
-                <input type="radio" name="multiple_samples" value="yes" id="yesOption" onclick="checkConditions()"> Yes
+                <input type="radio" name="multiple_samples" value="yes" id="yesOption"> Yes
             </label>
             <label>
-                <input type="radio" name="multiple_samples" value="no" id="noOption" onclick="checkConditions()"> No
+                <input type="radio" name="multiple_samples" value="no" id="noOption"> No
             </label>
         </div>
     
@@ -806,10 +806,10 @@
         <h4><b>Step 5: </b>Do you need the same sample request from different sources/participants?</h4>   
         <div class="radio-buttons">
             <label>
-                <input type="radio" name="different_sources" value="yes" onclick="checkConditions()"> Yes
+                <input type="radio" name="different_sources" value="yes"> Yes
             </label>
             <label>
-                <input type="radio" name="different_sources" value="no" onclick="checkConditions()"> No
+                <input type="radio" name="different_sources" value="no"> No
             </label>
         </div>
     
@@ -917,6 +917,53 @@
 </div>
 
 <script>
+     document.addEventListener('DOMContentLoaded', function() {
+        const yesOption = document.getElementById('yesOption');
+        const noOption = document.getElementById('noOption');
+        const timePointsSection = document.getElementById('timePointsSection');
+        // const nextButton = document.getElementById('nextButton');
+
+        yesOption.addEventListener('click', function() {
+            timePointsSection.style.display = 'block';
+            // nextButton.disabled = false;
+        });
+
+        noOption.addEventListener('click', function() {
+            timePointsSection.style.display = 'none';
+            // nextButton.disabled = false;
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle "different_sources" radio buttons
+        document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const numSources = document.getElementById('num_sources');
+                const singleSampleCollection = document.getElementById('single_sample_collection');
+
+                if (this.value === 'yes') {
+                    numSources.style.display = 'block';
+                    singleSampleCollection.style.display = 'none'; // Hide single sample section if "Yes" is selected
+                } else if (this.value === 'no') {
+                    numSources.style.display = 'none';
+                    singleSampleCollection.style.display = 'block'; // Show single sample section if "No" is selected
+                }
+            });
+        });
+
+        // Handle "multiple_timepoints_each" radio buttons
+        document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const timepointDetails = document.getElementById('timepoint_details');
+                if (this.value === 'yes') {
+                    timepointDetails.style.display = 'block';
+                } else if (this.value === 'no') {
+                    timepointDetails.style.display = 'none';
+                }
+            });
+        });
+    });
+
     function toggleSelection(option) {
         // Hide both options initially
         const newProjectForm = document.getElementById('new-project-form');
@@ -1207,42 +1254,6 @@
         document.getElementById('erb').value = ''; // Clear the ERB number field
         document.getElementById('funding').value = ''; // Clear the funding source field
     }
-
-    const yesOption = document.getElementById('yesOption');
-    const noOption = document.getElementById('noOption');
-    const timePointsSection = document.getElementById('timePointsSection');
-    const nextButton = document.getElementById('nextButton');
-
-    yesOption.addEventListener('change', function() {
-        timePointsSection.style.display = 'block';
-        nextButton.disabled = false;
-    });
-
-    noOption.addEventListener('change', function() {
-        timePointsSection.style.display = 'none';
-        nextButton.disabled = false;
-    });
-
-    document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        const numSources = document.getElementById('num_sources');
-        const singleSampleCollection = document.getElementById('single_sample_collection');
-        if (this.value === 'yes') {
-            numSources.style.display = 'block';
-            singleSampleCollection.style.display = 'none'; // Hide single sample section if "Yes" is selected
-        } else if (this.value === 'no') {
-            numSources.style.display = 'none';
-            singleSampleCollection.style.display = 'block'; // Show single sample section if "No" is selected
-        }
-        });
-    });
-
-    document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const timepointDetails= document.getElementById('timepoint_details');
-            timepointDetails.style.display = this.value === 'yes' ? 'block' : 'none';
-        });
-    });
 
     function validateTimePoints() {
         const timePointsInput = document.getElementById('time_points1');
