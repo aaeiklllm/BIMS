@@ -112,6 +112,7 @@ class RS_Step5(models.Model):
 
 class Create_Ack_Receipt(models.Model):
     officer_signature = models.FileField(blank=True, null=True)
+    pdf_file = models.FileField(upload_to='ack_receipts/', blank=True, null=True)
 
 class Approve_Reject_Request(models.Model):
     # Parent
