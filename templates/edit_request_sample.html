@@ -409,9 +409,9 @@
                 <div class="nested-dropdown">
                     <a href="#">Molecular (specify):</a>
                     <div class="nested-dropdown-content">
-                        <a href="#" onclick="selectOption('DNA', 'molecular')" id="molecular-DNA">DNA</a>
-                        <a href="#" onclick="selectOption('RNA', 'molecular')" id="molecular-RNA">RNA</a>
-                        <a href="#" onclick="selectOption('cDNA', 'molecular')" id="molecular-cDNA">cDNA</a>
+                        <a href="#" onclick="selectOption('DNA', 'molecular')">DNA</a>
+                        <a href="#" onclick="selectOption('RNA', 'molecular')">RNA</a>
+                        <a href="#" onclick="selectOption('cDNA', 'molecular')">cDNA</a>
                         <a href="#" onclick="showOtherInput('molecular')">Other (specify)</a>
                         <input type="text" id="molecular-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('molecular')">
                     </div>
@@ -1163,10 +1163,7 @@
         }
     });
 
-
-    
-    // End of Comorbidities
-    
+    // End of Comorbidities    
     function updateHiddenInput() {
       const items = Array.from(document.querySelectorAll('.added-item')).map(i => i.textContent.trim());
       document.getElementById('hiddenInput').value = items.join(',');
@@ -1178,8 +1175,9 @@
 
     // Function to select an option and update units dynamically
     function selectOption(option, category) {
-        document.getElementById("selectedOption").value = option;
-        document.getElementById('typeValue').value = option; 
+        category = category.charAt(0).toUpperCase() + category.slice(1);
+        document.getElementById("selectedOption").value = category + ' - ' + option;
+        document.getElementById('typeValue').value = category + ' - ' + option;
         updateUnitOptions(category, option);
         document.getElementById("type-dropdown").classList.remove("show");
     }
@@ -1187,13 +1185,15 @@
 
     // Capture the input in the "Other" field and update the display
     function captureOtherInput(type) {
-        const otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
+        let otherValue = document.getElementById(type + '-other').value;  // Get the value from the "Other" input
         const selectedType = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize the first letter of the type
         if (otherValue) {
+            otherValue = otherValue.charAt(0).toUpperCase() + otherValue.slice(1);
             // Combine the type and the specified other value
             document.getElementById("selectedOption").value = selectedType + " - " + otherValue;
             document.getElementById("typeValue").value = selectedType + " - " + otherValue; // Set the hidden input value as well
         }
+        updateUnitOptions(selectedType, otherValue);
     }
 
     // Function to show the "Other" input field
@@ -1209,16 +1209,16 @@
         const amountUnitSelect = document.getElementById('unit');
         amountUnitSelect.innerHTML = ''; // Clear existing options
 
-        if (category === 'molecular') {
+        if (category === 'Molecular') {
             amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
-        } else if (category === 'blood') {
+        } else if (category === 'Blood') {
             if (option === 'Whole Blood') {
                 amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
             } else {
                 amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
                 amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
             }
-        } else if (category === 'tissue') {
+        } else if (category === 'Tissue') {
             amountUnitSelect.innerHTML += '<option value="slides">Slides</option>';
             amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
         }
