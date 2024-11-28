@@ -295,7 +295,7 @@ def create_aliquot(request):
     
         except Exception as e:
             messages.error(request, f"Error creating aliquot: {e}")
-            return redirect('create_sample.html')
+            return redirect('')
 
     return render(request, 'create_sample.html')  # Render the form template on GET request
 
@@ -703,11 +703,11 @@ def request_sample(request):
             )
             approval_record.save()
             
-            messages.success(request, f"Sample request '{request_sample.id}' created successfully.")
+            messages.success(request, f"Sample request {request_sample.id} created successfully.")
             return redirect('request_sample_step7', sample_id=request_sample.id)
         except Exception as e:
             messages.error(request, f"Error creating sample request: {e}")
-            return redirect('request_sample.html')
+            return redirect('')
 
     # For a GET request, render the form page
     return render(request, 'request_sample.html', {'research_projects': research_projects})
@@ -1004,7 +1004,7 @@ def edit_request_sample(request, sample_id):
             return redirect('edit_request_sample_step7', sample_id=request_sample.id)
         except Exception as e:
             messages.error(request, f"Error editing sample request: {e}")
-            return redirect('create_sample.html')
+            return redirect('')
 
     # Render the form for editing with existing project data
     return render(request, 'edit_request_sample.html', {
@@ -1088,8 +1088,10 @@ def view_request_sample(request):
 def view_details(request, id):
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
-    comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
-    lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
+    # comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
+    # lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
+    comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
+    lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
     step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
     step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
     approval_record = Approve_Reject_Request.objects.filter(request_sample=request_sample).first()
@@ -1101,12 +1103,15 @@ def view_details(request, id):
         approval = request.POST.get('approval')
         attach_file = request.FILES.get('attach_file')
         reject_reason = request.POST.get('reject_reason')
-        no_sample = request.POST.get('no_sample')
 
+        no_sample = request.POST.get('no_sample')
         approval_record.approve_reject = approval
         approval_record.attach_file = attach_file
         approval_record.reject_reason = reject_reason
         approval_record.no_available_samples = no_sample
+
+        if approval_record.no_available_samples == 'No':
+            approval_record.reject_reason = "No available sample/s for now."
 
         if approval == 'approve' and attach_file:
             approval_record.create_ack_receipt = None 
@@ -1142,8 +1147,8 @@ def view_details(request, id):
 def update_view_details(request, id):
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
-    comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
-    lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
+    comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
+    lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
     step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
     step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
     approval_record = Approve_Reject_Request.objects.filter(request_sample=request_sample).first()
