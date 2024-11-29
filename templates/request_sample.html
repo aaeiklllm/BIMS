@@ -14,11 +14,13 @@
         }
         .container {
             width: 60%;
-            margin: 0 auto;
+            margin: 20px auto; /* Add space from the header and footer */
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* Make the container vertically scrollable */
+            max-height: calc(100vh - 40px); /* Optional: Limit the height to fit within the viewport */
         }
         h1 {
             text-align: center;
@@ -131,7 +133,7 @@
 
         .dropdown-content a {
             color: black;
-            padding: 12px 16px;
+            padding: 12px 40px;
             text-decoration: none;
             display: block;
         }
@@ -249,8 +251,24 @@
             font-size: 16px;
         }
 
-        .date-picker-wrapper {
-            margin-bottom: 15px; /* Adds space between each input */
+
+        
+        .date-picker-wrapper input[type="date"] {
+            height: 38px; 
+        }
+                
+        .date-picker-wrapper input[type="date"] {
+            height: 38px; 
+        }
+
+        .date-picker-wrapper input[type="month"] {
+            height: 38px; 
+            margin-top: 4.8px; 
+        }
+
+        .date-picker-wrapper input[type="number"] {
+            height: 38px;
+            margin-top: 4.8px;
         }
 
         .form-text {
@@ -436,7 +454,7 @@
                 <input class="form-check-input" type="radio" name="sex" id="male" value="Male" required>
                 <label class="form-check-label" for="male">Male</label>
             </div>
-            <div class="form-check me-2 required">
+            <div class="form-check me-2">
                 <input class="form-check-input" type="radio" name="sex" id="female" value="Female" required>
                 <label class="form-check-label" for="female">Female</label>
             </div>
@@ -736,7 +754,7 @@
 
         <div class="button-container">
             <button class="btn btn-back" type="button" onclick="showStep('step2')">Back</button>
-            <button class="btn btn-next" type="button" onclick="validateStep(3)">Next</button>
+            <button class="btn btn-next" type="button" onclick="validateStep3()">Next</button>
         </div>
     </div>
 
@@ -746,10 +764,10 @@
         
         <div class="radio-buttons">
             <label>
-                <input type="radio" name="multiple_samples" value="yes" id="yesOption" onclick="checkConditions()"> Yes
+                <input type="radio" name="multiple_samples" value="yes" id="yesOption"> Yes
             </label>
             <label>
-                <input type="radio" name="multiple_samples" value="no" id="noOption" onclick="checkConditions()"> No
+                <input type="radio" name="multiple_samples" value="no" id="noOption"> No
             </label>
         </div>
     
@@ -774,7 +792,7 @@
     
             <div class="form-group-4">
                 <label>Is there a specific start date? (optional):</label>
-                
+                <div class="date-pickers">
                 <!-- Full date picker -->
                 <div class="date-picker-wrapper">
                     <input type="date" class="form-control" name="start_date_ddmmyyyy" placeholder="dd-mm-yyyy">
@@ -792,6 +810,7 @@
                     <input type="number" class="form-control" name="start_date_yyyy" placeholder="yyyy" min="1900" max="2100">
                     <small class="form-text text-muted">if year only</small>
                 </div>
+                </div>
             </div>
         </div>
     
@@ -806,10 +825,10 @@
         <h4><b>Step 5: </b>Do you need the same sample request from different sources/participants?</h4>   
         <div class="radio-buttons">
             <label>
-                <input type="radio" name="different_sources" value="yes" onclick="checkConditions()"> Yes
+                <input type="radio" name="different_sources" value="yes"> Yes
             </label>
             <label>
-                <input type="radio" name="different_sources" value="no" onclick="checkConditions()"> No
+                <input type="radio" name="different_sources" value="no"> No
             </label>
         </div>
     
@@ -855,6 +874,7 @@
                     <div class="date-pickers">
                         <div class="date-picker-wrapper">
                             <input type="date" class="form-control" name="collection_date_ddmmyyyy" placeholder="dd-mm-yyyy">
+                            <small class="form-text text-muted">if day, month, and year</small>
                         </div>
     
                         <div class="date-picker-wrapper">
@@ -917,6 +937,53 @@
 </div>
 
 <script>
+     document.addEventListener('DOMContentLoaded', function() {
+        const yesOption = document.getElementById('yesOption');
+        const noOption = document.getElementById('noOption');
+        const timePointsSection = document.getElementById('timePointsSection');
+        // const nextButton = document.getElementById('nextButton');
+
+        yesOption.addEventListener('click', function() {
+            timePointsSection.style.display = 'block';
+            // nextButton.disabled = false;
+        });
+
+        noOption.addEventListener('click', function() {
+            timePointsSection.style.display = 'none';
+            // nextButton.disabled = false;
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle "different_sources" radio buttons
+        document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const numSources = document.getElementById('num_sources');
+                const singleSampleCollection = document.getElementById('single_sample_collection');
+
+                if (this.value === 'yes') {
+                    numSources.style.display = 'block';
+                    singleSampleCollection.style.display = 'none'; // Hide single sample section if "Yes" is selected
+                } else if (this.value === 'no') {
+                    numSources.style.display = 'none';
+                    singleSampleCollection.style.display = 'block'; // Show single sample section if "No" is selected
+                }
+            });
+        });
+
+        // Handle "multiple_timepoints_each" radio buttons
+        document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const timepointDetails = document.getElementById('timepoint_details');
+                if (this.value === 'yes') {
+                    timepointDetails.style.display = 'block';
+                } else if (this.value === 'no') {
+                    timepointDetails.style.display = 'none';
+                }
+            });
+        });
+    });
+
     function toggleSelection(option) {
         // Hide both options initially
         const newProjectForm = document.getElementById('new-project-form');
@@ -1208,42 +1275,6 @@
         document.getElementById('funding').value = ''; // Clear the funding source field
     }
 
-    const yesOption = document.getElementById('yesOption');
-    const noOption = document.getElementById('noOption');
-    const timePointsSection = document.getElementById('timePointsSection');
-    const nextButton = document.getElementById('nextButton');
-
-    yesOption.addEventListener('change', function() {
-        timePointsSection.style.display = 'block';
-        nextButton.disabled = false;
-    });
-
-    noOption.addEventListener('change', function() {
-        timePointsSection.style.display = 'none';
-        nextButton.disabled = false;
-    });
-
-    document.querySelectorAll('input[name="different_sources"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        const numSources = document.getElementById('num_sources');
-        const singleSampleCollection = document.getElementById('single_sample_collection');
-        if (this.value === 'yes') {
-            numSources.style.display = 'block';
-            singleSampleCollection.style.display = 'none'; // Hide single sample section if "Yes" is selected
-        } else if (this.value === 'no') {
-            numSources.style.display = 'none';
-            singleSampleCollection.style.display = 'block'; // Show single sample section if "No" is selected
-        }
-        });
-    });
-
-    document.querySelectorAll('input[name="multiple_timepoints_each"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const timepointDetails= document.getElementById('timepoint_details');
-            timepointDetails.style.display = this.value === 'yes' ? 'block' : 'none';
-        });
-    });
-
     function validateTimePoints() {
         const timePointsInput = document.getElementById('time_points1');
         const errorMessage = document.getElementById('time_points_error');
@@ -1303,10 +1334,49 @@
             currentStep.style.display = 'block';
         }
     }
+
+    function validateStep3() {
+        const step3 = document.getElementById('step3');
+        const requiredFields = step3.querySelectorAll('[required]');
+        
+        for (const field of requiredFields) {
+            // If the field is a radio button
+            if (field.type === 'radio') {
+                console.log(`Checking radio button group: ${field.name}`); // Debugging log
+
+                // Check if at least one radio button in the group is selected
+                const radioGroup = step3.querySelectorAll(`[name="${field.name}"]`);
+                const radioSelected = Array.from(radioGroup).some(radio => radio.checked);
+                                
+                if (!radioSelected) {
+                    alert(`Please select a ${field.name} option.`);
+                    radioGroup[0].focus(); // Focus on the first radio button in the group
+                    return false; // Prevent moving to the next step
+                }
+            } else if (!field.value.trim()) {
+                alert(`Please fill out the required field: ${field.previousElementSibling.textContent || field.name}`);
+                field.focus();
+                return false; // Prevent moving to the next step
+            }
+        }
+
+        // Check lab test field separately
+        const labTestValue = document.getElementById("lab_tests_input").value.trim();
+        if (!labTestValue) {
+            alert("Please select at least one lab test.");
+            return false; // Prevent moving to the next step
+        }
+
+        // If all validations pass, show step4
+        showStep('step4');
+        return true;
+    }
+
+
+
 </script>
 
 </body>
 </html>
 {% endblock %}
-
 

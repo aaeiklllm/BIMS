@@ -20,13 +20,16 @@
         }
 
         .container {
+            flex: 1; 
             width: 100%;
             max-width: 900px;
             margin: 30px auto;
+            margin-bottom: 40px;
             padding: 20px;
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
         }
 
         h1 {
@@ -400,7 +403,7 @@
                 <div class="sample-id">
                     <b>Sample ID:</b> 
                     <a href="{% url 'sample_detail' sample.id %}">
-                        {{ sample.id|default:"000000"|slice:"-6:" }}
+                        {{ sample.id|stringformat:"05d" }}
                     </a>
                 </div>
 

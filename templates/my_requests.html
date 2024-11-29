@@ -176,7 +176,6 @@
                     <tr>
                         <th>Research Project ID</th>
                         <th>Research Project</th>
-                        <th>Status</th>
                         <th>Request Date</th>
                     </tr>
                 </thead>
@@ -201,16 +200,6 @@
                                 {{sample.research_project.id|stringformat:"05d" }}
                             </td> 
                             <td> {{ sample.research_project.title }}</td>
-                            <td class="
-                                {% if sample.status == 'rejected' %}
-                                    text-rejected
-                                {% elif sample.status == 'approved' %}
-                                    text-approved
-                                {% elif sample.status == 'pending' %}
-                                    text-pending
-                                {% endif %}">
-                                {{ sample.status }}
-                            </td>
                             <td>{{ sample.created_at|date:"m/d/Y" }}</td>
                         </tr>
                         {% empty %}

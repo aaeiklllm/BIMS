@@ -20,9 +20,11 @@
             background-color: #ffffff;
             border-radius: 10px;
             padding: 20px;
-            max-width: 600px;
+            max-width: 800px;
+            max-height: 600px;
             margin: auto;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
         }
 
         .added-item {
@@ -67,7 +69,7 @@
 
         .dropdown-content a {
             color: black;
-            padding: 12px 16px;
+            padding: 12px 40px;
             text-decoration: none;
             display: block;
         }
@@ -318,7 +320,7 @@
              <!-- Comorbidities -->
 
              <div class="mb-3">
-                <label for="comorbidities" class="form-label required">Comorbidities:</label>
+                <label for="comorbidities" class="form-label">Comorbidities:</label>
                 <div class="d-flex align-items-center">
                     <select class="form-select me-2" id="comorbidity_select">
                         <option value="">Select Comorbidity</option>
@@ -619,6 +621,17 @@
     </div>
 
     <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const sampleIdField = document.getElementById('sample_id');
+            let sampleId = sampleIdField.value;
+
+            const paddedSampleId = sampleId.padStart(5, '0');
+
+            // Update the input field with the padded ID
+            sampleIdField.value = paddedSampleId;
+        });
+
         // Extract comorbidities directly from the Django context, by rendering them as a list in JavaScript
         const existingComorbidities = [
             {% for comorbidity in sample.comorbidities_set.all %}
@@ -646,7 +659,7 @@
                 const LabTestValue = document.getElementById("lab_tests_input").value;
                 const storageValue = document.getElementById("selectedStorage").value;
     
-                if (!typeValue || !comorbiditiesValue || !LabTestValue || !storageValue) {
+                if (!typeValue || !LabTestValue || !storageValue) {
                     alert("Please complete required fields.");
                     event.preventDefault();
                 }
