@@ -393,6 +393,7 @@
 			{% elif role == "BiobankManager" %}
 			Log in as a <b>Biobank Manager</b> or register by clicking the button below
 			{% endif %}
+			{{role}}
 			
 		</p>
 		<a href="{% url 'create_account' %}?role={{ role }}" 
