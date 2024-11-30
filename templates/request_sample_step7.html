@@ -111,13 +111,25 @@
         .highlight {
             color: red;
         }
+
+        .btn-back {
+            background-color: #ff4d4d; /* Red */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-back:hover {
+            background-color: #e60000;
+        }
     </style>
    
 </head>
 <body>
     <div class="container">
         <h1>Request Sample</h1>
-        <h4>Step 7: Is the information below correct?</h4>
+        <h4>Step 7: The infomration of your Request</h4>
 
         <div class="form-group">
             <div class="request-summary">
@@ -190,9 +202,10 @@
         </div>
 
         <div class="form-buttons">
-            <!-- <a href="{% url 'requestsample' %}">
-                <button class="btn btn-back" type="button">Back</button>
-            </a> -->
+            <form action="{% url 'delete_request_sample' request_sample.id %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <button class="btn btn-back" type="submit">Delete</button>
+            </form>
             <a href="{% url 'request_sample_ty' %}">
                 <button class="btn btn-next" type="button">Next</button>
             </a>

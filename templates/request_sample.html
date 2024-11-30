@@ -259,7 +259,12 @@
             margin-left: 5px;
             display: block; /* Forces small text to appear on its own line */
         }
-        
+
+        .required::after {
+			content: " *";
+			color: rgb(185, 24, 24);
+			font-size: 14px;
+	   }
     </style>
 </head>
 <body>
@@ -272,6 +277,7 @@
     <div id="step1" class="step">
         <h4><b>Step 1:</b> For what Research Project is this sample request?</h4>
         <div class="option">
+            {% if research_projects %}
             <label>
                 <input type="radio" name="project" onclick="toggleSelection('existing')">
                 Select Research Project
@@ -300,6 +306,13 @@
                     </div>
                 {% endfor %}
             </div>
+        {% else %}
+            <!-- Disable the option and gray it out if there are no research projects -->
+            <label style="color: grey; cursor: not-allowed;">
+                <input type="radio" name="project" disabled>
+                Select Research Project (No available research projects)
+            </label>
+        {% endif %}
         </div>
     
         <div class="option">
@@ -321,7 +334,7 @@
                 <div class="form-group">
                     <label for="description">Description:</label>
                     <textarea id="description" name="description"></textarea>
-                    <small>Note: Should include the scientific background, rationale, study design/methods, and references.</small>
+                    <small>Note: Should include the scientific background, rationale, study design/methods.</small>
                 </div>
                 <div class="form-group">
                     <label for="initiation-date">Anticipated Initiation Date:</label>
@@ -379,8 +392,8 @@
     <form method="post" enctype="multipart/form-data" action="" id="create-sample-form">
         {% csrf_token %}
         <div class="dropdown mb-2">
-            <label for="type" class="form-label">Type:</label>
-            <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" readonly onclick="toggleDropdown()">
+            <label for="type" class="required form-label">Type:</label>
+            <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" readonly onclick="toggleDropdown()" required>
             
             <input type="hidden" id="typeValue" name="typeValue">
 
@@ -418,22 +431,22 @@
             </div>
         </div>
         <div class="mb-3 d-flex align-items-center">
-            <label class="form-label me-2">Sex:</label>
+            <label class="form-label me-2 required">Sex:</label>
             <div class="form-check me-2">
-                <input class="form-check-input" type="radio" name="sex" id="male" value="Male">
+                <input class="form-check-input" type="radio" name="sex" id="male" value="Male" required>
                 <label class="form-check-label" for="male">Male</label>
             </div>
-            <div class="form-check me-2">
-                <input class="form-check-input" type="radio" name="sex" id="female" value="Female">
+            <div class="form-check me-2 required">
+                <input class="form-check-input" type="radio" name="sex" id="female" value="Female" required>
                 <label class="form-check-label" for="female">Female</label>
             </div>
-            <label class="form-label" style="margin-left: 100px">Age:</label>
-            <input type="number" class="form-control" id="age" name="age" min="0" style="width: 80px; margin-left: 10px;">
+            <label class="form-label required" style="margin-left: 100px">Age:</label>
+            <input type="number" class="form-control" id="age" name="age" min="0" style="width: 80px; margin-left: 10px;"required>
         </div>
 
         <div class="mb-3">
-            <label for="clinical_diagnosis" class="form-label">Clinical Diagnosis:</label>
-            <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis">
+            <label for="clinical_diagnosis" class="form-label required">Clinical Diagnosis:</label>
+            <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis" required>
                 <option value="">Select Clinical Diagnosis</option>
                 <option value="Alzheimer's Disease">Alzheimer's Disease</option>
                 <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
@@ -548,31 +561,168 @@
         <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
 
         <!-- Lab Test -->
-        <div class="mb-3">
-            <label for="lab_tests" class="form-label">Lab Tests:</label>
-            <div class="d-flex align-items-center">
-                <select class="form-select me-2" id="lab_test_select">
-                    <option value="">Select Lab Test</option>
-                    <option value="Complete Blood Count (CBC)">Complete Blood Count (CBC)</option>
-                    <option value="Blood Test">Blood Test</option>
-                    <option value="CT Scan">CT Scan</option>
-                    <option value="MRI">MRI</option>
-                    <option value="Others">Other (specify)</option>
-                </select>
-                <input type="text" class="form-control free-text-input" id="lab_test_other" placeholder="Specify other" style="display: none;">
-                <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
+        <div class="dropdown mb-2">
+            <label for="lab_tests" class="form-label required">Lab Tests:</label>
+            <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+            
+            <div id="lab-tests-dropdown" class="dropdown-content">
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
+                </div>   
+                <div class="nested-dropdown">
+                    <a href="#">Blood Chemistry Panel</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Glucose')">Glucose</a>
+                        <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                        <a href="#" onclick="selectLabTest('Creatinine')">Creatinine</a>
+                        <a href="#" onclick="selectLabTest('Electrolytes (Sodium, Potassium, Chloride)')">Electrolytes (Sodium, Potassium, Chloride)</a>
+                        <a href="#" onclick="selectLabTest('Calcium')">Calcium</a>
+                        <a href="#" onclick="selectLabTest('Albumin')">Albumin</a>
+                    </div>
+                </div>  
+                <div class="nested-dropdown">
+                    <a href="#">Lipid Profile</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Total Cholesterol')">Total Cholesterol</a>
+                        <a href="#" onclick="selectLabTest('HDL (High-Density Lipoprotein)')">HDL (High-Density Lipoprotein)</a>
+                        <a href="#" onclick="selectLabTest('LDL (Low-Density Lipoprotein)')">LDL (Low-Density Lipoprotein)</a>
+                        <a href="#" onclick="selectLabTest('Triglycerides')">Triglycerides</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Hemoglobin A1c (HbA1c)')">Hemoglobin A1c (HbA1c)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Fasting Blood Sugar (FBS)')">Fasting Blood Sugar (FBS)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Oral Glucose Tolerance Test (OGTT)')">Oral Glucose Tolerance Test (OGTT)</a>
+                </div>                    
+                <div class="nested-dropdown">
+                    <a href="#">Thyroid Function Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('T3 (Triiodothyronine)')">T3 (Triiodothyronine)</a>
+                        <a href="#" onclick="selectLabTest('T4 (Thyroxine)')">T4 (Thyroxine)</a>
+                        <a href="#" onclick="selectLabTest('TSH (Thyroid Stimulating Hormone)')">TSH (Thyroid Stimulating Hormone)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Kidney Function Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Serum Creatinine')">Serum Creatinine</a>
+                        <a href="#" onclick="selectLabTest('Estimated Glomerular Filtration Rate (eGFR)')">Estimated Glomerular Filtration Rate (eGFR)</a>
+                        <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                        <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Liver Function Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('ALT (Alanine Aminotransferase)')">ALT (Alanine Aminotransferase)</a>
+                        <a href="#" onclick="selectLabTest('AST (Aspartate Aminotransferase)')">AST (Aspartate Aminotransferase)</a>
+                        <a href="#" onclick="selectLabTest('ALP (Alkaline Phosphatase)')">ALP (Alkaline Phosphatase)</a>
+                        <a href="#" onclick="selectLabTest('Bilirubin')">Bilirubin</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Cardiac Enzyme Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Troponin')">Troponin</a>
+                        <a href="#" onclick="selectLabTest('Creatine Kinase-MB (CK-MB)')">Creatine Kinase-MB (CK-MB)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#">Coagulation Profile</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Prothrombin Time (PT)')">Prothrombin Time (PT)</a>
+                        <a href="#" onclick="selectLabTest('Partial Thromboplastin Time (PTT)')">Partial Thromboplastin Time (PTT)</a>
+                        <a href="#" onclick="selectLabTest('INR (International Normalized Ratio)')">INR (International Normalized Ratio)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Electrocardiogram (ECG/EKG)')">Electrocardiogram (ECG/EKG)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Echocardiogram')">Echocardiogram</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Chest X-ray')">Chest X-ray</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Abdominal Ultrasound')">Abdominal Ultrasound</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Bone Mineral Density Test (DEXA)')">Bone Mineral Density Test (DEXA)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('CT Scan (Computed Tomography)')">CT Scan (Computed Tomography)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('MRI (Magnetic Resonance Imaging)')">MRI (Magnetic Resonance Imaging)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Blood Culture')">Blood Culture</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Sputum Culture')">Sputum Culture</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Stool Analysis')">Stool Analysis</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Pap Smear')">Pap Smear</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Prostate-Specific Antigen (PSA)')">Prostate-Specific Antigen (PSA)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('HIV Test')">HIV Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Hepatitis B Test')">Hepatitis B Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Hepatitis C Test')">Hepatitis C Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Tuberculosis Skin Test (Mantoux Test)')">Tuberculosis Skin Test (Mantoux Test)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Dengue NS1 Antigen Test')">Dengue NS1 Antigen Test</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Blood Typing and Crossmatching')">Blood Typing and Crossmatching</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('C-Reactive Protein (CRP)')">C-Reactive Protein (CRP)</a>
+                </div>
+                <div class="nested-dropdown">
+                    <a href="#" onclick="selectLabTest('Erythrocyte Sedimentation Rate (ESR)')">Erythrocyte Sedimentation Rate (ESR)</a>
+                </div>                    
+                <div class="nested-dropdown">
+                    <a href="#">Immunological Tests</a>
+                    <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
+                        <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
+                    </div>
+                </div>
+                <div class="nested-dropdown">
+                    <input type="text" id="lab_test_other" placeholder="Specify other" onchange="captureOtherInputs()">
+                </div> 
             </div>
-            <div id="added_lab_tests" class="mt-2"></div>
         </div>
-
+        
         <div id="added_lab_tests" class="mt-2"></div>
         <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
 
         <div class="row">
             <label>Quantity Volume</label>
             <div class="col-md-6">
-                <label for="amount" class="form-label">Amount:</label>
-                <input type="number" class="form-control" id="amount" name="amount" step="0.01">
+                <label for="amount" class="form-label required">Amount:</label>
+                <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
             </div>
             <div class="col-md-6">
                 <label for="unit" class="form-label">Unit:</label>
@@ -586,7 +736,7 @@
 
         <div class="button-container">
             <button class="btn btn-back" type="button" onclick="showStep('step2')">Back</button>
-            <button class="btn btn-next" type="button" onclick="showStep('step4')">Next</button>
+            <button class="btn btn-next" type="button" onclick="validateStep(3)">Next</button>
         </div>
     </div>
 
@@ -752,8 +902,8 @@
     <div id="step6" class="step">
         <h4><b>Step 6:</b> When is the desired start date of the use of the sample(s) requested?</h4>
         <div class="form-group">
-            <label for="desired_start_date">Desired Start Date:</label>
-            <input type="date" id="desired_start_date" name="desired_start_date" class="form-control">
+            <label class="required" for="desired_start_date">Desired Start Date:</label>
+            <input type="date" id="desired_start_date" name="desired_start_date" class="form-control" required>
         </div>
 
         <p><i>Note: This date refers to when the samples are needed. If your requested sample(s) is/are not yet available, the biobank manager can choose to wait for it to be available until the desired start date. If the sample request is not available by then, the system will automatically reject your request.</i></p>
@@ -768,12 +918,18 @@
 
 <script>
     function toggleSelection(option) {
-        if (option === 'existing') {
-            document.getElementById('existing-project').style.display = 'block';
-            document.getElementById('new-project-form').style.display = 'none';
-        } else {
-            document.getElementById('existing-project').style.display = 'none';
-            document.getElementById('new-project-form').style.display = 'block';
+        // Hide both options initially
+        const newProjectForm = document.getElementById('new-project-form');
+        const existingProjectContainer = document.getElementById('existing-project');
+
+        if (newProjectForm) newProjectForm.style.display = 'none';
+        if (existingProjectContainer) existingProjectContainer.style.display = 'none';
+
+        // Show the relevant option
+        if (option === 'existing' && existingProjectContainer) {
+            existingProjectContainer.style.display = 'block';
+        } else if (option === 'new' && newProjectForm) {
+            newProjectForm.style.display = 'block';
         }
     }
 
@@ -833,6 +989,14 @@
         otherDiagnosisInput.style.display = clinicalDiagnosis.value === 'Others' ? 'block' : 'none';
     });
 
+    const ComorSelect = document.getElementById('comorbidity_select');
+    const ComorOthers = document.getElementById('comorbidity_other');
+        
+                // Show or hide the text input based on clinical diagnosis selection
+    ComorSelect.addEventListener('change', function () {
+        ComorOthers.style.display = ComorSelect.value === 'Others' ? 'block' : 'none';
+    });
+
 
         const addedComorbidities = new Set(); // Set to track added comorbidities
         const addedLabTests = new Set(); // Set to track added lab tests
@@ -883,18 +1047,25 @@
             addItem('comorbidity_select', 'comorbidity_other', 'added_comorbidities', 'comorbidities_input');
         });
 
-        document.getElementById('add_lab_test').addEventListener('click', function() {
-            addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
-        });
+        // document.getElementById('add_lab_test').addEventListener('click', function() {
+        //     addItem('lab_test_select', 'lab_test_other', 'added_lab_tests', 'lab_tests_input');
+        // });
 
 
         // Remove item functionality
         function removeItem(event) {
             if (event.target.classList.contains('remove-btn')) {
-                const item = event.target.parentElement;
+                const item = event.target.parentElement; // Get the parent div of the clicked "X"
+                const valueToRemove = item.querySelector('span').textContent.trim(); // Extract the value from the first span
+                const hiddenInput = document.getElementById('comorbidities_input'); // Update hidden input field
+
+                // Remove the item from the DOM
                 item.remove();
 
-                updateHiddenInput();
+                // Update the hidden input field
+                const existingValues = hiddenInput.value ? hiddenInput.value.split(',') : [];
+                const updatedValues = existingValues.filter(value => value !== valueToRemove);
+                hiddenInput.value = updatedValues.join(',');
             }
         }
 
@@ -967,6 +1138,64 @@
         if (!event.target.matches('.dropdown-input') && !event.target.closest('.dropdown')) {
             dropdown.classList.remove("show");
         }
+    }
+
+     // Lab Tests
+     let selectedLabTests = []; // To store added lab tests
+
+    document.getElementById('add_lab_test').addEventListener('click', function() {
+        updateAddedLabTests();
+    });
+
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle("show");
+    }
+
+    function selectLabTest(test) {
+        if (selectedLabTests.includes(test)) {
+            alert("This lab test has already been added.");
+        } else {
+            selectedLabTests.push(test);
+            updateAddedLabTests();
+        }
+    }
+
+    function captureOtherInputs() {
+        let otherValue = document.getElementById('lab_test_other').value.trim();
+        if (otherValue !== "") {
+            otherValue = otherValue.charAt(0).toUpperCase() + otherValue.slice(1);
+
+            if (selectedLabTests.includes(otherValue)) {
+                alert("This lab test has already been added.");
+            } else {
+                selectedLabTests.push(otherValue);
+                updateAddedLabTests();
+            }
+        }
+    }
+
+    function updateAddedLabTests() {
+        const addedLabTestsContainer = document.getElementById('added_lab_tests');
+        
+        // Clear existing items
+        addedLabTestsContainer.innerHTML = ''; 
+
+        // Display added items
+        selectedLabTests.forEach(test => {
+            const item = document.createElement('div');
+            item.classList.add('added-item');
+            item.innerHTML = `<span>${test}</span><span class="remove-btn" onclick="removeLabTest('${test}')">X</span>`;
+            addedLabTestsContainer.appendChild(item);
+        });
+
+        // Update hidden input field
+        document.getElementById('lab_tests_input').value = selectedLabTests.join(',');
+    }
+
+    function removeLabTest(test) {
+        selectedLabTests = selectedLabTests.filter(item => item !== test);
+        updateAddedLabTests();
     }
 
     function resetForm() {
@@ -1045,6 +1274,35 @@
         }
     }
 
+    function validateStep(stepNumber) {
+        const step = document.getElementById(`step${stepNumber}`);
+        const requiredFields = step.querySelectorAll('[required]');
+
+        for (const field of requiredFields) {
+            if (!field.value.trim()) {
+                alert(`Please fill out the required field: ${field.previousElementSibling.textContent}`);
+                field.focus();
+                return false; // Stop validation if a required field is empty
+            }
+        }
+
+        // If all validations pass, show the next step
+        const nextStep = stepNumber + 1;
+        showStep(`step${nextStep}`);
+        return true;
+    }
+
+    function showStep(stepId) {
+        // Hide all steps
+        const steps = document.querySelectorAll('.step');
+        steps.forEach(step => step.style.display = 'none');
+
+        // Show the selected step
+        const currentStep = document.getElementById(stepId);
+        if (currentStep) {
+            currentStep.style.display = 'block';
+        }
+    }
 </script>
 
 </body>

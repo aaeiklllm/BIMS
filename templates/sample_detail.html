@@ -194,6 +194,16 @@
             border: solid 2px #644ca4;
             border-radius: 5px;
         }
+
+        .text-rejected {
+            color: rgb(184, 8, 8); /* Red for rejected */
+        }
+        .text-approved {
+            color: rgb(0, 136, 0); /* Green for approved */
+        }
+        .text-pending {
+            color: rgb(221, 164, 9); /* Yellow for pending */
+        }
     </style>
 
 </head>
@@ -249,7 +259,14 @@
                                             <td>{{ request.created_at|date:"Y-m-d" }}</td>
                                             <td>{{ request.research_project.id }}</td>
                                             <td>{{ request.research_project.title }}</td>
-                                            <td>{{ request.status }}</td>
+                                            <td class="
+                                            {% if request.status == 'rejected' %}
+                                                text-rejected
+                                            {% elif request.status == 'approved' %}
+                                                text-approved
+                                            {% elif request.status == 'pending' %}
+                                                text-pending
+                                            {% endif %}">{{ request.status }}</td>
                                         </tr>
                                     {% empty %}
                                         <tr>
