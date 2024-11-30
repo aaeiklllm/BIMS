@@ -113,7 +113,11 @@
                 </li>
                 {% endfor %}
             </ul>
-            <div class="chart"><img src="{{ project_chart }}" alt="Project Pie Chart"></div>
+            <div class="chart">{% if project_chart %}
+                <img src="{{ project_chart }}" alt="Project Pie Chart">
+            {% else %}
+                <p>No data available for the Project Pie chart.</p>
+            {% endif %}</div>
         </div>
 
         <!-- Samples by Type -->
@@ -134,7 +138,11 @@
                 {% endfor %}
             </ul>
 
-            <div class="chart"><img src="{{ type_chart }}" alt="Type Pie Chart"></div>
+            <div class="chart">{% if type_chart %}
+                <img src="{{ type_chart }}" alt="Type Chart">
+            {% else %}
+                <p>No data available for the type chart.</p>
+            {% endif %}</div>
         </div>
 </body>
 

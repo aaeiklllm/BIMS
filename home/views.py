@@ -1373,10 +1373,21 @@ def inventory_status(request):
 def generate_pdf(request):
     samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
 
-    projects = [
-        {"name": "Genetic Factors Contributing to Early-Onset Parkinson's Disease in Filipinos", "count": 5},
-        {"name": "Asthma Susceptibility and Genetic Markers in Filipino Children", "count": 5},
-    ]
+    # Fetch research projects and their associated samples
+    research_projects = Research_Project.objects.prefetch_related(
+        'request_samples__sample'  # Prefetch samples through request_samples
+    ).all()
+
+    # Prepare the project data
+    projects = []
+    for project in research_projects:
+        # Get all sample IDs linked to the project
+        sample_ids = [
+            sample.id
+            for request_sample in project.request_samples.all()
+            for sample in request_sample.sample.all()
+        ]
+        projects.append({"name": project.title, "count": len(sample_ids), "sample_ids": sample_ids})
 
     # Group samples by type
     types_dict = defaultdict(list)
