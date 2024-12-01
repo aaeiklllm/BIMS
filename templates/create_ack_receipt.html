@@ -175,7 +175,6 @@
             <!-- Buttons -->
             <div class="buttons">
                 <button class="btn submit" type="submit">Submit</button>
-                <button class="btn pdf" type="button" id="save_to_pdf">Save to PDF</button>
                 <a href="{% url 'view_details' project.id %}">
                     <button class="btn cancel" type="button">Cancel</button>
                 </a>
@@ -187,60 +186,32 @@
 
 
     <script>
-        document.getElementById('save_to_pdf').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf;
+        document.querySelector('form').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent the default form submission
 
-            const pdf = new jsPDF();
+            const formData = new FormData(event.target);
 
-            // Add title
-            pdf.setFont('Helvetica', 'bold');
-            pdf.setFontSize(16);
-            pdf.text('Acknowledgment Receipt', 105, 20, { align: 'center' });
-
-            // Add recipient information
-            pdf.setFont('Helvetica', 'normal');
-            pdf.setFontSize(12);
-            pdf.text('Recipient Information:', 10, 40);
-
-            // Extract recipient details from the HTML
-            const recipientName = document.querySelector('.sub-section p:nth-child(1)').textContent.trim();
-            const recipientUnit = document.querySelector('.sub-section p:nth-child(2)').textContent.trim();
-            const recipientPosition = document.querySelector('.sub-section p:nth-child(3)').textContent.trim();
-
-            pdf.text(recipientName, 10, 50);
-            pdf.text(recipientUnit, 10, 60);
-            pdf.text(recipientPosition, 10, 70);
-
-            // Add sample information table
-            pdf.text('Sample Information:', 10, 90);
-
-            const tableData = [];
-            document.querySelectorAll('table tbody tr').forEach(row => {
-                const cells = row.querySelectorAll('td');
-                const rowData = Array.from(cells).map(cell => cell.textContent.trim());
-                tableData.push(rowData);
+            // Submit the form via fetch
+            const response = await fetch(event.target.action, {
+                method: 'POST',
+                body: formData,
             });
 
-            // Add table using autoTable
-            pdf.autoTable({
-                startY: 95,
-                head: [['Sample', 'Sample ID', 'Sample Type', 'Quality Volume', 'Container Location']],
-                body: tableData,
-            });
+            if (response.ok) {
+                const data = await response.json();
 
-            // Add issuing officer information
-            pdf.text('Issuing Officer Information:', 10, pdf.lastAutoTable.finalY + 20);
+                // Trigger the file download
+                const link = document.createElement('a');
+                link.href = data.pdf_url;
+                link.download = 'Acknowledgment_Receipt.pdf';
+                link.click();
 
-            const officerName = document.querySelector('.sub-section p:nth-child(1)').textContent.trim();
-            const officerPosition = document.querySelector('.sub-section p:nth-child(2)').textContent.trim();
-
-            pdf.text(officerName, 10, pdf.lastAutoTable.finalY + 30);
-            pdf.text(officerPosition, 10, pdf.lastAutoTable.finalY + 40);
-
-            // Save the PDF
-            pdf.save('Acknowledgment_Receipt.pdf');
+                // Redirect to the specified URL
+                window.location.href = data.redirect_url;
+            } else {
+                alert('Error submitting the form.');
+            }
         });
-
         function displayRemoveButton() {
             const fileInput = document.getElementById('signature-file');
             const signatureInfo = document.getElementById('signature-info');

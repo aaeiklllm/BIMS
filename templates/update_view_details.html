@@ -219,6 +219,14 @@
                        {% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}">
                        Create Acknowledgment Receipt
                     </a>
+
+                    <p><b>Acknowledgment Receipt Download:</b>
+                        {% if approval_record.create_ack_receipt and approval_record.create_ack_receipt.pdf_file %}
+                            <a href="{% url 'download_ack_receipt' approval_record.create_ack_receipt.id %}" download>&#128229;</a>
+                        {% else %}
+                            Receipt not yet generated.
+                        {% endif %}
+                    </p>                                 
                 
                     <!-- Area to display the selected file name and action buttons -->
                     <div id="file-info" class="mt-2" style="{% if request_sample.status == 'approved' %}display: block;{% else %}display: none;{% endif %}">

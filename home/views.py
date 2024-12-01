@@ -37,6 +37,15 @@ from django.db.models import Q
 from django.utils import timezone
 from django.db import transaction
 
+from django.http import FileResponse, Http404
+from django.core.files.base import ContentFile
+from reportlab.pdfgen import canvas
+from django.urls import reverse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib import colors
+
+
 # Create your views here.
 
 def home(request):
@@ -1146,9 +1155,22 @@ def view_request_sample_details(request, sample_id):
 
 def my_requests(request):
     user = request.user
-    if user.is_authenticated:  
+    if user.is_authenticated:
         # Retrieve all samples requested by the user, including their related research project
         sample_requests = Request_Sample.objects.filter(requested_by=request.user).select_related('research_project')
+
+        # Add 'ack_receipt' to each sample request in the context
+        for sample in sample_requests:
+            try:
+                # Attempt to get the related Create_Ack_Receipt through Approve_Reject_Request
+                ack_receipt = Approve_Reject_Request.objects.get(request_sample=sample).create_ack_receipt
+            except Approve_Reject_Request.DoesNotExist:
+                ack_receipt = None  # If no related approval record exists, set ack_receipt to None
+
+            # Attach the ack_receipt to the sample object
+            sample.ack_receipt = ack_receipt
+
+        # Pass the modified sample_requests (with ack_receipt) to the template
         return render(request, 'my_requests.html', {'sample_requests': sample_requests})
     else:
         return redirect('login')
@@ -1313,6 +1335,58 @@ def create_ack_receipt(request, id):
                     )
                     ack_sample.save()
 
+            # Generate the PDF with improved layout
+            buffer = BytesIO()
+            pdf = canvas.Canvas(buffer, pagesize=letter)
+
+            # Header
+            pdf.setFont("Helvetica-Bold", 14)
+            pdf.drawString(200, 750, "Acknowledgment Receipt")
+
+            # Request Information
+            pdf.setFont("Helvetica", 12)
+            pdf.drawString(50, 720, f"Request ID: {id}")
+            pdf.drawString(50, 700, f"Researcher Name: {researcher.first_name} {researcher.last_name}")
+            pdf.drawString(50, 680, f"Unit: {researcher.unit}")
+            pdf.drawString(50, 660, f"Position: {researcher.position}")
+            pdf.drawString(50, 640, f"Research Project: {research_project.title}")
+
+            # Sample Table
+            sample_data = [["Sample ID", "Sample Type", "Quality Volume", "Container Location"]]
+            for sample in Ack_Sample.objects.filter(create_ack_receipt=ack_receipt):
+                sample_data.append([sample.sample_id, sample.sample_type, sample.quantity_volume, sample.container_location])
+
+            table = Table(sample_data, colWidths=[100, 150, 120, 150])
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ]))
+
+            table.wrapOn(pdf, 50, 580)
+            table.drawOn(pdf, 50, 500)
+
+            # Issuing Officer Information
+            pdf.drawString(50, 460, f"Issuing Officer Name: {biobank_manager.first_name} {biobank_manager.last_name}")
+            pdf.drawString(50, 440, f"Position: {biobank_manager.position}")
+
+            # Signature
+            if ack_receipt.officer_signature:
+                pdf.drawString(50, 420, "Signature:")
+                signature_path = ack_receipt.officer_signature.path  # Path to the signature image
+                pdf.drawImage(signature_path, 120, 380, width=100, height=50)  # Adjust position and size
+
+            pdf.save()
+
+            # Save PDF to the database
+            buffer.seek(0)
+            ack_receipt.pdf_file.save(f'ack_receipt_{ack_receipt.id}.pdf', ContentFile(buffer.read()))
+            buffer.close()
+
             # Link the acknowledgment receipt to the approval record
             approval_record.create_ack_receipt = ack_receipt
             approval_record.approve_reject = 'approve'
@@ -1323,8 +1397,12 @@ def create_ack_receipt(request, id):
             request_sample.updated_at = timezone.now()
             request_sample.save()
 
+            # Return the PDF URL in JSON response
+            pdf_url = ack_receipt.pdf_file.url
+            return JsonResponse({'pdf_url': pdf_url, 'redirect_url': reverse('view_request_sample')})
+
             # Redirect to a success page or back to the list view
-            return redirect('view_request_sample')
+            # return redirect('view_request_sample')
 
     context = {
         'project': research_project,
@@ -1335,6 +1413,17 @@ def create_ack_receipt(request, id):
         'matching_samples': matching_samples,
     }
     return render(request, 'create_ack_receipt.html', context)
+
+def download_ack_receipt(request, ack_id):
+    try:
+        ack_receipt = Create_Ack_Receipt.objects.get(id=ack_id)
+        if ack_receipt.pdf_file:
+            return FileResponse(ack_receipt.pdf_file.open('rb'), as_attachment=True, filename=f"ack_receipt_{ack_id}.pdf")
+        else:
+            return Http404("Acknowledgment Receipt PDF not found.")
+    except Create_Ack_Receipt.DoesNotExist:
+        raise Http404("Acknowledgment Receipt not found.")
+    
 
 def sample_detail(request, sample_id):
     sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
