@@ -318,20 +318,34 @@
 	   }
 	   
 	   .name-grid {
-		   display: grid;
-		   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-		   text-align: left;
-		   width: 100%;
-		   gap: 0 10px;
-	   }
-	   
-	   .name-grid input {
-		   width: 100%;
-	   }
-	   
-	   .name-grid cell {
-		   display: grid;
-	   }  
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+			text-align: left;
+			width: 100%;
+			gap: 0 10px;
+		}
+
+		.name-grid input {
+			width: 100%;
+		}
+
+		.name-grid .cell {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.mobile-input-container {
+			display: flex;
+			justify-content: flex-end; /* Align the input field to the right */
+			align-items: center; /* Align country code and input vertically */
+			gap: 5px; /* Space between country code and input */
+		}
+
+		#mobile_number {
+			width: 100%; /* Make the input take full width */
+			text-align: right; /* Align text to the right */
+		}
+
 	</style>     
 </head>
 <body>

@@ -176,7 +176,6 @@
                     <tr>
                         <th>Research Project ID</th>
                         <th>Research Project</th>
-                        <th>Status</th>
                         <th>Request Date</th>
                     </tr>
                 </thead>
@@ -191,7 +190,7 @@
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
                                         {% elif sample.status == 'approved' %}
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
-                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">Print Acknowledgement Receipt</a>
+                                        <a href="{% url 'download_ack_receipt' ack_id=sample.ack_receipt.id%}" target="_blank">Print Acknowledgement Receipt</a>
                                         {% elif sample.status == 'pending' %}
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
                                         <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>
@@ -201,16 +200,6 @@
                                 {{sample.research_project.id|stringformat:"05d" }}
                             </td> 
                             <td> {{ sample.research_project.title }}</td>
-                            <td class="
-                                {% if sample.status == 'rejected' %}
-                                    text-rejected
-                                {% elif sample.status == 'approved' %}
-                                    text-approved
-                                {% elif sample.status == 'pending' %}
-                                    text-pending
-                                {% endif %}">
-                                {{ sample.status }}
-                            </td>
                             <td>{{ sample.created_at|date:"m/d/Y" }}</td>
                         </tr>
                         {% empty %}
