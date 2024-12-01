@@ -30,8 +30,6 @@ import urllib
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 
-
-
 User = get_user_model()
 
 def register_user(request, roledata):
@@ -419,17 +417,13 @@ def custom_login(request):
                     request.session["user_id"] = ubj.id
                     print(f"User ID from session: {request.session.get('user_id')}")
 
-                    if q and ubj:
-                            messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                            if userRole.role == 'BiobankManager':
-                                return redirect('biobankmanager_home')  # Replace with the actual URL name
-                            elif userRole.role == 'Researcher':
-                                return redirect('researcher_home')  # Replace with the actual URL name
-                            elif userRole.role == 'Admin':
-                                return redirect('admin_home')  # Replace with the actual URL name
-                    else:
-                            messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                            return redirect("")  # Fallback if no specific role
+                    messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                    if userRole.role == 'BiobankManager':
+                        return redirect('biobankmanager_home')  # Replace with the actual URL name
+                    elif userRole.role == 'Researcher':
+                        return redirect('researcher_home')  # Replace with the actual URL name
+                    elif userRole.role == 'Admin':
+                        return redirect('admin_home')  # Replace with the actual URL name
 
             else:
                 messages.add_message(request, messages.ERROR, "User role not found.")

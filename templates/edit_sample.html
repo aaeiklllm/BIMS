@@ -547,10 +547,10 @@
                 </div>
                 <div class="col-md-6">
                     <label for="unit" class="form-label required">Unit:</label>
-                    <select class="form-select" id="unit" name="unit" value="{{ sample.unit }}" >
-                        <option value="mL">mL</option>
-                        <option value="uL">µL</option>
-                        <option value="slides">Slides</option>
+                    <select class="form-select" id="unit" name="unit" value="{{ sample.unit }}">
+                        <option value="mL" {% if sample.unit == "mL" %}selected{% endif %}>mL</option>
+                        <option value="µL" {% if sample.unit == "µL" %}selected{% endif %}>µL</option>
+                        <option value="slides" {% if sample.unit == "Slides" %}selected{% endif %}>Slides</option>
                     </select>
                 </div>
             </div>
@@ -942,13 +942,13 @@
                 amountUnitSelect.innerHTML = ''; // Clear existing options
         
                 if (category === 'Molecular') {
-                    amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
+                    amountUnitSelect.innerHTML += '<option value="µL">µL</option>';
                 } else if (category === 'Blood') {
                     if (option === 'Whole Blood') {
                         amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
                     } else {
                         amountUnitSelect.innerHTML += '<option value="mL">mL</option>';
-                        amountUnitSelect.innerHTML += '<option value="uL">µL</option>';
+                        amountUnitSelect.innerHTML += '<option value="µL">µL</option>';
                     }
                 } else if (category === 'Tissue') {
                     amountUnitSelect.innerHTML += '<option value="slides">Slides</option>';

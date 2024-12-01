@@ -23,6 +23,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from collections import defaultdict
 
+from django.core.checks import messages
+from django.contrib import messages 
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -556,17 +559,17 @@ def request_sample(request):
             if clinical_diagnosis == "Others":
                 clinical_diagnosis = other_diagnosis
 
-        # Convert the desired_start_date to a date format if it's provided
-        if desired_start_date:
-            if desired_start_date == "":  # Handle empty or null values
+            # Convert the desired_start_date to a date format if it's provided
+            if desired_start_date:
+                if desired_start_date == "":  # Handle empty or null values
+                    desired_start_date = None
+                else: 
+                    try:
+                        desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
                 desired_start_date = None
-            else: 
-                try:
-                    desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            desired_start_date = None
 
             if age == '':
                 age = None
@@ -665,17 +668,17 @@ def request_sample(request):
             start_date_mmyyyy = request.POST.get('start_date_mmyyyy')
             start_date_yyyy = request.POST.get('start_date_yyyy')
 
-        # Validate and parse the start_date_ddmmyyyy
-        if start_date_ddmmyyyy:
-            if start_date_ddmmyyyy == "":  # Handle empty or null values
+            # Validate and parse the start_date_ddmmyyyy
+            if start_date_ddmmyyyy:
+                if start_date_ddmmyyyy == "":  # Handle empty or null values
+                    start_date_ddmmyyyy = None
+                else: 
+                    try:
+                        start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
                 start_date_ddmmyyyy = None
-            else: 
-                try:
-                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            start_date_ddmmyyyy = None
 
             # Ensure 'time_points1', 'interval', and 'start_date_yyyy' are None if empty
             if time_points1 == '':
@@ -725,28 +728,28 @@ def request_sample(request):
             collection_date_mmyyyy = request.POST.get('collection_date_mmyyyy')
             collection_date_yyyy = request.POST.get('collection_date_yyyy')
 
-        # Validate and parse the start_date_ddmmyyyy
-        if start_date_ddmmyyyy:
-            if start_date_ddmmyyyy == "":  # Handle empty or null values
-                start_date_ddmmyyyy = None
-            else: 
-                try:
-                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            start_date_ddmmyyyy = None
-
-        if collection_date_ddmmyyyy:
-            if collection_date_ddmmyyyy == "":  # Handle empty or null values
-                collection_date_ddmmyyyy = None
+            # Validate and parse the start_date_ddmmyyyy
+            if start_date_ddmmyyyy:
+                if start_date_ddmmyyyy == "":  # Handle empty or null values
+                    start_date_ddmmyyyy = None
+                else: 
+                    try:
+                        start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
             else:
-                try:
-                    collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            collection_date_ddmmyyyy = None
+                start_date_ddmmyyyy = None
+
+            if collection_date_ddmmyyyy:
+                if collection_date_ddmmyyyy == "":  # Handle empty or null values
+                    collection_date_ddmmyyyy = None
+                else:
+                    try:
+                        collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
+                collection_date_ddmmyyyy = None
 
             if num_participants == '':
                 num_participants = None
@@ -893,28 +896,28 @@ def edit_request_sample(request, sample_id):
                 erb_number = request.POST.get('erb')
                 funding_source = request.POST.get('funding')
 
-            # Validate and convert dates if provided
-            if initiation_date:
-                if initiation_date == "":  # Handle empty or null values
+                # Validate and convert dates if provided
+                if initiation_date:
+                    if initiation_date == "":  # Handle empty or null values
+                        initiation_date = None
+                    else: 
+                        try:
+                            initiation_date = datetime.strptime(initiation_date, '%Y-%m-%d').date()
+                        except ValueError:
+                            raise ValidationError(f"{initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                else:
                     initiation_date = None
-                else: 
-                    try:
-                        initiation_date = datetime.strptime(initiation_date, '%Y-%m-%d').date()
-                    except ValueError:
-                        raise ValidationError(f"{initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
-            else:
-                initiation_date = None
 
-            if completion_date:
-                if completion_date == "":  # Handle empty or null values
+                if completion_date:
+                    if completion_date == "":  # Handle empty or null values
+                        completion_date = None
+                    else: 
+                        try:
+                            completion_date = datetime.strptime(completion_date, '%Y-%m-%d').date()
+                        except ValueError:
+                            raise ValidationError(f"{completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                else:
                     completion_date = None
-                else: 
-                    try:
-                        completion_date = datetime.strptime(completion_date, '%Y-%m-%d').date()
-                    except ValueError:
-                        raise ValidationError(f"{completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
-            else:
-                completion_date = None
 
                 # Create a new Research_Project instance
                 new_project = Research_Project.objects.create(
@@ -943,21 +946,21 @@ def edit_request_sample(request, sample_id):
             if clinical_diagnosis == "Others":
                 clinical_diagnosis = other_diagnosis
 
-        # Convert the desired_start_date to a date format if it's provided
-        if desired_start_date:
-            if desired_start_date == "":  # Handle empty or null values
+            # Convert the desired_start_date to a date format if it's provided
+            if desired_start_date:
+                if desired_start_date == "":  # Handle empty or null values
+                    desired_start_date = None
+                else: 
+                    try:
+                        desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
                 desired_start_date = None
-            else: 
-                try:
-                    desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            desired_start_date = None
 
-        # Convert empty string fields to None
-        age = None if age == '' else int(age)
-        amount = None if amount == '' else float(amount)
+            # Convert empty string fields to None
+            age = None if age == '' else int(age)
+            amount = None if amount == '' else float(amount)
 
             # Update the Request Sample instance fields
             if erb_approval:
@@ -1009,17 +1012,17 @@ def edit_request_sample(request, sample_id):
             start_date_mmyyyy = request.POST.get('start_date_mmyyyy')
             start_date_yyyy = request.POST.get('start_date_yyyy')
 
-        # Validate and parse start_date_ddmmyyyy
-        if start_date_ddmmyyyy:
-            if start_date_ddmmyyyy == "":  # Handle empty or null values
+            # Validate and parse start_date_ddmmyyyy
+            if start_date_ddmmyyyy:
+                if start_date_ddmmyyyy == "":  # Handle empty or null values
+                    start_date_ddmmyyyy = None
+                else: 
+                    try:
+                        start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
                 start_date_ddmmyyyy = None
-            else: 
-                try:
-                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            start_date_ddmmyyyy = None
 
             # Convert fields to None if empty
             time_points1 = int(time_points1) if time_points1 else None
@@ -1054,29 +1057,29 @@ def edit_request_sample(request, sample_id):
             collection_date_mmyyyy = request.POST.get('collection_date_mmyyyy')
             collection_date_yyyy = request.POST.get('collection_date_yyyy')
 
-        # Validate and parse the start_date_ddmmyyyy
-        if start_date_ddmmyyyy:
-            if start_date_ddmmyyyy == "":  # Handle empty or null values
+            # Validate and parse the start_date_ddmmyyyy
+            if start_date_ddmmyyyy:
+                if start_date_ddmmyyyy == "":  # Handle empty or null values
+                    start_date_ddmmyyyy = None
+                else: 
+                    try:
+                        start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
                 start_date_ddmmyyyy = None
-            else: 
-                try:
-                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            start_date_ddmmyyyy = None
 
-        # Validate and parse the collection_date_ddmmyyyy
-        if collection_date_ddmmyyyy:
-            if collection_date_ddmmyyyy == "":  # Handle empty or null values
+            # Validate and parse the collection_date_ddmmyyyy
+            if collection_date_ddmmyyyy:
+                if collection_date_ddmmyyyy == "":  # Handle empty or null values
+                    collection_date_ddmmyyyy = None
+                else: 
+                    try:
+                        collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
                 collection_date_ddmmyyyy = None
-            else: 
-                try:
-                    collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
-        else:
-            collection_date_ddmmyyyy = None
 
             # Convert empty strings to None
             num_participants = int(num_participants) if num_participants else None
@@ -1112,6 +1115,10 @@ def edit_request_sample(request, sample_id):
             return redirect('edit_request_sample_step7', sample_id=request_sample.id)
         except Exception as e:
             messages.error(request, f"Error editing sample request: {e}")
+            
+            # Log the full traceback for further inspection
+            import traceback
+            print(traceback.format_exc())  # Or use logging
             return redirect('')
 
     # Render the form for editing with existing project data
@@ -1442,12 +1449,18 @@ def create_ack_receipt(request, id):
 def download_ack_receipt(request, ack_id):
     try:
         ack_receipt = Create_Ack_Receipt.objects.get(id=ack_id)
+        
         if ack_receipt.pdf_file:
+            # If the PDF file exists, return it as an attachment
             return FileResponse(ack_receipt.pdf_file.open('rb'), as_attachment=True, filename=f"ack_receipt_{ack_id}.pdf")
         else:
-            return Http404("Acknowledgment Receipt PDF not found.")
+            # If no PDF is found, show a message and redirect back to the same page
+            messages.add_message(request, messages.ERROR, "Acknowledgment Receipt PDF not found.")
+            return redirect(request.META.get('HTTP_REFERER'))  # Redirect to the previous page
     except Create_Ack_Receipt.DoesNotExist:
-        raise Http404("Acknowledgment Receipt not found.")
+        # If the acknowledgment receipt is not found, show a message and redirect back
+        messages.add_message(request, messages.ERROR, "Acknowledgment Receipt not found.")
+        return redirect(request.META.get('HTTP_REFERER'))  # Redirect to the previous page
     
 
 def sample_detail(request, sample_id):
