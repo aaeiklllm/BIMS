@@ -38,7 +38,7 @@
         .sample-details {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
         }
 
         .fieldset {
@@ -59,20 +59,15 @@
             font-size: 18px;
             color: #644ca4;
             font-weight: bold;
-            margin-bottom: 15px;
+            text-decoration: underline;
         }
 
         .sample-id a {
-            color: #ffffff;
-            text-decoration: none;
-            background-color: #644ca4;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 5px;
+            color: #644ca4;
         }
 
         .sample-id a:hover {
-            text-decoration: underline;
+            
         }
 
         .grid-container {
@@ -84,23 +79,24 @@
 
         .grid-item {
             /* background-color: #f0f0f0; */
-            border-radius: 5px;
+            /* border-radius: 5px; */
             /* padding: 10px; */
-            
+            padding-bottom: 15px;
+            font-weight: bold;
+            color: #644ca4;
         }
 
         .grid-item span {
             background-color: #f0f0f0;
             border-radius: 5px;
-            padding: 10px;
-            margin: 5px;
+            font-weight: normal;
+            padding: 8px;
+            color: black;
         }
 
-        .grid-item b {
-            font-size: 18px;
-            font-weight: bold;
-            color: #644ca4;
-            /* margin-top: 20px; */
+        .grid-item p {
+            font-weight: normal;
+            margin-bottom: 0 !important;
         }
 
         .highlight {
@@ -400,32 +396,33 @@
         {% for sample in samples %}
         <div class="sample-details">
             <fieldset class="fieldset">
-                <legend class="legend">Sample Details</legend>
-
-                <div class="sample-id">
-                    <b>Sample ID:</b> 
+                <div class="grid-item sample-id">
                     <a href="{% url 'sample_detail' sample.id %}">
-                        {{ sample.id|default:"000000"|slice:"-6:" }}
+                        Sample ID:
+                        <!-- {{ sample.id|default:"000000"|slice:"-6:" }} -->
+                        {{sample.id|stringformat:"05d"|default:"000000"}}
+
                     </a>
                 </div>
 
-                <div class="grid-container">
-                    <div class="grid-item">
-                        <b>Type:</b>
-                        <span class="highlight">{{ sample.type }}</span>
-                    </div>
-                    <div class="grid-item">
-                        <b>Sex:</b> <span class="sex highlight">{{ sample.sex }}</span>
-                    </div>
-                    <div class="grid-item">
-                        <b>Age:</b> <span class="age highlight">{{ sample.age }}</span>
-                    </div>
-                    <div class="grid-item">
-                        <b>Clinical Diagnosis:</b> <span class="clinical highlight">{{ sample.clinical_diagnosis }}</span>
-                    </div>
+                <div class="grid-item">
+                    <label>Type:</label>
+                    <span class="highlight">{{ sample.type }}</span>
+                </div>
+                <div class="grid-item">
+                    <label>Sex:</label> 
+                    <span class="sex highlight">{{ sample.sex }}</span>
+                </div>
+                <div class="grid-item">
+                    <label>Age:</label> 
+                    <span class="age highlight">{{ sample.age }}</span>
                 </div>
 
-                <div class="section-header">Comorbidities</div>
+                <div class="grid-item">
+                    <label>Clinical Diagnosis:</label> 
+                    <span class="highlight">{{ sample.clinical_diagnosis }}</span>
+                </div>
+                <div class="grid-item header-item">Comorbidities</div>
                 <div class="grid-item">
                     {% if sample.comorbidities_set.all %}
                         {% for comorbidity in sample.comorbidities_set.all %}
@@ -436,8 +433,8 @@
                     {% endif %}
                 </div>
 
-                <div class="section-header">Lab Tests</div>
-                <div class="lab grid-item">
+                <div class="grid-item header-item">Lab Tests</div>
+                <div class="grid-item">
                     {% if sample.lab_test_set.all %}
                         {% for lab_test in sample.lab_test_set.all %}
                             <span>{{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}</span>
@@ -447,36 +444,36 @@
                     {% endif %}
                 </div>
 
-                <div class="grid-container">
-                    <div class="grid-item">
-                        <b>Stored Amount:</b> <span class="highlight">{{ sample.amount }} {{ sample.unit }}</span>
-                    </div>
-                    <div class="grid-item">
-                        <b>Date Collected:</b> <span class="date highlight">{{ sample.date_collected }}</span>
-                    </div>
-                </div>
 
-                <div class="section-header">Storage Details</div>
                 <div class="grid-item">
-                    {% if sample.storage_set.all %}
-                        {% for storage in sample.storage_set.all %}
-                            <p>{{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}</p>
-                        {% endfor %}
-                    {% else %}
-                        <span class="no-info">No storage information available.</span>
-                    {% endif %}
+                    <label>Stored Amount:</label> <span class="highlight">{{ sample.amount }} {{ sample.unit }}</span>
+                </div>
+                <div class="grid-item">
+                    <label>Date Collected:</label> <span class="date highlight">{{ sample.date_collected }}</span>
                 </div>
 
-                <div class="section-header">Aliquots</div>
+
+            <div class="grid-item header-item">Storage Details
+                <span>{% if sample.storage_set.all %}
+                    {% for storage in sample.storage_set.all %}
+                        {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}
+                    {% endfor %}
+                {% else %}
+                    <span class="no-info">No storage information available.</span>
+                {% endif %}
+                </span>
+            </div>
+
+                <div class="grid-item header-item">Aliquots</div>
                 <div class="grid-item">
                     {% if sample.aliquot_set.all %}
                         {% for aliquot in sample.aliquot_set.all %}
                             <p><b>Amount:</b> <span class="highlight">{{ aliquot.amount }} {{ aliquot.unit }}</span></p>
                             <div class="storage-info">
-                                <b>Storage:</b>
-                                {% for storage in aliquot.storage_set.all %}
+                                Storage:{% for storage in aliquot.storage_set.all %}
                                     <p>{{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}</p>
                                 {% endfor %}
+                                
                             </div>
                         {% endfor %}
                     {% else %}

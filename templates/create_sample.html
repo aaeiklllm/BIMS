@@ -8,11 +8,11 @@
     <title>Create Sample</title>
     <style>
         body, html {
-            height: 100%;
             display: flex;
             flex-direction: column;
             margin: 0;
             padding: 0;
+            width: 100%;
             color: #644ca4;
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -21,14 +21,21 @@
         .container {
             flex: 1; 
             width: 100%;
-            max-width: 900px;
             margin: 20px auto;
-            margin-bottom: 40px;
             padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow-y: auto; 
+            max-width: 700px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 3rem;
+            margin-bottom: 5rem;
+            overflow: auto;
+        }
+
+        #main-div {
+            background-color: white;
+        }
+
+        .inline-label {
+          width: 50px;
         }
 
         .added-item {
@@ -191,147 +198,91 @@
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h2><b>Create Sample</b></h2>
-
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="create_sample" id="create_new" value="new" checked>
-            <label class="form-check-label" for="create_new">
-                Create New Sample
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="create_sample" id="create_aliquot" value="aliquot">
-            <label class="form-check-label" for="create_aliquot">
-                Create sample as an aliquot from a previous sample entry
-            </label>
-        </div>
-        <br>
-        <input type="text" id="aliquot_placeholder" class="form-control mt-2" placeholder="Enter previous sample ID" style="display: none;">
-
-        <form method="post" enctype="multipart/form-data" action="{% url 'createsample' %}" id="create-sample-form">
-            {% csrf_token %}
-
-            <div class="mb-3">
-                <label for="sample_id" class="form-label">Sample ID:</label>
-                <input type="text" class="form-control" id="sample_id" name="sample_id" readonly>
-            </div>      
-
-            <div class="dropdown mb-2">
-                <label for="type" class="form-label required">Type:</label>
-                <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" readonly onclick="toggleDropdown()">
+    <div class="page-hero">
+        <div class="container" id="main-div">
+            <h2><b>Create Sample</b></h2>
                 
-                <input type="hidden" id="typeValue" name="typeValue">
 
-                <div id="type-dropdown" class="dropdown-content">
-                    <div class="nested-dropdown">
-                        <a href="#">Molecular (specify):</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectOption('DNA', 'molecular')">DNA</a>
-                            <a href="#" onclick="selectOption('RNA', 'molecular')">RNA</a>
-                            <a href="#" onclick="selectOption('cDNA', 'molecular')">cDNA</a>
-                            <a href="#" onclick="showOtherInput('molecular')">Other (specify)</a>
-                            <input type="text" id="molecular-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('molecular')">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="create_sample" id="create_new" value="new" checked>
+                <label class="form-check-label" for="create_new">
+                    Create new sample
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="create_sample" id="create_aliquot" value="aliquot">
+                <label class="form-check-label" for="create_aliquot">
+                    Create sample as an aliquot from a previous sample entry
+                </label>
+            </div>
+            <br>
+            <input type="text" id="aliquot_placeholder" class="form-control mt-2" placeholder="Enter previous sample ID" style="display: none;">
+
+            <form method="post" enctype="multipart/form-data" action="{% url 'createsample' %}" id="create-sample-form">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="sample_id" class="form-label">Sample ID:</label>
+                    <input type="text" class="form-control" id="sample_id" name="sample_id" readonly>
+                </div>      
+
+                <div class="dropdown mb-2">
+                    <label for="type" class="form-label inline-label required">Type:</label>
+                    <input class="dropdown-input" type="text" id="selectedOption" name="selectedOption" placeholder="Select Type" readonly onclick="toggleDropdown()">
+                    
+                    <input type="hidden" id="typeValue" name="typeValue">
+
+                    <div id="type-dropdown" class="dropdown-content">
+                        <div class="nested-dropdown">
+                            <a href="#">Molecular (specify):</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectOption('DNA', 'molecular')">DNA</a>
+                                <a href="#" onclick="selectOption('RNA', 'molecular')">RNA</a>
+                                <a href="#" onclick="selectOption('cDNA', 'molecular')">cDNA</a>
+                                <a href="#" onclick="showOtherInput('molecular')">Other (specify)</a>
+                                <input type="text" id="molecular-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('molecular')">
+                            </div>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#">Blood or Derivatives (specify):</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectOption('Plasma', 'blood')">Plasma</a>
-                            <a href="#" onclick="selectOption('Serum', 'blood')">Serum</a>
-                            <a href="#" onclick="selectOption('PBMC', 'blood')">PBMC</a>
-                            <a href="#" onclick="selectOption('Whole Blood', 'blood')">Whole Blood</a>
-                            <a href="#" onclick="showOtherInput('blood')">Other (specify)</a>
-                            <input type="text" id="blood-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('blood')">
+                        <div class="nested-dropdown">
+                            <a href="#">Blood or Derivatives (specify):</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectOption('Plasma', 'blood')">Plasma</a>
+                                <a href="#" onclick="selectOption('Serum', 'blood')">Serum</a>
+                                <a href="#" onclick="selectOption('PBMC', 'blood')">PBMC</a>
+                                <a href="#" onclick="selectOption('Whole Blood', 'blood')">Whole Blood</a>
+                                <a href="#" onclick="showOtherInput('blood')">Other (specify)</a>
+                                <input type="text" id="blood-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('blood')">
+                            </div>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#">Tissue (specify location):</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectOption('Lung', 'tissue')">Lung</a>
-                            <a href="#" onclick="selectOption('Heart', 'tissue')">Heart</a>
-                            <a href="#" onclick="showOtherInput('tissue')">Other (specify)</a>
-                            <input type="text" id="tissue-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('tissue')">
+                        <div class="nested-dropdown">
+                            <a href="#">Tissue (specify location):</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectOption('Lung', 'tissue')">Lung</a>
+                                <a href="#" onclick="selectOption('Heart', 'tissue')">Heart</a>
+                                <a href="#" onclick="showOtherInput('tissue')">Other (specify)</a>
+                                <input type="text" id="tissue-other" class="hidden" placeholder="Specify other" onchange="captureOtherInput('tissue')">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="mb-3 d-flex align-items-center">
-                <label class="form-label me-2 required">Sex:</label>
-                <div class="form-check me-2">
-                    <input class="form-check-input" type="radio" name="sex" id="male" value="Male" required >
-                    <label class="form-check-label" for="male">Male</label>
+                <div class="mb-3 d-flex align-items-center">
+                    <label class="form-label me-2 inline-label required">Sex:</label>
+                    <div class="form-check me-2">
+                        <input class="form-check-input" type="radio" name="sex" id="male" value="Male" required >
+                        <label class="form-check-label" for="male">Male</label>
+                    </div>
+                    <div class="form-check me-2">
+                        <input class="form-check-input" type="radio" name="sex" id="female" value="Female" required>
+                        <label class="form-check-label" for="female">Female</label>
+                    </div>
+                    <label class="form-label inline-label required" style="margin-left: 100px">Age:</label>
+                    <input type="number" class="form-control" id="age" name="age" min="0" style="width: 80px;" required>
                 </div>
-                <div class="form-check me-2">
-                    <input class="form-check-input" type="radio" name="sex" id="female" value="Female" required>
-                    <label class="form-check-label" for="female">Female</label>
-                </div>
-                <label class="form-label required" style="margin-left: 100px">Age:</label>
-                <input type="number" class="form-control" id="age" name="age" min="0" style="width: 80px; margin-left: 10px;" required>
-            </div>
 
-            <div class="mb-3">
-                <label for="clinical_diagnosis" class="form-label required">Clinical Diagnosis:</label>
-                <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis" required>
-                    <option value="">Select Clinical Diagnosis</option>
-                    <option value="Alzheimer's Disease">Alzheimer's Disease</option>
-                    <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
-                    <option value="Asthma">Asthma</option>
-                    <option value="Atrial Fibrillation">Atrial Fibrillation</option>
-                    <option value="Breast Cancer">Breast Cancer</option>
-                    <option value="Cerebral Palsy">Cerebral Palsy</option>
-                    <option value="Chronic Kidney Disease">Chronic Kidney Disease</option>
-                    <option value="Chronic Obstructive Pulmonary Disease (COPD)">Chronic Obstructive Pulmonary Disease (COPD)</option>
-                    <option value="Chronic Pain (e.g., arthritis, fibromyalgia)">Chronic Pain (e.g., arthritis, fibromyalgia)</option>
-                    <option value="Colon Cancer">Colon Cancer</option>
-                    <option value="Congenital Heart Defects">Congenital Heart Defects</option>
-                    <option value="Coronary Artery Disease">Coronary Artery Disease</option>
-                    <option value="Cystic Fibrosis">Cystic Fibrosis</option>
-                    <option value="Diabetes Mellitus Type 1">Diabetes Mellitus Type 1</option>
-                    <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
-                    <option value="Down Syndrome">Down Syndrome</option>
-                    <option value="Dyslipidemia">Dyslipidemia</option>
-                    <option value="Epilepsy">Epilepsy</option>
-                    <option value="G6PD Deficiency">G6PD Deficiency</option>
-                    <option value="Gaucher Disease">Gaucher Disease</option>
-                    <option value="Hemophilia">Hemophilia</option>
-                    <option value="Hepatitis B">Hepatitis B</option>
-                    <option value="Hepatitis C">Hepatitis C</option>
-                    <option value="HIV/AIDS">HIV/AIDS</option>
-                    <option value="Huntington's Disease">Huntington's Disease</option>
-                    <option value="Hypertension">Hypertension</option>
-                    <option value="Leukemia">Leukemia</option>
-                    <option value="Liver Cirrhosis">Liver Cirrhosis</option>
-                    <option value="Lymphoma">Lymphoma</option>
-                    <option value="Multiple Sclerosis">Multiple Sclerosis</option>
-                    <option value="Obesity">Obesity</option>
-                    <option value="Osteoporosis">Osteoporosis</option>
-                    <option value="Parkinson's Disease">Parkinson's Disease</option>
-                    <option value="Peripheral Neuropathy">Peripheral Neuropathy</option>
-                    <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
-                    <option value="Psoriasis">Psoriasis</option>
-                    <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
-                    <option value="Sickle Cell Disease">Sickle Cell Disease</option>
-                    <option value="Sleep Apnea">Sleep Apnea</option>
-                    <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
-                    <option value="Systemic Lupus Erythematosus (SLE)">Systemic Lupus Erythematosus (SLE)</option>
-                    <option value="Thalassemia">Thalassemia</option>
-                    <option value="Tuberculosis">Tuberculosis</option>
-                    <option value="Viral Hepatitis">Viral Hepatitis</option>
-                    <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
-                    <option value="Others">Others (specify):</option>
-                </select>
-                <!-- Free text input for 'Others' option -->
-                <input type="text" id="other_diagnosis" name="other_diagnosis" class="form-control mt-2" placeholder="Specify if Others" style="display:none;">
-            </div>
-
-             <!-- Comorbidities -->
-
-            <div class="mb-3">
-                <label for="comorbidities" class="form-label required">Comorbidities:</label>
-                <div class="d-flex align-items-center">
-                    <select class="form-select me-2" id="comorbidity_select">
-                        <option value="">Select Comorbidity</option>
+                <div class="mb-3">
+                    <label for="clinical_diagnosis" class="form-label required">Clinical Diagnosis:</label>
+                    <select class="form-select" id="clinical_diagnosis" name="clinical_diagnosis" required>
+                        <option value="">Select Clinical Diagnosis</option>
                         <option value="Alzheimer's Disease">Alzheimer's Disease</option>
                         <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
                         <option value="Asthma">Asthma</option>
@@ -377,323 +328,389 @@
                         <option value="Tuberculosis">Tuberculosis</option>
                         <option value="Viral Hepatitis">Viral Hepatitis</option>
                         <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
-                        <option value="Others">Other (specify)</option>
+                        <option value="Others">Others (specify):</option>
                     </select>
-                    <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
-                    <button type="button" class="btn btn-dark" id="add_comorbidity">Add</button>
+                    <!-- Free text input for 'Others' option -->
+                    <input type="text" id="other_diagnosis" name="other_diagnosis" class="form-control mt-2" placeholder="Specify if Others" style="display:none;">
                 </div>
-            </div>
 
-            <div id="added_comorbidities" class="mt-2"></div>
-            <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
+                <!-- Comorbidities -->
 
-            <!-- Lab Test -->
-            <div class="dropdown mb-2">
-                <label for="lab_tests" class="form-label required">Lab Tests:</label>
-                <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
-                
-                <div id="lab-tests-dropdown" class="dropdown-content">
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
-                    </div>   
-                    <div class="nested-dropdown">
-                        <a href="#">Blood Chemistry Panel</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('Glucose')">Glucose</a>
-                            <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
-                            <a href="#" onclick="selectLabTest('Creatinine')">Creatinine</a>
-                            <a href="#" onclick="selectLabTest('Electrolytes (Sodium, Potassium, Chloride)')">Electrolytes (Sodium, Potassium, Chloride)</a>
-                            <a href="#" onclick="selectLabTest('Calcium')">Calcium</a>
-                            <a href="#" onclick="selectLabTest('Albumin')">Albumin</a>
+                <div class="mb-3">
+                    <label for="comorbidities" class="form-label">Comorbidities:</label>
+                    <div class="d-flex align-items-center">
+                        <select class="form-select me-2" id="comorbidity_select">
+                            <option value="">Select Comorbidity</option>
+                            <option value="Alzheimer's Disease">Alzheimer's Disease</option>
+                            <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
+                            <option value="Asthma">Asthma</option>
+                            <option value="Atrial Fibrillation">Atrial Fibrillation</option>
+                            <option value="Breast Cancer">Breast Cancer</option>
+                            <option value="Cerebral Palsy">Cerebral Palsy</option>
+                            <option value="Chronic Kidney Disease">Chronic Kidney Disease</option>
+                            <option value="Chronic Obstructive Pulmonary Disease (COPD)">Chronic Obstructive Pulmonary Disease (COPD)</option>
+                            <option value="Chronic Pain (e.g., arthritis, fibromyalgia)">Chronic Pain (e.g., arthritis, fibromyalgia)</option>
+                            <option value="Colon Cancer">Colon Cancer</option>
+                            <option value="Congenital Heart Defects">Congenital Heart Defects</option>
+                            <option value="Coronary Artery Disease">Coronary Artery Disease</option>
+                            <option value="Cystic Fibrosis">Cystic Fibrosis</option>
+                            <option value="Diabetes Mellitus Type 1">Diabetes Mellitus Type 1</option>
+                            <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
+                            <option value="Down Syndrome">Down Syndrome</option>
+                            <option value="Dyslipidemia">Dyslipidemia</option>
+                            <option value="Epilepsy">Epilepsy</option>
+                            <option value="G6PD Deficiency">G6PD Deficiency</option>
+                            <option value="Gaucher Disease">Gaucher Disease</option>
+                            <option value="Hemophilia">Hemophilia</option>
+                            <option value="Hepatitis B">Hepatitis B</option>
+                            <option value="Hepatitis C">Hepatitis C</option>
+                            <option value="HIV/AIDS">HIV/AIDS</option>
+                            <option value="Huntington's Disease">Huntington's Disease</option>
+                            <option value="Hypertension">Hypertension</option>
+                            <option value="Leukemia">Leukemia</option>
+                            <option value="Liver Cirrhosis">Liver Cirrhosis</option>
+                            <option value="Lymphoma">Lymphoma</option>
+                            <option value="Multiple Sclerosis">Multiple Sclerosis</option>
+                            <option value="Obesity">Obesity</option>
+                            <option value="Osteoporosis">Osteoporosis</option>
+                            <option value="Parkinson's Disease">Parkinson's Disease</option>
+                            <option value="Peripheral Neuropathy">Peripheral Neuropathy</option>
+                            <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
+                            <option value="Psoriasis">Psoriasis</option>
+                            <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
+                            <option value="Sickle Cell Disease">Sickle Cell Disease</option>
+                            <option value="Sleep Apnea">Sleep Apnea</option>
+                            <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
+                            <option value="Systemic Lupus Erythematosus (SLE)">Systemic Lupus Erythematosus (SLE)</option>
+                            <option value="Thalassemia">Thalassemia</option>
+                            <option value="Tuberculosis">Tuberculosis</option>
+                            <option value="Viral Hepatitis">Viral Hepatitis</option>
+                            <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
+                            <option value="Others">Other (specify)</option>
+                        </select>
+                        <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
+                        <button type="button" class="btn btn-dark" id="add_comorbidity">Add</button>
+                    </div>
+                    <!-- <div id="added_comorbidities" class="mt-2"></div> -->
+                </div>
+
+                <div id="added_comorbidities" class="mt-2"></div>
+                <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
+
+                <!-- Lab Test -->
+                <div class="dropdown mb-2">
+                    <label for="lab_tests" class="form-label required">Lab Tests:</label>
+                    <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+                    
+                    <div id="lab-tests-dropdown" class="dropdown-content">
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
+                        </div>   
+                        <div class="nested-dropdown" style="max-height: 20vh;">
+                            <a href="#">Blood Chemistry Panel</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('Glucose')">Glucose</a>
+                                <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                                <a href="#" onclick="selectLabTest('Creatinine')">Creatinine</a>
+                                <a href="#" onclick="selectLabTest('Electrolytes (Sodium, Potassium, Chloride)')">Electrolytes (Sodium, Potassium, Chloride)</a>
+                                <a href="#" onclick="selectLabTest('Calcium')">Calcium</a>
+                                <a href="#" onclick="selectLabTest('Albumin')">Albumin</a>
+                            </div>
+                        </div>  
+                        <div class="nested-dropdown">
+                            <a href="#">Lipid Profile</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('Total Cholesterol')">Total Cholesterol</a>
+                                <a href="#" onclick="selectLabTest('HDL (High-Density Lipoprotein)')">HDL (High-Density Lipoprotein)</a>
+                                <a href="#" onclick="selectLabTest('LDL (Low-Density Lipoprotein)')">LDL (Low-Density Lipoprotein)</a>
+                                <a href="#" onclick="selectLabTest('Triglycerides')">Triglycerides</a>
+                            </div>
                         </div>
-                    </div>  
-                    <div class="nested-dropdown">
-                        <a href="#">Lipid Profile</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('Total Cholesterol')">Total Cholesterol</a>
-                            <a href="#" onclick="selectLabTest('HDL (High-Density Lipoprotein)')">HDL (High-Density Lipoprotein)</a>
-                            <a href="#" onclick="selectLabTest('LDL (Low-Density Lipoprotein)')">LDL (Low-Density Lipoprotein)</a>
-                            <a href="#" onclick="selectLabTest('Triglycerides')">Triglycerides</a>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Hemoglobin A1c (HbA1c)')">Hemoglobin A1c (HbA1c)</a>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Hemoglobin A1c (HbA1c)')">Hemoglobin A1c (HbA1c)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Fasting Blood Sugar (FBS)')">Fasting Blood Sugar (FBS)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Oral Glucose Tolerance Test (OGTT)')">Oral Glucose Tolerance Test (OGTT)</a>
-                    </div>                    
-                    <div class="nested-dropdown">
-                        <a href="#">Thyroid Function Tests</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('T3 (Triiodothyronine)')">T3 (Triiodothyronine)</a>
-                            <a href="#" onclick="selectLabTest('T4 (Thyroxine)')">T4 (Thyroxine)</a>
-                            <a href="#" onclick="selectLabTest('TSH (Thyroid Stimulating Hormone)')">TSH (Thyroid Stimulating Hormone)</a>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Fasting Blood Sugar (FBS)')">Fasting Blood Sugar (FBS)</a>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#">Kidney Function Tests</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('Serum Creatinine')">Serum Creatinine</a>
-                            <a href="#" onclick="selectLabTest('Estimated Glomerular Filtration Rate (eGFR)')">Estimated Glomerular Filtration Rate (eGFR)</a>
-                            <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Oral Glucose Tolerance Test (OGTT)')">Oral Glucose Tolerance Test (OGTT)</a>
+                        </div>                    
+                        <div class="nested-dropdown">
+                            <a href="#">Thyroid Function Tests</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('T3 (Triiodothyronine)')">T3 (Triiodothyronine)</a>
+                                <a href="#" onclick="selectLabTest('T4 (Thyroxine)')">T4 (Thyroxine)</a>
+                                <a href="#" onclick="selectLabTest('TSH (Thyroid Stimulating Hormone)')">TSH (Thyroid Stimulating Hormone)</a>
+                            </div>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#">Kidney Function Tests</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('Serum Creatinine')">Serum Creatinine</a>
+                                <a href="#" onclick="selectLabTest('Estimated Glomerular Filtration Rate (eGFR)')">Estimated Glomerular Filtration Rate (eGFR)</a>
+                                <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
+                                <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
+                            </div>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#">Liver Function Tests</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('ALT (Alanine Aminotransferase)')">ALT (Alanine Aminotransferase)</a>
+                                <a href="#" onclick="selectLabTest('AST (Aspartate Aminotransferase)')">AST (Aspartate Aminotransferase)</a>
+                                <a href="#" onclick="selectLabTest('ALP (Alkaline Phosphatase)')">ALP (Alkaline Phosphatase)</a>
+                                <a href="#" onclick="selectLabTest('Bilirubin')">Bilirubin</a>
+                            </div>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#">Cardiac Enzyme Tests</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('Troponin')">Troponin</a>
+                                <a href="#" onclick="selectLabTest('Creatine Kinase-MB (CK-MB)')">Creatine Kinase-MB (CK-MB)</a>
+                            </div>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#">Coagulation Profile</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('Prothrombin Time (PT)')">Prothrombin Time (PT)</a>
+                                <a href="#" onclick="selectLabTest('Partial Thromboplastin Time (PTT)')">Partial Thromboplastin Time (PTT)</a>
+                                <a href="#" onclick="selectLabTest('INR (International Normalized Ratio)')">INR (International Normalized Ratio)</a>
+                            </div>
+                        </div>
+                        <div class="nested-dropdown">
                             <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#">Liver Function Tests</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('ALT (Alanine Aminotransferase)')">ALT (Alanine Aminotransferase)</a>
-                            <a href="#" onclick="selectLabTest('AST (Aspartate Aminotransferase)')">AST (Aspartate Aminotransferase)</a>
-                            <a href="#" onclick="selectLabTest('ALP (Alkaline Phosphatase)')">ALP (Alkaline Phosphatase)</a>
-                            <a href="#" onclick="selectLabTest('Bilirubin')">Bilirubin</a>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Electrocardiogram (ECG/EKG)')">Electrocardiogram (ECG/EKG)</a>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#">Cardiac Enzyme Tests</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('Troponin')">Troponin</a>
-                            <a href="#" onclick="selectLabTest('Creatine Kinase-MB (CK-MB)')">Creatine Kinase-MB (CK-MB)</a>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Echocardiogram')">Echocardiogram</a>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#">Coagulation Profile</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('Prothrombin Time (PT)')">Prothrombin Time (PT)</a>
-                            <a href="#" onclick="selectLabTest('Partial Thromboplastin Time (PTT)')">Partial Thromboplastin Time (PTT)</a>
-                            <a href="#" onclick="selectLabTest('INR (International Normalized Ratio)')">INR (International Normalized Ratio)</a>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Chest X-ray')">Chest X-ray</a>
                         </div>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Urinalysis')">Urinalysis</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Electrocardiogram (ECG/EKG)')">Electrocardiogram (ECG/EKG)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Echocardiogram')">Echocardiogram</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Chest X-ray')">Chest X-ray</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Abdominal Ultrasound')">Abdominal Ultrasound</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Bone Mineral Density Test (DEXA)')">Bone Mineral Density Test (DEXA)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('CT Scan (Computed Tomography)')">CT Scan (Computed Tomography)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('MRI (Magnetic Resonance Imaging)')">MRI (Magnetic Resonance Imaging)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Blood Culture')">Blood Culture</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Sputum Culture')">Sputum Culture</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Stool Analysis')">Stool Analysis</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Pap Smear')">Pap Smear</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Prostate-Specific Antigen (PSA)')">Prostate-Specific Antigen (PSA)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('HIV Test')">HIV Test</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Hepatitis B Test')">Hepatitis B Test</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Hepatitis C Test')">Hepatitis C Test</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Tuberculosis Skin Test (Mantoux Test)')">Tuberculosis Skin Test (Mantoux Test)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Dengue NS1 Antigen Test')">Dengue NS1 Antigen Test</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Blood Typing and Crossmatching')">Blood Typing and Crossmatching</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('C-Reactive Protein (CRP)')">C-Reactive Protein (CRP)</a>
-                    </div>
-                    <div class="nested-dropdown">
-                        <a href="#" onclick="selectLabTest('Erythrocyte Sedimentation Rate (ESR)')">Erythrocyte Sedimentation Rate (ESR)</a>
-                    </div>                    
-                    <div class="nested-dropdown">
-                        <a href="#">Immunological Tests</a>
-                        <div class="nested-dropdown-content">
-                            <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
-                            <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Abdominal Ultrasound')">Abdominal Ultrasound</a>
                         </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Bone Mineral Density Test (DEXA)')">Bone Mineral Density Test (DEXA)</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('CT Scan (Computed Tomography)')">CT Scan (Computed Tomography)</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('MRI (Magnetic Resonance Imaging)')">MRI (Magnetic Resonance Imaging)</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Blood Culture')">Blood Culture</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Sputum Culture')">Sputum Culture</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Stool Analysis')">Stool Analysis</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Pap Smear')">Pap Smear</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Prostate-Specific Antigen (PSA)')">Prostate-Specific Antigen (PSA)</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('HIV Test')">HIV Test</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Hepatitis B Test')">Hepatitis B Test</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Hepatitis C Test')">Hepatitis C Test</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#">Immunological Tests</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
+                                <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
+                            </div>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Tuberculosis Skin Test (Mantoux Test)')">Tuberculosis Skin Test (Mantoux Test)</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Dengue NS1 Antigen Test')">Dengue NS1 Antigen Test</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Blood Typing and Crossmatching')">Blood Typing and Crossmatching</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('C-Reactive Protein (CRP)')">C-Reactive Protein (CRP)</a>
+                        </div>
+                        <div class="nested-dropdown">
+                            <a href="#" onclick="selectLabTest('Erythrocyte Sedimentation Rate (ESR)')">Erythrocyte Sedimentation Rate (ESR)</a>
+                        </div>                    
+                        <div class="nested-dropdown">
+                            <input type="text" id="lab_test_other" placeholder="Specify other" onchange="captureOtherInputs()">
+                        </div> 
                     </div>
-                    <div class="nested-dropdown">
-                        <input type="text" id="lab_test_other" placeholder="Specify other" onchange="captureOtherInputs()">
-                    </div> 
                 </div>
-            </div>
-            
-            <div id="added_lab_tests" class="mt-2"></div>
-            <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
-            
-            
 
-            <div class="row">
-                <label>Quantity Volume</label>
-                <div class="col-md-6">
-                    <label for="amount" class="form-label required">Amount:</label>
-                    <input type="number" class="form-control" id="amount" name="amount" step="0.01" value='0' required>
+                
+                
+                <div id="added_lab_tests" class="mt-2"></div>
+                <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
+                
+                
+
+                <div class="row w-auto">
+                    <div class="col-md-6">
+                        <label for="amount" class="form-label required">Amount:</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" value='0' required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="unit" class="form-label required">Unit:</label>
+                        <select class="form-select" id="unit" name="unit">
+                            <option value="mL">mL</option>
+                            <option value="uL">µL</option>
+                            <option value="slides">Slides</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="unit" class="form-label required">Unit:</label>
-                    <select class="form-select" id="unit" name="unit">
-                        <option value="mL">mL</option>
-                        <option value="uL">µL</option>
-                        <option value="slides">Slides</option>
+                <br>
+                <div class="mb-3">
+                    <label for="date_collected" class="form-label required">Date Collected:</label>
+                    <input type="date" class="form-control" id="date_collected" name="date_collected" required>
+                </div>
+                
+                    <div class="mb-3">
+                        <label for="freezer" class="form-label required">Freezer:</label>
+                        <select class="form-select" id="freezer" name="freezer_num">
+                            <option value="Under-counter ULT Freezer 1">Under-counter ULT Freezer 1</option>
+                            <option value="Under-counter ULT Freezer 2">Under-counter ULT Freezer 2</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="shelf" class="form-label required">Shelf No.:</label>
+                        <select class="form-select" id="shelf" name="shelf_num">
+                            <option value="1">Shelf No. 1</option>
+                            <option value="2">Shelf No. 2</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rack" class="form-label required">Rack No.:</label>
+                        <select class="form-select" id="rack" name="rack_num">
+                            <option value="1">Rack No. 1</option>
+                            <option value="2">Rack No. 2</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="box" class="form-label required">Box No.:</label>
+                        <select class="form-select" id="box" name="box_num">
+                            <option value="1">Box No. 1</option>
+                            <option value="2">Box No. 2</option>
+                        </select>
+                    </div>
+                <div class="mb-3">
+                        <!-- Container Selection (10x10 Grid) -->
+                        <label class="form-label required">Container No.:</label>
+                        <input type="hidden" id="container-input" name="container" value="">
+                        <div class="container-grid">
+                            <div id="container-grid" class="grid-container">
+                            <!-- JavaScript will dynamically populate the grid with buttons -->
+                            </div>
+                        </div>
+                </div>
+
+
+                    <div class="mb-3">
+                        <label for="selectedStorage" class="form-label">Storage:</label>
+                        <input type="text" id="selectedStorage" class="form-control" readonly>
+                    </div>
+
+
+                <div class="mb-3">
+                    <label for="consent_form" class="form-label required">Informed Consent Form (.pdf)</label>
+                    <!-- File input for uploading the file -->
+                    <input type="file" class="form-control" id="consent_form" name="consent_form" accept=".pdf" onchange="handleFileChange()" required>
+                        
+                    <!-- Area to display the selected file name and action buttons -->
+                    <div id="file-info" class="mt-2" style="display: none;">
+                        <span id="file-name"></span>
+                        <button type="button" class="btn btn-link" onclick="removeFile()">Remove</button>
+                    </div>
+                                
+                </div>
+                    <button type="submit" class="btn btn-success mt-2" style="margin-left: 538px;">Save Sample</button>
+            </form>
+            <form method="post" enctype="multipart/form-data" action="{% url 'createaliquot' %}" id="create-aliquot-form" style="display: none;">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="previous_sample_id" class="form-label required">Select Existing Sample ID:</label>
+                    <select id="previous_sample_id" class="form-control" name="previous_sample_id" required>
+                        <option value="">Select a Sample ID</option>
                     </select>
                 </div>
-            </div>
-            <br>
-            <div class="mb-3">
-                <label for="date_collected" class="form-label required">Date Collected:</label>
-                <input type="date" class="form-control" id="date_collected" name="date_collected" required>
-            </div>
-            
+        
+                <div class="row w-auto mb-3">
+                    <div class="col-md-6">
+                        <label for="amount2" class="form-label required">Amount:</label>
+                        <input type="number" class="form-control" id="amount2" name="amount2" step="0.01" value="0" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="unit2" class="form-label required">Unit:</label>
+                        <input type="text" id="unit2" name="unit2" class="form-control" readonly>
+                    </div>
+                </div>
+                
                 <div class="mb-3">
-                    <label for="freezer" class="form-label required">Freezer:</label>
-                    <select class="form-select" id="freezer" name="freezer_num">
+                    <label for="freezer2" class="form-label required">Freezer:</label>
+                    <select class="form-select" id="freezer2" name="freezer_num2">
                         <option value="Under-counter ULT Freezer 1">Under-counter ULT Freezer 1</option>
                         <option value="Under-counter ULT Freezer 2">Under-counter ULT Freezer 2</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="shelf" class="form-label required">Shelf No.:</label>
-                    <select class="form-select" id="shelf" name="shelf_num">
+                    <label for="shelf2" class="form-label required">Shelf No.:</label>
+                    <select class="form-select" id="shelf2" name="shelf_num2">
                         <option value="1">Shelf No. 1</option>
                         <option value="2">Shelf No. 2</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="rack" class="form-label required">Rack No.:</label>
-                    <select class="form-select" id="rack" name="rack_num">
+                    <label for="rack2" class="form-label required">Rack No.:</label>
+                    <select class="form-select" id="rack2" name="rack_num2">
                         <option value="1">Rack No. 1</option>
                         <option value="2">Rack No. 2</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="box" class="form-label required">Box No.:</label>
-                    <select class="form-select" id="box" name="box_num">
+                    <label for="box2" class="form-label required">Box No.:</label>
+                    <select class="form-select" id="box2" name="box_num2">
                         <option value="1">Box No. 1</option>
                         <option value="2">Box No. 2</option>
                     </select>
                 </div>
-               
-                <!-- Container Selection (10x10 Grid) -->
+                <div class="mb-3">
                 <label class="form-label required">Container No.:</label>
-                <input type="hidden" id="container-input" name="container" value="">
-                <div class="container-grid">
-                    <div id="container-grid" class="grid-container">
-                        <!-- JavaScript will dynamically populate the grid with buttons -->
-                    </div>
+                <input type="hidden" id="container-input2" name="container2" value="">
+                <div class="container-grid2">
+                        <div id="container-grid2" class="grid-container2">
+                            <!-- JavaScript will dynamically populate the grid with buttons -->
+                        </div>
+                        <br>
                 </div>
+                </div>
+                <!-- Container Selection (10x10 Grid) -->
+
 
                 <div class="mb-3">
-                    <label for="selectedStorage" class="form-label">Storage:</label>
-                    <input type="text" id="selectedStorage" class="form-control mt-2" readonly>
+                    <label for="selectedStorage2" class="form-label">Storage:</label>
+                    <input type="text" id="selectedStorage2" class="form-control" readonly>
                 </div>
-
-
-            <div class="mb-3">
-                <label for="consent_form" class="form-label required">Informed Consent Form (.pdf)</label>
-                <!-- File input for uploading the file -->
-                <input type="file" class="form-control" id="consent_form" name="consent_form" accept=".pdf" onchange="handleFileChange()" required>
-                    
-                <!-- Area to display the selected file name and action buttons -->
-                <div id="file-info" class="mt-2" style="display: none;">
-                    <span id="file-name"></span>
-                    <button type="button" class="btn btn-link" onclick="removeFile()">Remove</button>
-                </div>            
-            </div>
-
-            <button type="submit" class="btn btn-success">Save Sample</button>
-            
-        </form>
-        <form method="post" enctype="multipart/form-data" action="{% url 'createaliquot' %}" id="create-aliquot-form" style="display: none;">
-            {% csrf_token %}
-            
-            <div class="mb-3">
-                <label for="previous_sample_id" class="form-label required">Select Existing Sample ID:</label>
-                <select id="previous_sample_id" class="form-control mt-2" name="previous_sample_id" required>
-                    <option value="">Select a Sample ID</option>
-                </select>
-            </div>
-    
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="amount2" class="form-label required">Amount:</label>
-                    <input type="number" class="form-control" id="amount2" name="amount2" step="0.01" value="0" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="unit2" class="form-label required">Unit:</label>
-                    <input type="text" id="unit2" name="unit2" class="form-control" readonly>
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label for="freezer2" class="form-label required">Freezer:</label>
-                <select class="form-select" id="freezer2" name="freezer_num2">
-                    <option value="Under-counter ULT Freezer 1">Under-counter ULT Freezer 1</option>
-                    <option value="Under-counter ULT Freezer 2">Under-counter ULT Freezer 2</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="shelf2" class="form-label required">Shelf No.:</label>
-                <select class="form-select" id="shelf2" name="shelf_num2">
-                    <option value="1">Shelf No. 1</option>
-                    <option value="2">Shelf No. 2</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="rack2" class="form-label required">Rack No.:</label>
-                <select class="form-select" id="rack2" name="rack_num2">
-                    <option value="1">Rack No. 1</option>
-                    <option value="2">Rack No. 2</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="box2" class="form-label required">Box No.:</label>
-                <select class="form-select" id="box2" name="box_num2">
-                    <option value="1">Box No. 1</option>
-                    <option value="2">Box No. 2</option>
-                </select>
-            </div>
-            
-            <!-- Container Selection (10x10 Grid) -->
-            <label class="form-label required">Container No.:</label>
-            <input type="hidden" id="container-input2" name="container2" value="">
-            <div class="container-grid2">
-                <div id="container-grid2" class="grid-container2">
-                    <!-- JavaScript will dynamically populate the grid with buttons -->
-                </div>
-                <br>
-            </div>
-            <div class="mb-3">
-                <label for="selectedStorage2" class="form-label">Storage:</label>
-                <input type="text" id="selectedStorage2" class="form-control mt-2" readonly>
-            </div>
-    
-            <button type="submit" class="btn btn-success">Save Aliquot Sample</button>
-        </form>
+        
+                <button type="submit" class="btn btn-success" style="float: right;">Save Aliquot Sample</button>
+            </form>
+        </div>
     </div>
+    
 
     <script>
        
@@ -706,7 +723,7 @@
             const LabTestValue = document.getElementById("lab_tests_input").value;
             const storageValue = document.getElementById("selectedStorage").value;
 
-            if (!typeValue || !comorbiditiesValue || !LabTestValue || !storageValue) {
+            if (!typeValue || !LabTestValue || !storageValue) {
                 alert("Please complete required fields.");
                 event.preventDefault();
             }
