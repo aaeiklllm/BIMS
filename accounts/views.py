@@ -26,6 +26,10 @@ from django.contrib.auth.hashers import make_password
 from .models import PasswordResetCode
 from django.utils import timezone
 from datetime import timedelta
+import urllib
+from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
+
 
 
 User = get_user_model()
@@ -363,56 +367,45 @@ def custom_login(request):
     print(f"Request path: {request.path}")
     print(f"GET parameters: {request.GET}")
 
-    role = request.GET.get('role')
-    print("role", role)
+    role = request.GET.get('role') if request.method == 'GET' else request.POST.get('role')
+
     roledata_mapping = {
        'BiobankManager': 'BiobankManager',
        'Researcher': 'Researcher',
     }
-    
-    roledata = roledata_mapping.get(role)
 
-    # request.session["role"] = userRole.role
+    roledata = roledata_mapping.get(role)
 
     try:
         if request.method == 'POST':
             email = request.POST.get('eml', None)
             pwd = request.POST.get('pwd', None)
 
-            user = User.objects.get(username=email)
+            # Authenticate user
+            try:
+                user = User.objects.get(username=email)
+            except User.DoesNotExist:
+                user = None
 
-            if 'forgot_password' in request.POST:
-                if not email:                
-                    messages.add_message(request, messages.ERROR, "Please enter your username.")
-                    return redirect(request.path)
-
-                # Password reset logic
-                reset_code = random.randint(100000, 999999)
-                PasswordResetCode.objects.create(user=user, code=reset_code, created_at=timezone.now())
-
-                try:
-                    send_mail(
-                        subject='Password Reset Code',
-                        message='',  # Leave plain text message empty since we're using HTML
-                        html_message=f'''Your password reset code is {reset_code}''',
-                        from_email=settings.EMAIL_HOST_USER,
-                        recipient_list=[user.email]
-                    )
-                except Exception as e:
-                    print(e)
-                    return render(request, 'index.html', {'message': 'Failed To Send Email'})
-
-                messages.add_message(request, messages.SUCCESS, "Password reset code sent to your email.")
-                return render(request, 'reset.html')
-
-            ubj = authenticate(request, username=email, password=pwd) 
-            if ubj is None:
+            if user is None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
-                return redirect(request.path)
-            
+                # Redirect back with role as a query parameter
+                params = {'role': role}
+                query_string = urllib.parse.urlencode(params)
+                return HttpResponseRedirect(f"{request.path}?{query_string}")
+
+            ubj = authenticate(request, username=email, password=pwd)
+            if ubj is None:
+                messages.add_message(request, messages.ERROR, "Invalid credentials or password!")
+                # Redirect back with role as a query parameter
+                params = {'role': role}
+                query_string = urllib.parse.urlencode(params)
+                return HttpResponseRedirect(f"{request.path}?{query_string}")
+
+            # Log the user in
             login(request, ubj)
 
-            q = User.objects.filter(username=email).filter
+            # Get the user's role from the UserroleMap and set it in the session
             table1_data = UserroleMap.objects.filter(user_id=ubj.id).first()
             if table1_data:
                 userRole = Role.objects.filter(id=table1_data.role_id.id).first()
@@ -440,13 +433,22 @@ def custom_login(request):
 
             else:
                 messages.add_message(request, messages.ERROR, "User role not found.")
-                return redirect(request.path)
+                # Redirect back with role as a query parameter
+                params = {'role': role}
+                query_string = urllib.parse.urlencode(params)
+                return HttpResponseRedirect(f"{request.path}?{query_string}")
+
         else:
-            return render(request, 'index.html', {'role': roledata})
+            # For GET request: pass role to the template
+            return render(request, 'index.html', {'role': role})
+
     except Exception as e:
-        print(e)
+        print(f"Error: {e}")
         messages.add_message(request, messages.ERROR, "Something Went Wrong!")
-        return render(request, 'index.html', {'role': roledata})
+        # Redirect back with role as a query parameter
+        params = {'role': role} if role else {}
+        query_string = urllib.parse.urlencode(params)
+        return HttpResponseRedirect(f"{request.path}?{query_string}")
 
 def login_admin(request):
     try:

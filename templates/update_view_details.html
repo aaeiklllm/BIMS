@@ -118,6 +118,18 @@
         .remove-link:hover {
             color: #0056b3; /* Darker color on hover */
         }
+
+        #reject_reason {
+            padding-top: 0;  /* Remove any padding at the top */
+            padding-left: 0; /* Remove left padding */
+            padding-right: 0; /* Remove right padding */
+            padding-bottom: 0; /* Remove bottom padding */
+            margin: 0;   /* Remove any margin around the textarea */
+            line-height: 1.2;  /* Adjust the line-height to ensure the text is aligned properly */
+            height: auto;  /* Ensure the height adjusts based on content */
+        }
+
+
     </style>    
 </head>
 <body>
@@ -256,7 +268,6 @@
                     <label for="reject_reason">Reason <span style="color: red;">*</span></label>
                     <textarea id="reject_reason" name="reject_reason" rows="3" cols="50"{% if request_sample.status == 'approved' or request_sample.status == 'rejected' %} disabled {% endif %}>{{ approval_record.reject_reason }}</textarea>
 
-                
                     <label>
                         <input type="checkbox" id="no_sample" name="no_sample" value="No" 
                                onclick="toggleReasonField()" 
