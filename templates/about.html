@@ -1,64 +1,94 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">  
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        
-        {% block title %} <title>Biobank Information Management System (BIMS)</title> {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    {% block title %} <title>Biobank Information Management System (BIMS)</title> {% endblock %}
 
-        <style>
-            /* Styling for the FAQ section */
-            .faq-section {
-                padding: 0;
-                max-width: 1200px;
-                margin: 0 auto;
+    <style>
+        body {
+            background-image: url('https://i.vimeocdn.com/video/1917288018-5cb22cc57268e0af9e03d11c24f2e4501096a249a1a9dbc3cfa5a68b5ce00759-d?f=webp');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow: hidden;  /* Prevent body from scrolling */
+        }
+
+        /* Styling for the FAQ section */
+        .faq-section {
+            max-width: 90%;
+            background-color: rgb(250, 250, 250);
+            border-radius: 20px;
+            background-blend-mode: multiply;
+            box-shadow: 0 4px 20px rgba(0.1, 0.1, 0.1, 0.2);
+            margin-top: 50px;   /* Add space outside the top */
+            margin-bottom: 50px;  /* Add space outside the bottom */
+            overflow-y: auto;  /* Enable vertical scrolling */
+            max-height: 75vh;  /* Limit the height to 80% of the viewport height */
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;  /* Ensure padding is included in total height */
+        }
+
+        /* FAQ question and answer styling */
+        .faq-question {
+            font-weight: bold;
+            color: #644ca4;
+            margin-top: 1.5rem;
+            font-size: 20px;
+        }
+
+        .faq-answer {
+            margin-top: 0.5rem;
+            color: #333;
+            text-align: justify;
+            font-family: Helvetica, sans-serif;
+            font-size: medium;
+        }
+
+        /* Styling for the FAQ title */
+        .faq-title {
+            font-size: 45px;
+            text-align: center;
+            color: #644ca4;
+            font-weight: bold;
+        }
+
+        /* Additional Styling for sub-title */
+        .faq-subtitle {
+            font-size: 30px;
+            text-align: center;
+            color: #644ca4;
+            margin-top: 15px;
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 767px) {
+            .faq-title {
+                font-size: 2rem;
             }
 
-            /* FAQ question and answer styling */
             .faq-question {
-                font-weight: bold;
-                color: #644ca4;
-                margin-top: 1.5rem;
-                font-size: 20px;
+                font-size: 1rem;
             }
 
             .faq-answer {
-                margin-top: 0.5rem;
-                color: #333;
-                text-align: justify;
-                font-family: Helvetica, sans-serif;
-                font-size: medium;
+                font-size: 0.9rem;
             }
-
-            /* Media query for smaller screens */
-            @media (max-width: 767px) {
-                .bims-title {
-                    font-size: 2rem;
-                }
-
-                .faq-question {
-                    font-size: 1rem;
-                }
-
-                .faq-answer {
-                    font-size: 0.9rem;
-                }
-            }
-
-        </style>
-    </head>
-    <body>
+        }
+    </style>
+</head>
+<body>
     <div class="container-fluid faq-section">
-        <br>
-        <h1 style="font-size: 45px; text-align: center; color: #644ca4"><b>Biobank Information Management System (BIMS)</b></h1>
-        <h2 style="font-size: 30px; text-align: center;"><b>Frequently Asked Questions</b></h1>
-        <br>
-        <!-- Frequently Asked Questions section -->
-        <div class="container-fluid">
+            <br>
+                <h1 class="faq-title">Biobank Information Management System (BIMS)</h1>
+                <h2 class="faq-subtitle">Frequently Asked Questions</h2>
+                <br>
             <p>
                 <span class="faq-question">Q: What is the Biobank Information Management System (BIMS)?</span><br>
                 <span class="faq-answer">A: BIMS is a web-based platform designed to streamline the management and tracking of biobanked samples. It allows biobank managers to easily track and manage samples, while offering researchers a streamlined process for requesting and accessing samples.</span>
@@ -86,7 +116,7 @@
 
             <p>
                 <span class="faq-question">Q: How does BIMS handle data security and privacy?</span><br>
-                <span class="faq-answer">A: Access to sensitive information is restricted based on user roles to ensure privacy.</span>
+                <span class="faq-answer">A: Access to sensitive information is restricted based on user roles to ensure privacy. BIMS complies with standard data protection regulations.</span>
             </p>
 
             <p>
@@ -108,7 +138,11 @@
                 <span class="faq-question">Q: How can I provide feedback about BIMS?</span><br>
                 <span class="faq-answer">A: We welcome feedback from users to help improve our system. Please send your comments and suggestions to techassist.bims@gmail.com.</span>
             </p>
-        </div>
-    </div>
-    </body>
+
+            <p>
+                <span class="faq-question">Do you have other questions?</span><br>
+                <span class="faq-answer">Please send your queries to techassist.bims@gmail.com.</span>
+            </p>
+     </div>
+</body>
 {% endblock %}

@@ -80,7 +80,7 @@
 
         .dropdown-content a {
             color: black;
-            padding: 12px 16px;
+            padding: 12px 40px;
             text-decoration: none;
             display: block;
         }
@@ -336,63 +336,62 @@
 
                 <!-- Comorbidities -->
 
-                <div class="mb-3">
-                    <label for="comorbidities" class="form-label">Comorbidities:</label>
-                    <div class="d-flex align-items-center">
-                        <select class="form-select me-2" id="comorbidity_select">
-                            <option value="">Select Comorbidity</option>
-                            <option value="Alzheimer's Disease">Alzheimer's Disease</option>
-                            <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
-                            <option value="Asthma">Asthma</option>
-                            <option value="Atrial Fibrillation">Atrial Fibrillation</option>
-                            <option value="Breast Cancer">Breast Cancer</option>
-                            <option value="Cerebral Palsy">Cerebral Palsy</option>
-                            <option value="Chronic Kidney Disease">Chronic Kidney Disease</option>
-                            <option value="Chronic Obstructive Pulmonary Disease (COPD)">Chronic Obstructive Pulmonary Disease (COPD)</option>
-                            <option value="Chronic Pain (e.g., arthritis, fibromyalgia)">Chronic Pain (e.g., arthritis, fibromyalgia)</option>
-                            <option value="Colon Cancer">Colon Cancer</option>
-                            <option value="Congenital Heart Defects">Congenital Heart Defects</option>
-                            <option value="Coronary Artery Disease">Coronary Artery Disease</option>
-                            <option value="Cystic Fibrosis">Cystic Fibrosis</option>
-                            <option value="Diabetes Mellitus Type 1">Diabetes Mellitus Type 1</option>
-                            <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
-                            <option value="Down Syndrome">Down Syndrome</option>
-                            <option value="Dyslipidemia">Dyslipidemia</option>
-                            <option value="Epilepsy">Epilepsy</option>
-                            <option value="G6PD Deficiency">G6PD Deficiency</option>
-                            <option value="Gaucher Disease">Gaucher Disease</option>
-                            <option value="Hemophilia">Hemophilia</option>
-                            <option value="Hepatitis B">Hepatitis B</option>
-                            <option value="Hepatitis C">Hepatitis C</option>
-                            <option value="HIV/AIDS">HIV/AIDS</option>
-                            <option value="Huntington's Disease">Huntington's Disease</option>
-                            <option value="Hypertension">Hypertension</option>
-                            <option value="Leukemia">Leukemia</option>
-                            <option value="Liver Cirrhosis">Liver Cirrhosis</option>
-                            <option value="Lymphoma">Lymphoma</option>
-                            <option value="Multiple Sclerosis">Multiple Sclerosis</option>
-                            <option value="Obesity">Obesity</option>
-                            <option value="Osteoporosis">Osteoporosis</option>
-                            <option value="Parkinson's Disease">Parkinson's Disease</option>
-                            <option value="Peripheral Neuropathy">Peripheral Neuropathy</option>
-                            <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
-                            <option value="Psoriasis">Psoriasis</option>
-                            <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
-                            <option value="Sickle Cell Disease">Sickle Cell Disease</option>
-                            <option value="Sleep Apnea">Sleep Apnea</option>
-                            <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
-                            <option value="Systemic Lupus Erythematosus (SLE)">Systemic Lupus Erythematosus (SLE)</option>
-                            <option value="Thalassemia">Thalassemia</option>
-                            <option value="Tuberculosis">Tuberculosis</option>
-                            <option value="Viral Hepatitis">Viral Hepatitis</option>
-                            <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
-                            <option value="Others">Other (specify)</option>
-                        </select>
-                        <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
-                        <button type="button" class="btn btn-dark" id="add_comorbidity">Add</button>
-                    </div>
-                    <!-- <div id="added_comorbidities" class="mt-2"></div> -->
+            <div class="mb-3">
+                <label for="comorbidities" class="form-label">Comorbidities:</label>
+                <div class="d-flex align-items-center">
+                    <select class="form-select me-2" id="comorbidity_select">
+                        <option value="">Select Comorbidity</option>
+                        <option value="Alzheimer's Disease">Alzheimer's Disease</option>
+                        <option value="Amyotrophic Lateral Sclerosis (ALS)">Amyotrophic Lateral Sclerosis (ALS)</option>
+                        <option value="Asthma">Asthma</option>
+                        <option value="Atrial Fibrillation">Atrial Fibrillation</option>
+                        <option value="Breast Cancer">Breast Cancer</option>
+                        <option value="Cerebral Palsy">Cerebral Palsy</option>
+                        <option value="Chronic Kidney Disease">Chronic Kidney Disease</option>
+                        <option value="Chronic Obstructive Pulmonary Disease (COPD)">Chronic Obstructive Pulmonary Disease (COPD)</option>
+                        <option value="Chronic Pain (e.g., arthritis, fibromyalgia)">Chronic Pain (e.g., arthritis, fibromyalgia)</option>
+                        <option value="Colon Cancer">Colon Cancer</option>
+                        <option value="Congenital Heart Defects">Congenital Heart Defects</option>
+                        <option value="Coronary Artery Disease">Coronary Artery Disease</option>
+                        <option value="Cystic Fibrosis">Cystic Fibrosis</option>
+                        <option value="Diabetes Mellitus Type 1">Diabetes Mellitus Type 1</option>
+                        <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
+                        <option value="Down Syndrome">Down Syndrome</option>
+                        <option value="Dyslipidemia">Dyslipidemia</option>
+                        <option value="Epilepsy">Epilepsy</option>
+                        <option value="G6PD Deficiency">G6PD Deficiency</option>
+                        <option value="Gaucher Disease">Gaucher Disease</option>
+                        <option value="Hemophilia">Hemophilia</option>
+                        <option value="Hepatitis B">Hepatitis B</option>
+                        <option value="Hepatitis C">Hepatitis C</option>
+                        <option value="HIV/AIDS">HIV/AIDS</option>
+                        <option value="Huntington's Disease">Huntington's Disease</option>
+                        <option value="Hypertension">Hypertension</option>
+                        <option value="Leukemia">Leukemia</option>
+                        <option value="Liver Cirrhosis">Liver Cirrhosis</option>
+                        <option value="Lymphoma">Lymphoma</option>
+                        <option value="Multiple Sclerosis">Multiple Sclerosis</option>
+                        <option value="Obesity">Obesity</option>
+                        <option value="Osteoporosis">Osteoporosis</option>
+                        <option value="Parkinson's Disease">Parkinson's Disease</option>
+                        <option value="Peripheral Neuropathy">Peripheral Neuropathy</option>
+                        <option value="Phenylketonuria (PKU)">Phenylketonuria (PKU)</option>
+                        <option value="Psoriasis">Psoriasis</option>
+                        <option value="Rheumatoid Arthritis">Rheumatoid Arthritis</option>
+                        <option value="Sickle Cell Disease">Sickle Cell Disease</option>
+                        <option value="Sleep Apnea">Sleep Apnea</option>
+                        <option value="Spinal Muscular Atrophy">Spinal Muscular Atrophy</option>
+                        <option value="Systemic Lupus Erythematosus (SLE)">Systemic Lupus Erythematosus (SLE)</option>
+                        <option value="Thalassemia">Thalassemia</option>
+                        <option value="Tuberculosis">Tuberculosis</option>
+                        <option value="Viral Hepatitis">Viral Hepatitis</option>
+                        <option value="X-linked Dystonia Parkinsonism (XDP)">X-linked Dystonia Parkinsonism (XDP)</option>
+                        <option value="Others">Other (specify)</option>
+                    </select>
+                    <input type="text" class="form-control free-text-input" id="comorbidity_other" name="comorbidity_other" placeholder="Specify other" style="display: none;">
+                    <button type="button" class="btn btn-dark" id="add_comorbidity">Add</button>
                 </div>
+            </div>
 
                 <div id="added_comorbidities" class="mt-2"></div>
                 <input type="hidden" id="comorbidities_input" name="comorbidities" value="">
@@ -742,8 +741,9 @@
         fetch('{% url "latest_sample_id" %}')
             .then(response => response.json())
             .then(data => {
+                const paddedSampleId = data.sample_id.toString().padStart(5, '0');
                 // Set the sample_id input value
-                document.getElementById('sample_id').value = data.sample_id;
+                document.getElementById('sample_id').value = paddedSampleId;
             })
             .catch(error => {
                 console.error('Error fetching the latest sample ID:', error);
@@ -770,7 +770,8 @@
                 .then(data => {
                     previousSampleSelect.innerHTML = '<option value="">Select a Sample ID</option>'; // Reset options
                     data.sample_ids.forEach(sample_id => {
-                        previousSampleSelect.innerHTML += `<option value="${sample_id}">${sample_id}</option>`;
+                        const paddedSampleId = sample_id.toString().padStart(5, '0');
+                        previousSampleSelect.innerHTML += `<option value="${sample_id}">${paddedSampleId}</option>`;
                     });
                 })
                 .catch(error => {

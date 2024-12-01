@@ -11,11 +11,13 @@
 
         .container {
             width: 60%;
-            margin: 0 auto;
+            margin: 20px auto; /* Add space from the header and footer */
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* Make the container vertically scrollable */
+            max-height: 650px;
         }
 
         .form-buttons {
@@ -128,7 +130,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Request Sample</h1>
+        <h1><b>Request Sample</b></h1>
         <h4>Step 7: The information of your Request</h4>
 
         <div class="form-group">
