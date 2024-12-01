@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
                 ('sex', models.CharField(max_length=100, null=True)),
                 ('age', models.IntegerField(blank=True, null=True)),
                 ('clinical_diagnosis', models.CharField(max_length=300, null=True)),
-                ('amount', models.IntegerField(blank=True, null=True)),
+                ('amount', models.FloatField(blank=True, null=True)),
                 ('unit', models.CharField(blank=True, max_length=100, null=True)),
                 ('desired_start_date', models.DateField(null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

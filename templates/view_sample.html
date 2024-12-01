@@ -379,8 +379,13 @@
                     <label for="research-project">By Research Project(s):</label>
                     <select id="research-project" name="research-project">
                         <option value="">Select Project</option>
-                        <!-- Add options -->
+                        {% for project in projects %}
+                        <option value="{{ project.name }}" {% if request.GET.research_project == project.name %}selected{% endif %}>
+                            {{ project.name }}
+                        </option>
+                        {% endfor %}
                     </select>
+
                     <br>
 
                     <div class="filter-buttons">
@@ -478,6 +483,29 @@
                         <span class="no-info">No aliquots available.</span>
                     {% endif %}
                 </div>
+
+                <div class="section-header">Research Projects</div>
+                <div class="grid-item">
+                    {% if request_samples_dict %}
+                        {% for sample_id, request_samples in request_samples_dict.items %}
+                            {% if sample.id == sample_id %}
+                                <p class="project">
+                                    {% if request_samples %}
+                                        {% for request in request_samples %}
+                                            <span class="project highlight">{{ request.research_project.title }}{% if not forloop.last %}, {% endif %}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="project no-info">No Research Projects for this sample.</span>
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                <span class="project no-info">No Research Projects for this sample.</span>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <span class="project no-info">No research projects associated with this sample.</span>
+                    {% endif %}
+                </div>
             </fieldset>
 
             <div class="divider"></div>
@@ -562,7 +590,7 @@
                     const comorbiditiesMatch = comorbidities.length === 0 || comorbidities.every(c => sample.querySelector('.section-header + .grid-item').innerText.toLowerCase().includes(c));
                     const labTestsMatch = labTests.length === 0 || labTests.every(l => sample.querySelector('.section-header + .lab').innerText.toLowerCase().includes(l));
                     const dateMatch = !formattedDate || sample.querySelector('.grid-item span.date').innerText === formattedDate;
-                    const projectMatch = !researchProject || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(researchProject);
+                    const projectMatch = !researchProject || sample.querySelector('.project').innerText.toLowerCase().includes(researchProject);
 
                     let ageMatch = true;
                     const sampleAge = parseInt(sample.querySelector('.grid-item span.age').innerText);

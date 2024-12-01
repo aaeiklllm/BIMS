@@ -364,13 +364,15 @@ def custom_login(request):
     print(f"GET parameters: {request.GET}")
 
     role = request.GET.get('role')
-
+    print("role", role)
     roledata_mapping = {
        'BiobankManager': 'BiobankManager',
        'Researcher': 'Researcher',
     }
-
+    
     roledata = roledata_mapping.get(role)
+
+    # request.session["role"] = userRole.role
 
     try:
         if request.method == 'POST':
@@ -416,21 +418,25 @@ def custom_login(request):
                 userRole = Role.objects.filter(id=table1_data.role_id.id).first()
                 print(userRole.role)
 
-                request.session["role"] = userRole.role
-                request.session["user_id"] = ubj.id
-                print(f"User ID from session: {request.session.get('user_id')}")
-                
-                if q and ubj:
-                    messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                    if userRole.role == 'BiobankManager':
-                        return redirect('biobankmanager_home')  # Replace with the actual URL name
-                    elif userRole.role == 'Researcher':
-                        return redirect('researcher_home')  # Replace with the actual URL name
-                    elif userRole.role == 'Admin':
-                        return redirect('admin_home')  # Replace with the actual URL name
+                if role != userRole.role:
+                    messages.add_message(request, messages.ERROR, "Wrong Login Page.")
+                    return redirect(f'/accounts/loginpage/?role={role}')
                 else:
-                    messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
-                    return redirect("")  # Fallback if no specific role
+                    request.session["role"] = userRole.role
+                    request.session["user_id"] = ubj.id
+                    print(f"User ID from session: {request.session.get('user_id')}")
+
+                    if q and ubj:
+                            messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                            if userRole.role == 'BiobankManager':
+                                return redirect('biobankmanager_home')  # Replace with the actual URL name
+                            elif userRole.role == 'Researcher':
+                                return redirect('researcher_home')  # Replace with the actual URL name
+                            elif userRole.role == 'Admin':
+                                return redirect('admin_home')  # Replace with the actual URL name
+                    else:
+                            messages.add_message(request, messages.SUCCESS, f"Welcome Back, {userRole.role}")
+                            return redirect("")  # Fallback if no specific role
 
             else:
                 messages.add_message(request, messages.ERROR, "User role not found.")

@@ -135,18 +135,16 @@
                         <ul>
                             {% for project in projects %}
                             <li>
-                                {{ project.name }}: {{ project.count }} samples
+                                <strong>{{ project.name }}</strong>: {{ project.count }} sample/s
                                 <ul>
-                                    {% for sample in samples %}
-                                        {% if sample.project == project.name %}
-                                            <li>{{ sample.id }}</li>
-                                        {% endif %}
+                                    {% for sample_id in project.sample_ids %}
+                                    <li><a href="{% url 'sample_detail' sample_id %}">Sample {{ sample_id }}</a></li>
                                     {% endfor %}
                                 </ul>
                             </li>
                             {% endfor %}
                         </ul>
-                    </div>
+                    </div>                    
                     <div class="chart">
                         {% if project_chart %}
                             <img src="{{ project_chart }}" alt="Project Pie Chart">
@@ -165,11 +163,11 @@
                         <ul>
                             {% for type in types %}
                             <li>
-                                {{ type.type }}: {{ type.count }} sample/s
+                                <strong>{{ type.type }}</strong>: {{ type.count }} sample/s
                                 <ul>
                                     {% for sample in samples %}
                                         {% if sample.type == type.type %}
-                                            <li>Sample {{ sample.id }}</li>
+                                            <li><a href="{% url 'sample_detail' sample.id %}">Sample {{ sample.id }}</a></li>
                                         {% endif %}
                                     {% endfor %}
                                 </ul>

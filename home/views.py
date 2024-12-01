@@ -179,6 +179,7 @@ from .models import Samples, Comorbidities, Lab_Test, Aliquot, Storage
 def create_sample(request):
     if request.method == 'POST':
         # Collect Sample data
+        id_created = request.POST.get('sample_id')
         type_selected = request.POST.get('typeValue')
         sex = request.POST.get('sex')
         age = request.POST.get('age')
@@ -194,6 +195,7 @@ def create_sample(request):
 
         # Create and save Sample instance
         sample = Samples(
+            id = id_created,
             type=type_selected,
             sex=sex,
             age=age,
@@ -309,8 +311,64 @@ def get_sample_unit(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def view_sample(request):
+    research_projects = Research_Project.objects.prefetch_related(
+        'request_samples__sample'  # Prefetch samples through request_samples
+    ).all()
+
+    # Prepare the project data
+    projects = []
+    for project in research_projects:
+        # Get all sample IDs linked to the project
+        sample_ids = [
+            sample.id
+            for request_sample in project.request_samples.all()
+            for sample in request_sample.sample.all()
+        ]
+        projects.append({"name": project.title, "count": len(sample_ids), "sample_ids": sample_ids})
+
     samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
-    return render(request, 'view_sample.html', {'samples': samples})
+    request_samples_dict = {}
+    for sample in samples:
+        sample_id = sample.id
+        ack_samples = Ack_Sample.objects.filter(sample_id=sample_id)
+
+        request_samples = []
+
+        for ack_sample in ack_samples:
+            print(f"Ack_Sample ID: {ack_sample.id}")
+
+            # Get the related Create_Ack_Receipt
+            ack_receipt = ack_sample.create_ack_receipt
+            if not ack_receipt:
+                print(f"No associated Create_Ack_Receipt found for Ack_Sample ID: {ack_sample.id}")
+                continue 
+
+            print(f"Create Ack Receipt: {ack_receipt.id}")
+
+            # Get the related Approve_Reject_Request
+            approval_record = Approve_Reject_Request.objects.filter(create_ack_receipt=ack_receipt).first()
+            if not approval_record:
+                print(f"No associated Approve_Reject_Request found for Create_Ack_Receipt ID: {ack_receipt.id}")
+                continue  
+
+            print(f"Approval Record: {approval_record.id}")
+
+            # Get the associated Request_Sample
+            request_sample = approval_record.request_sample
+            if not request_sample:
+                print(f"No associated Request_Sample found for Approve_Reject_Request ID: {approval_record.id}")
+                continue 
+
+            print(f"Request Sample: {request_sample.id}")
+
+            if request_sample not in request_samples:
+                request_samples.append(request_sample)
+
+        # Add the list of request_samples to the dictionary, keyed by sample_id
+        if request_samples:
+            request_samples_dict[sample_id] = request_samples
+            print(f"request_samples_dict: {request_samples_dict}")
+    return render(request, 'view_sample.html', {'samples': samples, 'projects': projects, 'request_samples': request_samples, 'request_samples_dict': request_samples_dict})
 
 # def sample_detail(request, sample_id):
 #     # Fetch the specific sample, prefetching related comorbidities, lab tests, aliquots, and storage
@@ -477,10 +535,13 @@ def request_sample(request):
 
         # Convert the desired_start_date to a date format if it's provided
         if desired_start_date:
-            try:
-                desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            if desired_start_date == "":  # Handle empty or null values
+                desired_start_date = None
+            else: 
+                try:
+                    desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             desired_start_date = None
 
@@ -516,18 +577,24 @@ def request_sample(request):
 
             # Convert anticipated initiation and completion dates if provided
             if anticipated_initiation_date:
-                try:
-                    anticipated_initiation_date = datetime.strptime(anticipated_initiation_date, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{anticipated_initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                if anticipated_initiation_date == "":  # Handle empty or null values
+                    anticipated_initiation_date = None
+                else: 
+                    try:
+                        anticipated_initiation_date = datetime.strptime(anticipated_initiation_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{anticipated_initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
             else:
                 anticipated_initiation_date = None
 
             if anticipated_completion_date:
-                try:
-                    anticipated_completion_date = datetime.strptime(anticipated_completion_date, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{anticipated_completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                if anticipated_completion_date == "":  # Handle empty or null values
+                    anticipated_completion_date = None
+                else: 
+                    try:
+                        anticipated_completion_date = datetime.strptime(anticipated_completion_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{anticipated_completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
             else:
                 anticipated_completion_date = None
 
@@ -577,10 +644,13 @@ def request_sample(request):
 
         # Validate and parse the start_date_ddmmyyyy
         if start_date_ddmmyyyy:
-            try:
-                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            if start_date_ddmmyyyy == "":  # Handle empty or null values
+                start_date_ddmmyyyy = None
+            else: 
+                try:
+                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             start_date_ddmmyyyy = None
 
@@ -634,18 +704,24 @@ def request_sample(request):
 
         # Validate and parse the start_date_ddmmyyyy
         if start_date_ddmmyyyy:
-            try:
-                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            if start_date_ddmmyyyy == "":  # Handle empty or null values
+                start_date_ddmmyyyy = None
+            else: 
+                try:
+                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             start_date_ddmmyyyy = None
 
         if collection_date_ddmmyyyy:
-            try:
-                collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            if collection_date_ddmmyyyy == "":  # Handle empty or null values
+                collection_date_ddmmyyyy = None
+            else:
+                try:
+                    collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             collection_date_ddmmyyyy = None
 
@@ -791,15 +867,26 @@ def edit_request_sample(request, sample_id):
 
             # Validate and convert dates if provided
             if initiation_date:
-                try:
-                    initiation_date = datetime.strptime(initiation_date, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                if initiation_date == "":  # Handle empty or null values
+                    initiation_date = None
+                else: 
+                    try:
+                        initiation_date = datetime.strptime(initiation_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
+                initiation_date = None
+
             if completion_date:
-                try:
-                    completion_date = datetime.strptime(completion_date, '%Y-%m-%d').date()
-                except ValueError:
-                    raise ValidationError(f"{completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                if completion_date == "":  # Handle empty or null values
+                    completion_date = None
+                else: 
+                    try:
+                        completion_date = datetime.strptime(completion_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValidationError(f"{completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            else:
+                completion_date = None
 
             # Create a new Research_Project instance
             new_project = Research_Project.objects.create(
@@ -830,16 +917,19 @@ def edit_request_sample(request, sample_id):
 
         # Convert the desired_start_date to a date format if it's provided
         if desired_start_date:
-            try:
-                desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
+            if desired_start_date == "":  # Handle empty or null values
+                desired_start_date = None
+            else: 
+                try:
+                    desired_start_date = datetime.strptime(desired_start_date, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{desired_start_date} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             desired_start_date = None
 
         # Convert empty string fields to None
         age = None if age == '' else int(age)
-        amount = None if amount == '' else int(amount)
+        amount = None if amount == '' else float(amount)
 
         # Update the Request Sample instance fields
         if erb_approval:
@@ -893,10 +983,13 @@ def edit_request_sample(request, sample_id):
 
         # Validate and parse start_date_ddmmyyyy
         if start_date_ddmmyyyy:
-            try:
-                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            if start_date_ddmmyyyy == "":  # Handle empty or null values
+                start_date_ddmmyyyy = None
+            else: 
+                try:
+                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             start_date_ddmmyyyy = None
 
@@ -935,19 +1028,25 @@ def edit_request_sample(request, sample_id):
 
         # Validate and parse the start_date_ddmmyyyy
         if start_date_ddmmyyyy:
-            try:
-                start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            if start_date_ddmmyyyy == "":  # Handle empty or null values
+                start_date_ddmmyyyy = None
+            else: 
+                try:
+                    start_date_ddmmyyyy = datetime.strptime(start_date_ddmmyyyy, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{start_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             start_date_ddmmyyyy = None
 
         # Validate and parse the collection_date_ddmmyyyy
         if collection_date_ddmmyyyy:
-            try:
-                collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
-            except ValueError:
-                raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
+            if collection_date_ddmmyyyy == "":  # Handle empty or null values
+                collection_date_ddmmyyyy = None
+            else: 
+                try:
+                    collection_date_ddmmyyyy = datetime.strptime(collection_date_ddmmyyyy, '%Y-%m-%d').date()
+                except ValueError:
+                    raise ValidationError(f"{collection_date_ddmmyyyy} is not a valid date. Expected format: YYYY-MM-DD.")
         else:
             collection_date_ddmmyyyy = None
 
@@ -1066,8 +1165,8 @@ def view_request_sample(request):
 def view_details(request, id):
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
-    comorbidities = Comorbidities.objects.filter(sample_id=request_sample.id)
-    lab_tests = Lab_Test.objects.filter(sample_id=request_sample.id)
+    comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample)
+    lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample)
     step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
     step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
     approval_record = Approve_Reject_Request.objects.filter(request_sample=request_sample).first()
@@ -1310,33 +1409,44 @@ def generate_pie_chart(labels, values, title, max_label_length=15):
         return None
 
     try:
+        # Filter out entries with 0 values
+        filtered_data = [(label, value) for label, value in zip(labels, values) if value > 0]
+        if not filtered_data:
+            print(f"Skipping pie chart generation for '{title}': No non-zero data.")
+            return None
+        
+        filtered_labels, filtered_values = zip(*filtered_data)
+
         # Wrap labels to a fixed length
-        wrapped_labels = [textwrap.fill(label, max_label_length) for label in labels]
+        wrapped_labels = [textwrap.fill(label, max_label_length) for label in filtered_labels]
 
         # Create a fixed-size figure
-        fig, ax = plt.subplots(figsize=(6, 6))
+        fig, ax = plt.subplots(figsize=(8, 8))
         
         # Generate the pie chart
         wedges, texts, autotexts = ax.pie(
-            values,
+            filtered_values,
             labels=wrapped_labels,  # Use wrapped labels
             autopct='%1.1f%%',
             startangle=90,
-            textprops={'fontsize': 12},
+            textprops={'fontsize': 14},  # Increased font size for better readability
             normalize=True  # Ensure data normalization
         )
         
-        # Enforce consistent font sizes
+        # Set consistent font sizes for labels and percentages
         for text in texts:
-            text.set_fontsize(12)
+            text.set_fontsize(14)
         for autotext in autotexts:
-            autotext.set_fontsize(10)
+            autotext.set_fontsize(12)  # Larger percentage text size
         
+        # Remove extra spacing by ensuring explode is 0
+        explode = [0 for _ in filtered_values]
+
         # Set equal aspect ratio
         ax.set_aspect('equal', adjustable='box')
         
-        # Add title
-        plt.title(title, fontsize=16, pad=20)
+        # Add title with larger font size
+        plt.title(title, fontsize=18, pad=20)
         
         # Save the plot to a Base64 string
         with BytesIO() as buffer:
@@ -1353,26 +1463,51 @@ def generate_pie_chart(labels, values, title, max_label_length=15):
         return None
 
 
-
 # Inventory Status View
 def inventory_status(request):
+    # Fetch all samples
     samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
 
-    # Fetch research projects and their associated samples
-    research_projects = Research_Project.objects.prefetch_related(
-        'request_samples__sample'  # Prefetch samples through request_samples
-    ).all()
+    # Fetch all research projects
+    research_projects = Research_Project.objects.all()
 
-    # Prepare the project data
+    # Prepare the data for each research project
     projects = []
+
     for project in research_projects:
-        # Get all sample IDs linked to the project
-        sample_ids = [
-            sample.id
-            for request_sample in project.request_samples.all()
-            for sample in request_sample.sample.all()
-        ]
-        projects.append({"name": project.title, "count": len(sample_ids), "sample_ids": sample_ids})
+        print(f"Project: {project.title}")
+        
+        # Get all Request_Sample objects linked to this research project
+        request_samples = Request_Sample.objects.filter(research_project=project)
+
+        # Collect all sample IDs associated with the research project
+        sample_ids = set()  # Use a set to avoid duplicates
+
+        for request_sample in request_samples:
+            print(f"Request Sample: {request_sample.id}")
+
+            # Get related Approve_Reject_Request objects
+            approval_records = Approve_Reject_Request.objects.filter(request_sample=request_sample)
+            for approval_record in approval_records:
+                print(f"Approval Record: {approval_record.id}")
+
+                # Get the related Create_Ack_Receipt
+                ack_receipt = approval_record.create_ack_receipt
+                if not ack_receipt:
+                    print(f"No Create_Ack_Receipt found for Approval Request {approval_record.id}")
+                    continue
+
+                print(f"Create Ack Receipt: {ack_receipt.id}")
+
+                # Get related Ack_Sample objects
+                ack_samples = Ack_Sample.objects.filter(create_ack_receipt=ack_receipt)
+                for ack_sample in ack_samples:
+                    print(f"Ack Sample: {ack_sample.id}, Sample ID: {ack_sample.sample_id}")
+                    if ack_sample.sample_id:  # Ensure sample_id is not None
+                        sample_ids.add(ack_sample.sample_id)
+
+        # Append project with its sample data
+        projects.append({"name": project.title, "count": len(sample_ids), "sample_ids": list(sample_ids)})
 
     # Group samples by type
     types_dict = defaultdict(list)
@@ -1388,22 +1523,17 @@ def inventory_status(request):
     # Generate pie charts
     project_labels = [project["name"] for project in projects]
     project_values = [project["count"] for project in projects]
-    # project_chart = generate_pie_chart(project_labels, project_values, "Samples by Research Project")
-
-    type_labels = [sample_type["type"] for sample_type in grouped_samples]
-    type_values = [sample_type["count"] for sample_type in grouped_samples]
-    # type_chart = generate_pie_chart(type_labels, type_values, "Samples by Type")
-
     project_chart = generate_pie_chart(project_labels, project_values, "Samples by Research Project")
     if project_chart is None:
         print("No project chart generated.")
 
+    type_labels = [sample_type["type"] for sample_type in grouped_samples]
+    type_values = [sample_type["count"] for sample_type in grouped_samples]
     type_chart = generate_pie_chart(type_labels, type_values, "Samples by Type")
     if type_chart is None:
         print("No type chart generated.")
 
-
-
+    # Prepare context for the template
     context = {
         "samples": samples,
         "projects": projects,

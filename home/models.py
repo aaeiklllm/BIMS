@@ -61,7 +61,7 @@ class Request_Sample(models.Model):
     sex = models.CharField(max_length=100, null=True, blank=False)
     age = models.IntegerField(null=True, blank=True)
     clinical_diagnosis = models.CharField(max_length=300, null=True, blank=False)
-    amount = models.IntegerField(null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
     unit = models.CharField(max_length=100, null=True, blank=True)
     desired_start_date = models.DateField(null=True, blank=False) 
     requested_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE)  # Add the requested_by field
