@@ -40,11 +40,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'Hackfest.urls'
-
 AUTH_USER_MODEL = 'accounts.UserProfile'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 TEMPLATES = [
     {
@@ -73,8 +74,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bims',        # DB_DATABASE
         'USER': 'postgres',         # DB_USERNAME
-        'PASSWORD': 'antoninofamily', # DB_PASSWORD
-        'HOST': '127.0.0.1',        # DB_HOST
+        'PASSWORD': 'password123', # DB_PASSWORD
+        'HOST': 'postgres-image-835157106418.asia-southeast1.run.app',        # DB_HOST
         'PORT': '5432',             # DB_PORT
     }
 }
@@ -116,6 +117,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Media files (uploads)

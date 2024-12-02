@@ -1,0 +1,12 @@
+# Use the official pgAdmin image from Docker Hub
+FROM dpage/pgadmin4:latest
+
+# Set the environment variables for pgAdmin
+ENV PGADMIN_DEFAULT_EMAIL=admin@gmail.com
+ENV PGADMIN_DEFAULT_PASSWORD=admin123
+
+# Expose the default pgAdmin port
+EXPOSE 80
+
+# Run pgAdmin (default entrypoint)
+CMD ["python3", "/pgadmin4/web/pgAdmin4.py"]

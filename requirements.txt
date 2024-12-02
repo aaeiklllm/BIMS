@@ -3,10 +3,10 @@ dj-database-url==0.5.0
 Django==4.2.7
 django-cors-headers==3.11.0
 gunicorn==20.1.0
-psycopg2==2.9.3
 psycopg2-binary==2.9.3
 whitenoise==5.3.0
 reportlab==4.2.2
 xhtml2pdf
 matplotlib
 pytz
+gunicorn==20.1.0
