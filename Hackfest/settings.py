@@ -69,15 +69,16 @@ WSGI_APPLICATION = 'Hackfest.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASE_URL = os.getenv('DATABASE_URL') 
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',  
+        'USER': 'postgres', 
+        'PASSWORD': 'NqdavVIIhAWmZrloOwcbaKVdITjydDCX', 
+        'HOST': 'postgres.railway.internal',  
+        'PORT': '5432', 
     }
-else:
-    # Handle error if DATABASE_URL is not set
-    print("DATABASE_URL environment variable is not set!")
-
+}
 
 # DATABASES = {
 #     'default': {
