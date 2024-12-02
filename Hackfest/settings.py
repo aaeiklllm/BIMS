@@ -15,9 +15,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(%c3b((l#$4j@kx10covjz^fn!9m77=%dx-acy4uv2o3-n48lh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", 'junction.proxy.rlwy.net']
 
 # Application definition
 
@@ -64,6 +64,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Hackfest.wsgi.application'
+CSRF_TRUSTED_ORIGINS = ['https://bims-production.up.railway.app']
 
 
 # Database
