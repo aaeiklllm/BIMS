@@ -70,26 +70,23 @@ WSGI_APPLICATION = 'Hackfest.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',  
-        'USER': 'postgres', 
-        'PASSWORD': 'NqdavVIIhAWmZrloOwcbaKVdITjydDCX', 
-        'HOST': 'postgres.railway.internal',  
-        'PORT': '5432', 
-    }
+    'default': dj_database_url.config(
+        default='postgresql://postgres:NqdavVIIhAWmZrloOwcbaKVdITjydDCX@junction.proxy.rlwy.net:12437/railway'
+    )
 }
+
 
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'bims',        # DB_DATABASE
-#         'USER': 'postgres',         # DB_USERNAME
-#         'PASSWORD': 'password123', # DB_PASSWORD
-#         'HOST': 'postgres-image-835157106418.asia-southeast1.run.app',        # DB_HOST
-#         'PORT': '5432',             # DB_PORT
+#         'NAME': 'railway',  
+#         'USER': 'postgres', 
+#         'PASSWORD': 'NqdavVIIhAWmZrloOwcbaKVdITjydDCX', 
+#         'HOST': 'postgres.railway.internal',  
+#         'PORT': '5432', 
 #     }
 # }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
