@@ -2,10 +2,11 @@
 import os
 from pathlib import Path
 from django.contrib import messages
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -16,8 +17,7 @@ SECRET_KEY = 'django-insecure-(%c3b((l#$4j@kx10covjz^fn!9m77=%dx-acy4uv2o3-n48lh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = ["*", 'junction.proxy.rlwy.net']
 
 # Application definition
 
@@ -64,6 +64,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Hackfest.wsgi.application'
+CSRF_TRUSTED_ORIGINS = ['https://bims-production.up.railway.app']
 
 
 # Database
@@ -72,13 +73,14 @@ WSGI_APPLICATION = 'Hackfest.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bims',        # DB_DATABASE
-        'USER': 'postgres',         # DB_USERNAME
-        'PASSWORD': 'password123', # DB_PASSWORD
-        'HOST': 'postgres-image-835157106418.asia-southeast1.run.app',        # DB_HOST
-        'PORT': '5432',             # DB_PORT
+        'NAME': 'railway',  
+        'USER': 'postgres', 
+        'PASSWORD': 'NqdavVIIhAWmZrloOwcbaKVdITjydDCX', 
+        'HOST': 'junction.proxy.rlwy.net',  
+        'PORT': '12437', 
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

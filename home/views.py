@@ -264,7 +264,9 @@ def create_sample(request):
             messages.error(request, f"Error creating sample: {e}")
             return redirect('create_sample.html')
 
-    return render(request, 'create_sample.html')  # Render the form template on GET request
+    used_containers = Storage.objects.values_list('container', flat=True)
+
+    return render(request, 'create_sample.html', {'used_containers': list(used_containers)})
 
 def create_aliquot(request):
     if request.method == 'POST':
