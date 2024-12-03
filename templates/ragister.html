@@ -346,6 +346,44 @@
 			text-align: right; /* Align text to the right */
 		}
 
+		input[type="password"] {
+			width: 100%;
+			padding: 12px 10px;  /* Adjust padding for uniformity */
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			box-sizing: border-box;
+			margin: 0;
+			margin-bottom: 5px;  /* Reduced gap between the fields */
+		}
+
+		.password-container {
+			position: relative;
+			width: 100%;
+			margin: 0;  
+		}
+
+		/* Eye icon styling */
+		.eye-icon {
+			position: absolute;
+			top: 50%;
+			right: 10px;
+			transform: translateY(-50%);
+			cursor: pointer;
+			font-size: 20px;
+			color: #888;
+		}
+
+		.eye-icon:hover {
+			color: #333;
+		}
+
+		/* Focus styling for input fields */
+		input[type="password"]:focus {
+			border-color: #674FA7;  /* Change the border color when focused */
+			outline: none;
+		}
+
 	</style>     
 </head>
 <body>
@@ -425,10 +463,25 @@
 
 		<label class="required">Username</label>
 		<input type="text" name="uname" id="username" oninput="toLowerCase(this)" required/>
+
 		<label class="required">Password</label>
-        <input id="password" type="password" name='pwd' pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
+		<div class="password-container">
+			<input id="password" type="password" name="pwd" 
+				pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+				title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" 
+				required />
+			<span id="togglePassword" class="eye-icon">&#128065;</span>
+		</div>
+
 		<label class="required">Confirm Password</label>
-        <input  id="confirm_password" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required />
+		<div class="password-container">
+			<input id="confirm_password" type="password" 
+				pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+				title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" 
+				required />
+			<span id="toggleConfirmPassword" class="eye-icon">&#128065;</span>
+		</div>
+
 		
 		<br>
 			<button class="btn btn-primary btn-sm-2" style="background-color: #674FA7;">Register</button>
@@ -452,6 +505,34 @@
   </div> 
 </body>
 <script>
+	const togglePassword = document.getElementById('togglePassword');
+	const passwordField = document.getElementById('password');
+
+	togglePassword.addEventListener('click', function() {
+	const type = passwordField.type === 'password' ? 'text' : 'password';
+	passwordField.type = type;
+
+	if (type === 'password') {
+		togglePassword.innerHTML = '&#128065;';  // Eye icon (hidden)
+	} else {
+		togglePassword.innerHTML = '&#128064;';  // Open eye icon (visible)
+	}
+	});
+
+	const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+	const confirmPasswordField = document.getElementById('confirm_password');
+
+	toggleConfirmPassword.addEventListener('click', function() {
+	const type = confirmPasswordField.type === 'password' ? 'text' : 'password';
+	confirmPasswordField.type = type;
+
+	if (type === 'password') {
+		toggleConfirmPassword.innerHTML = '&#128065;';  // Eye icon (hidden)
+	} else {
+		toggleConfirmPassword.innerHTML = '&#128064;';  // Open eye icon (visible)
+	}
+	});
+
 	var password = document.getElementById("password")
 	var confirm_password = document.getElementById("confirm_password");
 	

@@ -73,11 +73,11 @@ CSRF_TRUSTED_ORIGINS = ['https://bims-production.up.railway.app']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',  
+        'NAME': 'bims',  
         'USER': 'postgres', 
-        'PASSWORD': 'NqdavVIIhAWmZrloOwcbaKVdITjydDCX', 
-        'HOST': 'junction.proxy.rlwy.net',  
-        'PORT': '12437', 
+        'PASSWORD': '0143', 
+        'HOST': '127.0.0.1',  
+        'PORT': '5432', 
     }
 }
 

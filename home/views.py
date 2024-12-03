@@ -552,6 +552,8 @@ def request_sample(request):
             type_selected = request.POST.get('typeValue')
             sex = request.POST.get('sex')
             age = request.POST.get('age')
+            age_from = request.POST.get('age_from')
+            age_to = request.POST.get('age_to')
             clinical_diagnosis = request.POST.get('clinical_diagnosis')
             other_diagnosis = request.POST.get("other_diagnosis")
             amount = request.POST.get('amount')
@@ -584,6 +586,8 @@ def request_sample(request):
                 type=type_selected, 
                 sex=sex,
                 age=age,
+                age_from=age_from,
+                age_to=age_to,
                 clinical_diagnosis=clinical_diagnosis,
                 amount=amount,
                 unit=unit,
@@ -939,6 +943,8 @@ def edit_request_sample(request, sample_id):
             type_selected = request.POST.get('typeValue')
             sex = request.POST.get('sex')
             age = request.POST.get('age')
+            age_from = request.POST.get('age_from')
+            age_to = request.POST.get('age_to')
             clinical_diagnosis = request.POST.get('clinical_diagnosis')
             other_diagnosis = request.POST.get("other_diagnosis")
             amount = request.POST.get('amount')
@@ -960,9 +966,10 @@ def edit_request_sample(request, sample_id):
             else:
                 desired_start_date = None
 
-            # Convert empty string fields to None
-            age = None if age == '' else int(age)
-            amount = None if amount == '' else float(amount)
+            # If these are empty strings, convert them to None instead of trying to convert empty strings to integers
+            age = None if age == '' else (int(age) if age is not None else None)
+            age_from = None if age_from == '' else (int(age_from) if age_from is not None else None)
+            age_to = None if age_to == '' else (int(age_to) if age_to is not None else None)
 
             # Update the Request Sample instance fields
             if erb_approval:
@@ -971,6 +978,8 @@ def edit_request_sample(request, sample_id):
             request_sample.type = type_selected
             request_sample.sex = sex
             request_sample.age = age
+            request_sample.age_from = age_from
+            request_sample.age_to = age_to
             request_sample.clinical_diagnosis = clinical_diagnosis
             request_sample.amount = amount
             request_sample.unit = unit
@@ -1333,14 +1342,38 @@ def create_ack_receipt(request, id):
     request_comorbidities = RS_Comorbidities.objects.filter(request_sample=request_sample).values_list('comorbidity', flat=True)
     request_lab_tests = RS_Lab_Test.objects.filter(request_sample=request_sample).values_list('labtest', flat=True)
 
+    # Assuming `request_sample.age`, `request_sample.age_from`, and `request_sample.age_to` are being passed
     matching_samples = Samples.objects.filter(
         type=request_sample.type,
         sex=request_sample.sex,
-        age=request_sample.age,
         clinical_diagnosis=request_sample.clinical_diagnosis,
-    ).filter(
-        Q(comorbidities__comorbidity__in=request_comorbidities) & Q(lab_test__labtest__in=request_lab_tests)
-    ).distinct()
+    )
+
+    # Apply the comorbidity filter only if request_comorbidities is not empty
+    if request_comorbidities:
+        matching_samples = matching_samples.filter(
+            Q(comorbidities__comorbidity__in=request_comorbidities) |
+            Q(comorbidities__comorbidity__isnull=True)  # This allows samples with no comorbidities
+        )
+    else:
+        matching_samples = matching_samples.filter(
+            comorbidities__comorbidity__isnull=True  # Only samples with no comorbidity
+        )
+
+    # Apply the lab test filter
+    if request_lab_tests:
+        matching_samples = matching_samples.filter(
+            lab_test__labtest__in=request_lab_tests
+        )
+
+    matching_samples = matching_samples.distinct()
+
+    if request_sample.age is not None: 
+        matching_samples = matching_samples.filter(age=request_sample.age)
+    elif request_sample.age_from is not None and request_sample.age_to is not None:
+        matching_samples = matching_samples.filter(age__gte=request_sample.age_from, age__lte=request_sample.age_to)
+    else:
+        matching_samples = matching_samples.exclude(age__isnull=True)
 
     if request.method == 'POST':
         officer_signature = request.FILES.get('signature-file')
