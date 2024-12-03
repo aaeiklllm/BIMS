@@ -318,17 +318,21 @@
         
             <!-- Projects List -->
             <div id="existing-project" class="projects-container" style="display: {% if request_sample.research_project %}block{% else %}none{% endif %};">
-                {% for project in research_projects %}
+                {% for context in projects_context %}
                     <label>
-                        <input type="radio" name="existing-project" value="{{ project.id }}"
-                            {% if request_sample.research_project and project.id == request_sample.research_project.id %}checked{% endif %}>
-                        Project ID {{ project.id|stringformat:"05d" }}: {{ project.title }}
-                        <span class="underline-link" onclick="toggleProjectDetails('{{ project.id }}')">View details</span>
+                        <input type="radio" name="existing-project" value="{{ context.project.id }}"
+                            {% if request_sample.research_project and context.project.id == request_sample.research_project.id %}checked{% endif %}>
+                        Project ID {{ context.project.id|stringformat:"05d" }}: {{ context.project.title }}
+                        {% if context.has_requested_sample or context.is_past_due %}
+                            <span class="underline-link" onclick="toggleProjectDetails('{{ context.project.id }}')">
+                                View details
+                            </span>
+                        {% endif %}
                     </label>
         
                     <!-- Project details -->
-                    <div id="project-details-{{ project.id }}" class="project-details"
-                         style="display: {% if request_sample.research_project and project.id == request_sample.research_project.id %}block{% else %}none{% endif %};">
+                    <div id="project-details-{{ context.project.id }}" class="project-details"
+                        style="display: {% if request_sample.research_project and context.project.id == request_sample.research_project.id %}block{% else %}none{% endif %};">
                         <h3>Research Project Details</h3>
                         <p><strong>Title:</strong> {{ project.title }}</p>
                         <p><strong>Principal Investigator:</strong> {{ project.principal_investigator }}</p>

@@ -47,7 +47,7 @@ from django.urls import reverse
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
-
+from django.db import transaction
 
 # Create your views here.
 
@@ -187,7 +187,7 @@ def aboutUs(request):
 
 
 from .models import Samples, Comorbidities, Lab_Test, Aliquot, Storage
-
+@transaction.atomic
 def create_sample(request):
     if request.method == 'POST':
         # Collect Sample data
@@ -257,7 +257,7 @@ def create_sample(request):
                     )
                     lab_test_instance.save()
 
-            messages.success(request, f"Sample {sample.id} created successfully.")
+            messages.success(request, f"Sample created successfully.")
             return redirect('')  # Redirect to a success page after saving
         
         except Exception as e:
@@ -268,6 +268,7 @@ def create_sample(request):
 
     return render(request, 'create_sample.html', {'used_containers': list(used_containers)})
 
+@transaction.atomic
 def create_aliquot(request):
     if request.method == 'POST':
         # Get the selected sample ID
@@ -306,7 +307,7 @@ def create_aliquot(request):
             )
             storage_instance.save()
 
-            messages.success(request, f"Aliquot successfully created from sample ID {sample.id}.")
+            messages.success(request, f"Aliquot successfully created from sample.")
             return redirect('')  # Redirect to a success page after saving
     
         except Exception as e:
@@ -336,6 +337,7 @@ def get_sample_unit(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+@transaction.atomic
 def view_sample(request):
     research_projects = Research_Project.objects.prefetch_related(
         'request_samples__sample'  # Prefetch samples through request_samples
@@ -416,6 +418,7 @@ def view_sample(request):
 #         'aliquots': aliquots,
 #     })
 
+@transaction.atomic
 def edit_sample(request, sample_id):
     # Fetch the existing sample and its related data
     sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
@@ -524,7 +527,7 @@ def delete_sample(request, sample_id):
     samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
     return render(request, 'view_sample.html', {'samples': samples})
 
-
+@transaction.atomic
 def request_sample(request):
     user_id = request.session.get("user_id")  # Get the user ID from the session
     if not user_id:
@@ -536,6 +539,26 @@ def request_sample(request):
 
     # Fetch all research projects from the database
     research_projects = Research_Project.objects.all()
+    request_samples = Request_Sample.objects.all()
+    
+    projects_context = []
+
+    for project in research_projects:
+        # Check if the user has requested a sample for this project
+        has_requested_sample = project.request_samples.filter(requested_by=request.user).exists()
+        
+        # Check if the project is past its anticipated completion date
+        if project.anticipated_completion_date and project.anticipated_completion_date < datetime.now():
+            is_past_due = True
+        else:
+            is_past_due = False
+
+        # Store the project with its precomputed conditions
+        projects_context.append({
+            'project': project,
+            'has_requested_sample': has_requested_sample,
+            'is_past_due': is_past_due,
+        })
 
     if request.method == 'POST':
         selected_project_id = request.POST.get('existing-project')  # Get selected project ID
@@ -797,14 +820,14 @@ def request_sample(request):
             )
             approval_record.save()
             
-            messages.success(request, f"Sample request {request_sample.id} created successfully.")
+            messages.success(request, f"Sample request created successfully.")
             return redirect('request_sample_step7', sample_id=request_sample.id)
         except Exception as e:
             messages.error(request, f"Error creating sample request: {e}")
             return redirect('')
 
     # For a GET request, render the form page
-    return render(request, 'request_sample.html', {'research_projects': research_projects})
+    return render(request, 'request_sample.html', {'research_projects': research_projects, 'request_samples': request_samples, 'projects_context': projects_context})
 
 def calculate_total_samples(step4, step5):
     # Start with 1 sample from Step 3
@@ -865,6 +888,7 @@ def delete_request_sample(request, pk):
     messages.success(request, "Request sample deleted successfully.")
     return redirect('')  # Replace with your desired redirect URL
 
+@transaction.atomic
 def edit_request_sample(request, sample_id):
     # Fetch the existing Request Sample and its associated project
     request_sample = get_object_or_404(Request_Sample, id=sample_id)
@@ -878,6 +902,27 @@ def edit_request_sample(request, sample_id):
 
     rs_step4 = RS_Step4.objects.filter(request_sample=request_sample).first()
     rs_step5 = RS_Step5.objects.filter(request_sample=request_sample).first()
+
+    request_samples = Request_Sample.objects.all()
+    
+    projects_context = []
+
+    for project in research_projects:
+        # Check if the user has requested a sample for this project
+        has_requested_sample = project.request_samples.filter(requested_by=request.user).exists()
+        
+        # Check if the project is past its anticipated completion date
+        if project.anticipated_completion_date and project.anticipated_completion_date < datetime.now():
+            is_past_due = True
+        else:
+            is_past_due = False
+
+        # Store the project with its precomputed conditions
+        projects_context.append({
+            'project': project,
+            'has_requested_sample': has_requested_sample,
+            'is_past_due': is_past_due,
+        })
     
     if request.method == 'POST':
         # Check if the user selected to create a new project or select an existing one
@@ -1122,7 +1167,7 @@ def edit_request_sample(request, sample_id):
                 }
             )   
 
-            messages.success(request, f"Sample request {request_sample.id} edited successfully.")
+            messages.success(request, f"Sample request edited successfully.")
             return redirect('edit_request_sample_step7', sample_id=request_sample.id)
         except Exception as e:
             messages.error(request, f"Error editing sample request: {e}")
@@ -1140,6 +1185,7 @@ def edit_request_sample(request, sample_id):
         'existing_lab_tests': existing_lab_tests_list,
         'rs_step4': rs_step4,
         'rs_step5': rs_step5,
+        'projects_context': projects_context,
     })
 
 def edit_request_sample_step7(request, sample_id):
@@ -1223,7 +1269,7 @@ def view_request_sample(request):
     sample_requests = Request_Sample.objects.select_related('research_project').prefetch_related('approve_reject_request_set').all()
     return render(request, 'view_request_sample.html', {'sample_requests': sample_requests})
 
-
+@transaction.atomic
 def view_details(request, id):
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
@@ -1280,7 +1326,7 @@ def view_details(request, id):
     }
     return render(request, 'view_details.html', context)
 
-
+@transaction.atomic
 def update_view_details(request, id):
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
@@ -1317,6 +1363,7 @@ def update_view_details(request, id):
     }
     return render(request, 'update_view_details.html', context)
 
+@transaction.atomic
 def create_ack_receipt(request, id):
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
@@ -1497,7 +1544,7 @@ def download_ack_receipt(request, ack_id):
         messages.add_message(request, messages.ERROR, "Acknowledgment Receipt not found.")
         return redirect(request.META.get('HTTP_REFERER'))  # Redirect to the previous page
     
-
+@transaction.atomic
 def sample_detail(request, sample_id):
     sample = get_object_or_404(Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set'), id=sample_id)
     print(f"Sample fetched: {sample.id}")

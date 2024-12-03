@@ -147,54 +147,42 @@
           <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style="">
             {% if request.session.role == 'BiobankManager' %}
             <div class="nav-item">
-              <a class="nav-link active" href="/accounts/biobankmanager/home/" style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+              <a class="nav-link active" href="/accounts/biobankmanager/home/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
             </div> 
-  
-            <a  style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
+            <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
             
             <div class="nav-item">
-              <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">Create Sample</a>
+              <a class="nav-link active" href="/home/createsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Create Sample</a>
             </div>
-  
-            <a  style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
-  
+
+            <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
             <div class="nav-item">
-              <a class="nav-link active" href="/home/viewsample"style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Sample</button></a>
+              <a class="nav-link active" href="/home/viewsample"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Samples</button></a>
             </div>
-  
-            <a  style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
-  
+
+            <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
             <div class="nav-item">
-              <a class="nav-link active" href="/home/view_request_sample"style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">View Request</button></a>
-            </div>
-  
-            <a  style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
-  
-            <div class="nav-item">
-              <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">Generate Reports</button></a>
+              <a class="nav-link active" href="/home/view_request_sample"style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Sample Requests</button></a>
             </div>
   
             {% elif request.session.role == 'Researcher' %}
             <div class="nav-item">
-              <a class="nav-link active" href="/accounts/researcher/home/" style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
+              <a class="nav-link active" href="/accounts/researcher/home/" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Profile</a>
             </div> 
-  
-            <a  style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
+            <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
             
             <div class="nav-item">
-              <a class="nav-link active" href="/myrequests" style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Request</a>
+              <a class="nav-link active" href="/requestsample" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">Request Sample</button></a>
             </div>
-  
-            <a  style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
-  
+
+            <a  style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
+
             <div class="nav-item">
-              <a class="nav-link active" href="/"style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Sample</button></a>
-            </div>
-  
-            <a  style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">&nbsp; | &nbsp;</a>
-  
-            <div class="nav-item">
-              <a class="nav-link active" href="/requestsample" style="font-size: 20px; padding-top:10px; padding-bottom: 10px; font-family: Helvetica, sans-serif; color: #ffffff;">Request Sample</button></a>
+              <a class="nav-link active" href="/myrequests" style="font-size: 20px; padding-top:10px; font-family: Helvetica, sans-serif; color: #ffffff;">My Requests</a>
             </div>
 
             {% elif request.session.role == 'Admin' %}
