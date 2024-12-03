@@ -283,7 +283,24 @@
 			color: rgb(185, 24, 24);
 			font-size: 14px;
 	   }
-    </style>
+       /* Age Range Inputs in one line */
+        #age-range-field input {
+            display: inline-block;
+            width: 80px;
+            margin-top: 5px;
+        }
+
+        /* Indentation for the Age Only and Age Range input boxes */
+        #age-only-field, #age-range-field {
+            margin-left: 20px;
+        }
+
+
+        /* Style for radio buttons below Age */
+        label input[type="radio"] {
+            margin-left: 10px;
+        }
+        </style>
 </head>
 <body>
 
@@ -303,27 +320,31 @@
     
             <!-- Projects List, hidden by default, will show when "Select Research Project" is selected -->
             <div id="existing-project" class="projects-container" style="display:none;">
-                {% for project in research_projects %}
+                {% for context in projects_context %}
                     <label>
-                        <input type="radio" name="existing-project" value="{{ project.id }}" onclick="toggleProjectDetails('{{ project.id }}')">
-                        Project ID {{ project.id }}: {{ project.title }} 
-                        <span class="underline-link" onclick="toggleProjectDetails('{{ project.id }}')">View details</span>
+                        <input type="radio" name="existing-project" value="{{ context.project.id }}">
+                        Project ID {{ context.project.id|stringformat:"05d" }}: {{ context.project.title }}
+                        {% if context.has_requested_sample or context.is_past_due %}
+                            <span class="underline-link" onclick="toggleProjectDetails('{{ context.project.id }}')">
+                                View details
+                            </span>
+                        {% endif %}
                     </label>
-
+            
                     <!-- Project details will appear here -->
-                    <div id="project-details-{{ project.id }}" class="project-details" style="display:none;">
+                    <div id="project-details-{{ context.project.id }}" class="project-details" style="display: none;">
                         <h3>Research Project Details</h3>
-                        <p><strong>Research Project ID:</strong> {{ project.id }}</p>
-                        <p><strong>Title:</strong> {{ project.title }}</p>
-                        <p><strong>Principal Investigator:</strong> {{ project.principal_investigator }}</p>
-                        <p><strong>Description:</strong> {{ project.description }}</p>
-                        <p><strong>Anticipated Initiation Date:</strong> {{ project.anticipated_initiation_date }}</p>
-                        <p><strong>Anticipated Completion Date:</strong> {{ project.anticipated_completion_date }}</p>
-                        <p><strong>ERB #:</strong> {{ project.erb_number }}</p>
-                        <p><strong>Funding source:</strong> {{ project.funding_source }}</p>
+                        <p><strong>Research Project ID:</strong> {{ context.project.id }}</p>
+                        <p><strong>Title:</strong> {{ context.project.title }}</p>
+                        <p><strong>Principal Investigator:</strong> {{ context.project.principal_investigator }}</p>
+                        <p><strong>Description:</strong> {{ context.project.description }}</p>
+                        <p><strong>Anticipated Initiation Date:</strong> {{ context.project.anticipated_initiation_date }}</p>
+                        <p><strong>Anticipated Completion Date:</strong> {{ context.project.anticipated_completion_date }}</p>
+                        <p><strong>ERB #:</strong> {{ context.project.erb_number }}</p>
+                        <p><strong>Funding source:</strong> {{ context.project.funding_source }}</p>
                     </div>
                 {% endfor %}
-            </div>
+            </div>            
         {% else %}
             <!-- Disable the option and gray it out if there are no research projects -->
             <label style="color: grey; cursor: not-allowed;">
@@ -459,9 +480,35 @@
                     <input class="form-check-input" type="radio" name="sex" id="female" value="Female">
                     <label class="form-check-label" for="female">Female</label>
                 </div>
+                <div class="required form-check me-2 ">
+                    <input class="form-check-input" type="radio" name="sex" id="either" value="Either">
+                    <label class="form-check-label" for="either">Either</label>
+                </div>
             </div>
-            <label class="required form-label" style="margin-left: 100px">Age:</label>
-            <input type="number" class="form-control" id="age" name="age" min="0" style="width: 80px; margin-left: 10px;"required>
+            <div class="form-group">
+                <label for="age_option" class="form-label required">Age:</label><br>
+                <label>
+                    <input type="radio" name="age_option" value="only" onclick="toggleAgeFields('only')" required> Age Only
+                </label>
+                <label>
+                    <input type="radio" name="age_option" value="range" onclick="toggleAgeFields('range')" required> Age Range
+                </label>
+            </div>
+            
+            <!-- Age Only Input Box -->
+            <div id="age-only-field" style="display: none; margin-left: 20px;">
+                <input type="number" class="form-control" id="age" name="age" min="0" placeholder="Enter Age" required onchange="toggleAgeFields('only')">
+            </div>
+            
+            <!-- Age Range Inputs -->
+            <div id="age-range-field" style="display: none; margin-left: 20px;">
+                <label for="age_from" class="form-label">From:</label>
+                <input type="number" class="form-control" id="age_from" name="age_from" min="0" placeholder="Start" onchange="toggleAgeFields('range')">
+                
+                <label for="age_to" class="form-label" style="margin-left: 10px;">To:</label>
+                <input type="number" class="form-control" id="age_to" name="age_to" min="0" placeholder="End" onchange="toggleAgeFields('range')">
+            </div>
+            
         </div>
 
         <div class="mb-3">
@@ -583,9 +630,11 @@
         <!-- Lab Test -->
         <div class="dropdown mb-2">
             <label for="lab_tests" class="form-label required">Lab Tests:</label>
-            <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+            <input class="dropdown-input" type="text" id="labValue" name="selectedOption" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+
+            <!-- <input type="hidden" id="labValue" name="labValue"> -->
             
-            <div id="lab-tests-dropdown" class="dropdown-content">
+            <div id="type-dropdown" class="dropdown-content">
                 <div class="nested-dropdown">
                     <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
                 </div>   
@@ -734,7 +783,7 @@
                 </div> 
             </div>
         </div>
-        
+        <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
         <div id="added_lab_tests" class="mt-2"></div>
         <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
 
@@ -939,6 +988,32 @@
 </div>
 
 <script>
+    function toggleAgeFields(option) {
+        const ageOnlyField = document.getElementById('age-only-field');
+        const ageRangeField = document.getElementById('age-range-field');
+        const ageField = document.getElementById('age');
+        const ageFromField = document.getElementById('age_from');
+        const ageToField = document.getElementById('age_to');
+
+        // Handle Age Only Option
+        if (option === 'only') {
+            ageOnlyField.style.display = 'block';
+            ageRangeField.style.display = 'none';
+            ageFromField.disabled = true;  // Disable age range inputs
+            ageToField.disabled = true;    // Disable age range inputs
+            ageField.disabled = false;
+        }
+
+        // Handle Age Range Option
+        else if (option === 'range') {
+            ageOnlyField.style.display = 'none';
+            ageRangeField.style.display = 'block';
+            ageField.disabled = true;      // Disable age input when age range is selected
+            ageFromField.disabled = false;
+            ageToField.disabled = false;
+        }
+    }
+
      document.addEventListener('DOMContentLoaded', function() {
         const yesOption = document.getElementById('yesOption');
         const noOption = document.getElementById('noOption');
@@ -1212,23 +1287,41 @@
      // Lab Tests
      let selectedLabTests = []; // To store added lab tests
 
-    document.getElementById('add_lab_test').addEventListener('click', function() {
-        updateAddedLabTests();
-    });
+     let currentTest = "";
+        
+        document.getElementById('add_lab_test').addEventListener('click', function() {
+            if (currentTest) {
+                // If the test is not already added, push it to the array
+                if (!selectedLabTests.includes(currentTest)) {
+                    selectedLabTests.push(currentTest);
+                    updateAddedLabTests();  // Function to update the display of added tests
+                } else {
+                    alert("This lab test has already been added.");
+                }
 
-    function toggleDropdown(dropdownId) {
-        const dropdown = document.getElementById(dropdownId);
-        dropdown.classList.toggle("show");
-    }
-
-    function selectLabTest(test) {
-        if (selectedLabTests.includes(test)) {
-            alert("This lab test has already been added.");
-        } else {
-            selectedLabTests.push(test);
-            updateAddedLabTests();
+                // Optionally, you can reset the current selection after adding
+                currentTest = "";
+                document.getElementById('labValue').value = "";
+            } else {
+                alert("Please select a lab test first.");
+            }
+        });
+    
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.classList.toggle("show");
         }
-    }
+
+        function selectLabTest(test) {
+            // Store the selected test temporarily
+            currentTest = test;
+
+            // Update the input field with the selected test
+            document.getElementById('labValue').value = test;
+
+            // Optionally, you can hide the dropdown after selection
+            document.getElementById("type-dropdown").classList.remove("show");
+        }
 
     function captureOtherInputs() {
         let otherValue = document.getElementById('lab_test_other').value.trim();
@@ -1351,43 +1444,42 @@
     }
 
     function validateStep3() {
-        const step3 = document.getElementById('step3');
-        const requiredFields = step3.querySelectorAll('[required]');
-        
-        for (const field of requiredFields) {
-            // If the field is a radio button
-            if (field.type === 'radio') {
-                console.log(`Checking radio button group: ${field.name}`); // Debugging log
+        const ageOption = document.querySelector('input[name="age_option"]:checked');
+        const age = document.getElementById("age").value.trim();
+        const ageFrom = document.getElementById("age_from").value.trim();
+        const ageTo = document.getElementById("age_to").value.trim();
 
-                // Check if at least one radio button in the group is selected
-                const radioGroup = step3.querySelectorAll(`[name="${field.name}"]`);
-                const radioSelected = Array.from(radioGroup).some(radio => radio.checked);
-                                
-                if (!radioSelected) {
-                    alert(`Please select a ${field.name} option.`);
-                    radioGroup[0].focus(); // Focus on the first radio button in the group
-                    return false; // Prevent moving to the next step
-                }
-            } else if (!field.value.trim()) {
-                alert(`Please fill out the required field: ${field.previousElementSibling.textContent || field.name}`);
-                field.focus();
+        // Check if an age option (Age Only or Age Range) is selected
+        if (!ageOption) {
+            alert("Please select either 'Age Only' or 'Age Range'.");
+            return false; // Prevent moving to the next step
+        }
+
+        // **If Age Range is selected**:
+        if (ageOption.value === 'range') {
+            if (!ageFrom || !ageTo) {
+                alert("Please fill in both the 'From' and 'To' age values.");
+                return false; // Prevent moving to the next step
+            }
+
+            // Validate that 'age_from' is less than or equal to 'age_to'
+            if (parseInt(ageFrom) > parseInt(ageTo)) {
+                alert("The 'From' age must be less than or equal to the 'To' age.");
+                return false; // Prevent moving to the next step
+            }
+        }
+        // **If Age Only is selected**:
+        else if (ageOption.value === 'only') {
+            if (!age) {
+                alert("Please enter the age.");
                 return false; // Prevent moving to the next step
             }
         }
 
-        // Check lab test field separately
-        const labTestValue = document.getElementById("lab_tests_input").value.trim();
-        if (!labTestValue) {
-            alert("Please select at least one lab test.");
-            return false; // Prevent moving to the next step
-        }
-
-        // If all validations pass, show step4
+        // Proceed to the next step if all validations pass
         showStep('step4');
         return true;
     }
-
-
 
 </script>
 

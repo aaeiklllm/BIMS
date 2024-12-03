@@ -194,6 +194,27 @@
 			color: rgb(185, 24, 24);
 			font-size: 14px;
 	    }
+
+        #selectedStorage {
+            white-space: normal;      /* Allow text to wrap within the input */
+            word-wrap: break-word;    /* Break long words to prevent overflow */
+            width: 100%;              /* Ensure the input is responsive */
+            min-width: 300px;         /* Optional: Set a minimum width to fit the content */
+            overflow: hidden;         /* Prevent horizontal scrolling */
+            padding: 5px;             /* Add some padding for better visual appearance */
+        }
+
+        /* Style for the disabled container buttons */
+        .container-btn:disabled,
+        .container-btn2.disabled {
+            background-color: #d6d6d6;  /* Light gray background */
+            color: #808080;             /* Gray text */
+            border-color: #d6d6d6;      /* Light gray border */
+            cursor: not-allowed;        /* Change cursor to indicate it's disabled */
+        }
+
+
+
     </style>
 </head>
 
@@ -399,13 +420,15 @@
                 <!-- Lab Test -->
                 <div class="dropdown mb-2">
                     <label for="lab_tests" class="form-label required">Lab Tests:</label>
-                    <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+                    <input class="dropdown-input" type="text" id="labValue" name="selectedOption" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+    
+                    <!-- <input type="hidden" id="labValue" name="labValue"> -->
                     
-                    <div id="lab-tests-dropdown" class="dropdown-content">
+                    <div id="type-dropdown" class="dropdown-content">
                         <div class="nested-dropdown">
                             <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
                         </div>   
-                        <div class="nested-dropdown" style="max-height: 20vh;">
+                        <div class="nested-dropdown">
                             <a href="#">Blood Chemistry Panel</a>
                             <div class="nested-dropdown-content">
                                 <a href="#" onclick="selectLabTest('Glucose')">Glucose</a>
@@ -524,13 +547,6 @@
                             <a href="#" onclick="selectLabTest('Hepatitis C Test')">Hepatitis C Test</a>
                         </div>
                         <div class="nested-dropdown">
-                            <a href="#">Immunological Tests</a>
-                            <div class="nested-dropdown-content">
-                                <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
-                                <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
-                            </div>
-                        </div>
-                        <div class="nested-dropdown">
                             <a href="#" onclick="selectLabTest('Tuberculosis Skin Test (Mantoux Test)')">Tuberculosis Skin Test (Mantoux Test)</a>
                         </div>
                         <div class="nested-dropdown">
@@ -546,13 +562,18 @@
                             <a href="#" onclick="selectLabTest('Erythrocyte Sedimentation Rate (ESR)')">Erythrocyte Sedimentation Rate (ESR)</a>
                         </div>                    
                         <div class="nested-dropdown">
+                            <a href="#">Immunological Tests</a>
+                            <div class="nested-dropdown-content">
+                                <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
+                                <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
+                            </div>
+                        </div>
+                        <div class="nested-dropdown">
                             <input type="text" id="lab_test_other" placeholder="Specify other" onchange="captureOtherInputs()">
                         </div> 
                     </div>
                 </div>
-
-                
-                
+                <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
                 <div id="added_lab_tests" class="mt-2"></div>
                 <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
                 
@@ -618,12 +639,12 @@
                 </div>
 
 
-                    <div class="mb-3">
-                        <label for="selectedStorage" class="form-label">Storage:</label>
-                        <input type="text" id="selectedStorage" class="form-control" readonly>
-                    </div>
-
-
+                <div class="mb-3">
+                    <label for="selectedStorage" class="form-label">Storage:</label>
+                    <textarea id="selectedStorage" class="form-control" readonly rows="2" style="resize: none;"></textarea>
+                </div>
+                
+                
                 <div class="mb-3">
                     <label for="consent_form" class="form-label required">Informed Consent Form (.pdf)</label>
                     <!-- File input for uploading the file -->
@@ -699,10 +720,9 @@
                 </div>
                 <!-- Container Selection (10x10 Grid) -->
 
-
                 <div class="mb-3">
                     <label for="selectedStorage2" class="form-label">Storage:</label>
-                    <input type="text" id="selectedStorage2" class="form-control" readonly>
+                    <textarea id="selectedStorage2" class="form-control" readonly rows="2" style="resize: none;"></textarea>
                 </div>
         
                 <button type="submit" class="btn btn-success" style="float: right;">Save Aliquot Sample</button>
@@ -803,18 +823,28 @@
             }
         });
 
+        const usedContainers = {{ used_containers|safe }}; // List of containers already in use
         const containerGrid = document.getElementById('container-grid');
         const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
+        // Create the grid of container buttons
         for (let i = 0; i < rows.length; i++) {
             for (let j = 1; j <= 10; j++) {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'btn btn-outline-primary container-btn';
                 button.textContent = `${rows[i]}${j}`;
+
+                // Check if the container is already used
+                if (usedContainers.includes(button.textContent)) {
+                    button.disabled = true; // Disable the button if it's already used
+                    button.classList.add('btn-secondary'); // Optionally, change style for disabled buttons
+                }
+
                 button.onclick = function () {
                     selectContainer(button.textContent);
                 };
+
                 containerGrid.appendChild(button);
             }
         }
@@ -845,21 +875,32 @@
         }
 
         // Storage for Aliquots
+        const usedContainers2 = {{ used_containers|safe }}; // List of containers already in use in Grid 2
         const containerGrid2 = document.getElementById('container-grid2');
         const rows2 = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
+        // Create the grid of container buttons for the second grid
         for (let i = 0; i < rows2.length; i++) {
             for (let j = 1; j <= 10; j++) {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'btn btn-outline-primary container-btn2';
                 button.textContent = `${rows2[i]}${j}`;
+
+                // Check if the container is already used in containerGrid2
+                if (usedContainers2.includes(button.textContent)) {
+                    button.disabled = true; // Disable the button if it's already used in Storage (Grid 2)
+                    button.classList.add('btn-secondary'); // Optionally, add a different class to disabled buttons
+                }
+
                 button.onclick = function () {
                     selectContainer2(button.textContent);
                 };
+
                 containerGrid2.appendChild(button);
             }
         }
+        
 
         // Function to select container
         let selectedContainer2 = '';
@@ -1059,23 +1100,41 @@
     // Lab Tests
     let selectedLabTests = []; // To store added lab tests
 
-    document.getElementById('add_lab_test').addEventListener('click', function() {
-        updateAddedLabTests();
-    });
+    let currentTest = "";
+        
+            document.getElementById('add_lab_test').addEventListener('click', function() {
+                if (currentTest) {
+                    // If the test is not already added, push it to the array
+                    if (!selectedLabTests.includes(currentTest)) {
+                        selectedLabTests.push(currentTest);
+                        updateAddedLabTests();  // Function to update the display of added tests
+                    } else {
+                        alert("This lab test has already been added.");
+                    }
 
-    function toggleDropdown(dropdownId) {
-        const dropdown = document.getElementById(dropdownId);
-        dropdown.classList.toggle("show");
-    }
+                    // Optionally, you can reset the current selection after adding
+                    currentTest = "";
+                    document.getElementById('labValue').value = "";
+                } else {
+                    alert("Please select a lab test first.");
+                }
+            });
+        
+            function toggleDropdown(dropdownId) {
+                const dropdown = document.getElementById(dropdownId);
+                dropdown.classList.toggle("show");
+            }
 
-    function selectLabTest(test) {
-        if (selectedLabTests.includes(test)) {
-            alert("This lab test has already been added.");
-        } else {
-            selectedLabTests.push(test);
-            updateAddedLabTests();
-        }
-    }
+            function selectLabTest(test) {
+                // Store the selected test temporarily
+                currentTest = test;
+
+                // Update the input field with the selected test
+                document.getElementById('labValue').value = test;
+
+                // Optionally, you can hide the dropdown after selection
+                document.getElementById("type-dropdown").classList.remove("show");
+            }
 
     function captureOtherInputs() {
         let otherValue = document.getElementById('lab_test_other').value.trim();
