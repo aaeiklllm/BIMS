@@ -147,7 +147,7 @@
                     <li>Source
                         <ul>
                             <li>Sex: {{ request_sample.sex }}</li>
-                            <li>Age: {{ request_sample.age }}</li>
+                            <li>Age: {% if request_sample.age %}{{ request_sample.age }}{% else %}{{ request_sample.age_from }} to {{ request_sample.age_to }}{% endif %}</li>
                             <li>Clinical Diagnosis: {{ request_sample.clinical_diagnosis }}</li>
                             <li>Comorbidities: 
                                 {% if comorbidities %}
@@ -174,7 +174,7 @@
 
                 <p><strong>Multiple samples from the same source/participant with multiple time points:</strong> 
                     {% if step4 and step4.multiple_samples == 'yes' %}
-                        YES - {{ step4.time_points }} time points - {{ step4.interval }} {{ step4.interval_unit }} interval
+                        YES - {{ step4.time_points1 }} time points - {{ step4.interval }} {{ step4.interval_unit }} interval
                     {% else %}
                         NO
                     {% endif %}
@@ -188,9 +188,9 @@
                     {% endif %}
                 </p>
                 <ul style="margin-left: 70px;">
-                    {% if step5 and step5.multiple_timepoints_each == 'yes' %}
                         <li>Multiple samples with multiple time points from each source/participant: 
-                            YES - {{ step5.time_points }} time points - {{ step5.interval }} {{ step5.interval_unit }} interval
+                    {% if step5 and step5.multiple_timepoints_each == 'yes' %}
+                            YES - {{ step5.time_points2 }} time points - {{ step5.interval }} {{ step5.interval_unit }} interval
                         </li>
                     {% else %}
                         NO
