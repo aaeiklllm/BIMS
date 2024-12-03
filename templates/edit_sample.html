@@ -383,9 +383,11 @@
             <!-- Lab Test -->
             <div class="dropdown mb-2">
                 <label for="lab_tests" class="form-label required">Lab Tests:</label>
-                <input class="dropdown-input" type="text" id="selectedLabTests" name="selectedLabTests" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+                <input class="dropdown-input" type="text" id="labValue" name="selectedOption" placeholder="Select Lab Tests" readonly onclick="toggleDropdown('lab-tests-dropdown')">
+
+                <!-- <input type="hidden" id="labValue" name="labValue"> -->
                 
-                <div id="lab-tests-dropdown" class="dropdown-content">
+                <div id="type-dropdown" class="dropdown-content">
                     <div class="nested-dropdown">
                         <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
                     </div>   
@@ -534,7 +536,7 @@
                     </div> 
                 </div>
             </div>
-            
+            <button type="button" class="btn btn-dark" id="add_lab_test">Add</button>
             <div id="added_lab_tests" class="mt-2"></div>
             <input type="hidden" id="lab_tests_input" name="lab_tests" value="">
             
@@ -966,25 +968,61 @@
         
         
             // Lab Tests
-            
+            let currentTest = "";
         
             document.getElementById('add_lab_test').addEventListener('click', function() {
-                updateAddedLabTests();
+                if (currentTest) {
+                    // If the test is not already added, push it to the array
+                    if (!selectedLabTests.includes(currentTest)) {
+                        selectedLabTests.push(currentTest);
+                        updateAddedLabTests();  // Function to update the display of added tests
+                    } else {
+                        alert("This lab test has already been added.");
+                    }
+
+                    // Optionally, you can reset the current selection after adding
+                    currentTest = "";
+                    document.getElementById('labValue').value = "";
+                } else {
+                    alert("Please select a lab test first.");
+                }
             });
         
             function toggleDropdown(dropdownId) {
                 const dropdown = document.getElementById(dropdownId);
                 dropdown.classList.toggle("show");
             }
-        
+
             function selectLabTest(test) {
-                if (selectedLabTests.includes(test)) {
-                    alert("This lab test has already been added.");
-                } else {
-                    selectedLabTests.push(test);
-                    updateAddedLabTests();
-                }
+                // Store the selected test temporarily
+                currentTest = test;
+
+                // Update the input field with the selected test
+                document.getElementById('labValue').value = test;
+
+                // Optionally, you can hide the dropdown after selection
+                document.getElementById("type-dropdown").classList.remove("show");
             }
+
+            // Event listener for the "Add" button
+            document.getElementById('add_labtest').addEventListener('click', function() {
+                // Check if a test is selected
+                if (currentTest) {
+                    // If the test is not already added, push it to the array
+                    if (!selectedLabTests.includes(currentTest)) {
+                        selectedLabTests.push(currentTest);
+                        updateAddedLabTests();  // Function to update the display of added tests
+                    } else {
+                        alert("This lab test has already been added.");
+                    }
+
+                    // Optionally, you can reset the current selection after adding
+                    currentTest = "";
+                    document.getElementById('labValue').value = "";
+                } else {
+                    alert("Please select a lab test first.");
+                }
+            });
         
             function captureOtherInputs() {
                 let otherValue = document.getElementById('lab_test_other').value.trim();
