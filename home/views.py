@@ -603,28 +603,28 @@ def request_sample(request):
                 erb_number = request.POST.get('erb')
                 funding_source = request.POST.get('funding')
 
-            # Convert anticipated initiation and completion dates if provided
-            if anticipated_initiation_date:
-                if anticipated_initiation_date == "":  # Handle empty or null values
+                # Convert anticipated initiation and completion dates if provided
+                if anticipated_initiation_date:
+                    if anticipated_initiation_date == "":  # Handle empty or null values
+                        anticipated_initiation_date = None
+                    else: 
+                        try:
+                            anticipated_initiation_date = datetime.strptime(anticipated_initiation_date, '%Y-%m-%d').date()
+                        except ValueError:
+                            raise ValidationError(f"{anticipated_initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                else:
                     anticipated_initiation_date = None
-                else: 
-                    try:
-                        anticipated_initiation_date = datetime.strptime(anticipated_initiation_date, '%Y-%m-%d').date()
-                    except ValueError:
-                        raise ValidationError(f"{anticipated_initiation_date} is not a valid date. Expected format: YYYY-MM-DD.")
-            else:
-                anticipated_initiation_date = None
 
-            if anticipated_completion_date:
-                if anticipated_completion_date == "":  # Handle empty or null values
+                if anticipated_completion_date:
+                    if anticipated_completion_date == "":  # Handle empty or null values
+                        anticipated_completion_date = None
+                    else: 
+                        try:
+                            anticipated_completion_date = datetime.strptime(anticipated_completion_date, '%Y-%m-%d').date()
+                        except ValueError:
+                            raise ValidationError(f"{anticipated_completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
+                else:
                     anticipated_completion_date = None
-                else: 
-                    try:
-                        anticipated_completion_date = datetime.strptime(anticipated_completion_date, '%Y-%m-%d').date()
-                    except ValueError:
-                        raise ValidationError(f"{anticipated_completion_date} is not a valid date. Expected format: YYYY-MM-DD.")
-            else:
-                anticipated_completion_date = None
 
                 # Create and associate the new project with the request sample
                 new_project = Research_Project.objects.create(
