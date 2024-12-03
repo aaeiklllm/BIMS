@@ -1,26 +1,40 @@
-version: "3.3"
 services:
-  app:
+  web:
     build: .
     volumes:
-      - .:/django
+      - .:/BIMS
     ports:
       - 8000:8000
-    image: app:django
-    container_name: django_container
-    command: python Hackfest/manage.py runserver 0.0.0.0:8000
-
     depends_on:
       - db
+    image: bims_image
+    container_name: web
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - default
 
   db:
-    image: postgres
+    image: postgres:13
     volumes:
-      - ./datas/db:/var/lib/postgresql/data
-    
+      - postgres_data:/var/lib/postgresql/data 
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=bims
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    
+      - POSTGRES_PASSWORD=password123
     container_name: postgres_db
+    networks:
+      - default
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@gmail.com"  
+      PGADMIN_DEFAULT_PASSWORD: "admin123" 
+    ports:
+      - "5050:80"  
+    networks:
+      - default
+
+volumes:
+  postgres_data:
