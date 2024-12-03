@@ -303,27 +303,31 @@
     
             <!-- Projects List, hidden by default, will show when "Select Research Project" is selected -->
             <div id="existing-project" class="projects-container" style="display:none;">
-                {% for project in research_projects %}
+                {% for context in projects_context %}
                     <label>
-                        <input type="radio" name="existing-project" value="{{ project.id }}" onclick="toggleProjectDetails('{{ project.id }}')">
-                        Project ID {{ project.id }}: {{ project.title }} 
-                        <span class="underline-link" onclick="toggleProjectDetails('{{ project.id }}')">View details</span>
+                        <input type="radio" name="existing-project" value="{{ context.project.id }}">
+                        Project ID {{ context.project.id|stringformat:"05d" }}: {{ context.project.title }}
+                        {% if context.has_requested_sample or context.is_past_due %}
+                            <span class="underline-link" onclick="toggleProjectDetails('{{ context.project.id }}')">
+                                View details
+                            </span>
+                        {% endif %}
                     </label>
-
+            
                     <!-- Project details will appear here -->
-                    <div id="project-details-{{ project.id }}" class="project-details" style="display:none;">
+                    <div id="project-details-{{ context.project.id }}" class="project-details" style="display: none;">
                         <h3>Research Project Details</h3>
-                        <p><strong>Research Project ID:</strong> {{ project.id }}</p>
-                        <p><strong>Title:</strong> {{ project.title }}</p>
-                        <p><strong>Principal Investigator:</strong> {{ project.principal_investigator }}</p>
-                        <p><strong>Description:</strong> {{ project.description }}</p>
-                        <p><strong>Anticipated Initiation Date:</strong> {{ project.anticipated_initiation_date }}</p>
-                        <p><strong>Anticipated Completion Date:</strong> {{ project.anticipated_completion_date }}</p>
-                        <p><strong>ERB #:</strong> {{ project.erb_number }}</p>
-                        <p><strong>Funding source:</strong> {{ project.funding_source }}</p>
+                        <p><strong>Research Project ID:</strong> {{ context.project.id }}</p>
+                        <p><strong>Title:</strong> {{ context.project.title }}</p>
+                        <p><strong>Principal Investigator:</strong> {{ context.project.principal_investigator }}</p>
+                        <p><strong>Description:</strong> {{ context.project.description }}</p>
+                        <p><strong>Anticipated Initiation Date:</strong> {{ context.project.anticipated_initiation_date }}</p>
+                        <p><strong>Anticipated Completion Date:</strong> {{ context.project.anticipated_completion_date }}</p>
+                        <p><strong>ERB #:</strong> {{ context.project.erb_number }}</p>
+                        <p><strong>Funding source:</strong> {{ context.project.funding_source }}</p>
                     </div>
                 {% endfor %}
-            </div>
+            </div>            
         {% else %}
             <!-- Disable the option and gray it out if there are no research projects -->
             <label style="color: grey; cursor: not-allowed;">
