@@ -60,6 +60,8 @@ class Request_Sample(models.Model):
     type = models.CharField(max_length=300, null=True, blank=False)
     sex = models.CharField(max_length=100, null=True, blank=False)
     age = models.IntegerField(null=True, blank=True)
+    age_from = models.IntegerField(null=True, blank=True)
+    age_to = models.IntegerField(null=True, blank=True)
     clinical_diagnosis = models.CharField(max_length=300, null=True, blank=False)
     amount = models.FloatField(null=True, blank=True)
     unit = models.CharField(max_length=100, null=True, blank=True)
