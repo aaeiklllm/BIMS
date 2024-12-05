@@ -404,7 +404,14 @@
     <div class="form-container sign-in-container">
       <form action="/accounts/loginpage/?role={{ role }}" method="post">
         {% csrf_token %}
-        <h1 style="color: #674FA7;">Login</h1>
+        <h1 style="color: #674FA7; margin-bottom: 5px;	">Login</h1>
+		<p style="margin-bottom: 10px; font-weight: 500; opacity: 80%;">
+			{% if role == "Researcher" %}
+				as a Researcher
+			{% elif role == "BiobankManager" %}
+				as a Biobank Manager
+			{% endif %}
+		</p>
 		<input type="hidden" name="role" value="{{ role }}">
         <input type='text' placeholder="Username" name='eml' id="username" required>
         <div class="password-container">
@@ -444,7 +451,6 @@
 			{% elif role == "BiobankManager" %}
 			Log in as a <b>Biobank Manager</b> or register by clicking the button below
 			{% endif %}
-			{{role}}
 			
 		</p>
 		<a href="{% url 'create_account' %}?role={{ role }}" 
