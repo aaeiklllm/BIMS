@@ -241,7 +241,40 @@
             </div>
         </form>
     </div>
+    <script>
+        window.onload = function() {
+            const today = new Date();  // Get today's date
+            const desiredStartDate = new Date("{{ request_sample.desired_start_date|date:'Y-m-d' }}");  // Convert the desired start date to a JavaScript Date object
 
+            // Check if the desired start date is already in the past
+            if (desiredStartDate < today) {
+                // Automatically select "Reject" and show the reason section
+                const rejectRadio = document.querySelector('input[name="approval"][value="reject"]');
+                if (rejectRadio) {
+                    rejectRadio.checked = true;
+                }
+
+                // Set the rejection reason automatically
+                document.getElementById('reject_reason').value = "Request rejected because the desired start date is in the past.";
+
+                // Optionally, you can disable the submit button temporarily if needed
+                const submitButton = document.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;  // Disable the submit button
+                }
+
+                // Display an alert to the user that the sample is being automatically rejected
+                alert("The desired start date has passed. The sample will be automatically rejected.");
+
+                // Automatically submit the form after rejection
+                const form = document.querySelector('form');
+                if (form) {
+                    form.submit();  // Submit the form automatically
+                }
+            }
+        };
+
+    </script>    
     <script>
         function toggleSections(selection) {
             const approveOptions = document.getElementById('approve-options');
