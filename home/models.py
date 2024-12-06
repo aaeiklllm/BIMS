@@ -45,7 +45,7 @@ class Storage(models.Model):
 class Research_Project(models.Model):
     title = models.CharField(max_length=300, null=True, blank=False)
     principal_investigator = models.CharField(max_length=300, null=True, blank=False)
-    description = models.CharField(max_length=300, null=True, blank=False)
+    description = models.CharField(max_length=3000, null=True, blank=False)
     anticipated_initiation_date = models.DateField(null=True, blank=False) 
     anticipated_completion_date = models.DateField(null=True, blank=False) 
     erb_number = models.CharField(max_length=300, null=True, blank=False)
