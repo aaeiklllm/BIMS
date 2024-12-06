@@ -2,10 +2,11 @@
 import os
 from pathlib import Path
 from django.contrib import messages
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -16,8 +17,7 @@ SECRET_KEY = 'django-insecure-(%c3b((l#$4j@kx10covjz^fn!9m77=%dx-acy4uv2o3-n48lh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = ["*", 'junction.proxy.rlwy.net']
 
 # Application definition
 
@@ -40,11 +40,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'Hackfest.urls'
-
 AUTH_USER_MODEL = 'accounts.UserProfile'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 TEMPLATES = [
     {
@@ -63,21 +64,35 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Hackfest.wsgi.application'
+CSRF_TRUSTED_ORIGINS = ['https://bims-production.up.railway.app']
 
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'railway',  
+#         'USER': 'postgres', 
+#         'PASSWORD': 'NqdavVIIhAWmZrloOwcbaKVdITjydDCX', 
+#         'HOST': 'junction.proxy.rlwy.net',  
+#         'PORT': '12437', 
+#     }
+# }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bims',        # DB_DATABASE
-        'USER': 'postgres',         # DB_USERNAME
-        'PASSWORD': 'antoninofamily', # DB_PASSWORD
-        'HOST': '127.0.0.1',        # DB_HOST
-        'PORT': '5432',             # DB_PORT
+        'NAME': 'railway',  
+        'USER': 'postgres', 
+        'PASSWORD': 'NqdavVIIhAWmZrloOwcbaKVdITjydDCX', 
+        'HOST': 'junction.proxy.rlwy.net',  
+        'PORT': '12437', 
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -116,6 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Media files (uploads)

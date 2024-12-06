@@ -470,7 +470,6 @@
             </div>
         </div>
         <div class="mb-3 d-flex align-items-center">
-            <div class="form-group">
                 <label for="male" class="required form-label me-2">Sex:</label>
                 <div class="form-check me-2">
                     <input class="form-check-input" type="radio" name="sex" id="male" value="Male" required>
@@ -480,11 +479,10 @@
                     <input class="form-check-input" type="radio" name="sex" id="female" value="Female">
                     <label class="form-check-label" for="female">Female</label>
                 </div>
-                <div class="required form-check me-2 ">
+                <div class="form-check me-2 ">
                     <input class="form-check-input" type="radio" name="sex" id="either" value="Either">
                     <label class="form-check-label" for="either">Either</label>
                 </div>
-            </div>
             <div class="form-group">
                 <label for="age_option" class="form-label required">Age:</label><br>
                 <label>
@@ -639,8 +637,11 @@
                     <a href="#" onclick="selectLabTest('Complete Blood Count (CBC)')">Complete Blood Count (CBC)</a>
                 </div>   
                 <div class="nested-dropdown">
-                    <a href="#">Blood Chemistry Panel</a>
+                    <a href="#">&#x25B6; Blood Chemistry Panel</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Glucose, Blood Urea Nitrogen (BUN), Creatinine, Electrolytes (Sodium, Potassium, Chloride), Calcium, Albumin')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('Glucose')">Glucose</a>
                         <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
                         <a href="#" onclick="selectLabTest('Creatinine')">Creatinine</a>
@@ -650,8 +651,11 @@
                     </div>
                 </div>  
                 <div class="nested-dropdown">
-                    <a href="#">Lipid Profile</a>
+                    <a href="#">&#x25B6; Lipid Profile</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Total Cholesterol, HDL (High-Density Lipoprotein), LDL (Low-Density Lipoprotein), Triglycerides')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('Total Cholesterol')">Total Cholesterol</a>
                         <a href="#" onclick="selectLabTest('HDL (High-Density Lipoprotein)')">HDL (High-Density Lipoprotein)</a>
                         <a href="#" onclick="selectLabTest('LDL (Low-Density Lipoprotein)')">LDL (Low-Density Lipoprotein)</a>
@@ -668,16 +672,22 @@
                     <a href="#" onclick="selectLabTest('Oral Glucose Tolerance Test (OGTT)')">Oral Glucose Tolerance Test (OGTT)</a>
                 </div>                    
                 <div class="nested-dropdown">
-                    <a href="#">Thyroid Function Tests</a>
+                    <a href="#">&#x25B6; Thyroid Function Tests</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('T3 (Triiodothyronine), T4 (Thyroxine), TSH (Thyroid Stimulating Hormone)')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('T3 (Triiodothyronine)')">T3 (Triiodothyronine)</a>
                         <a href="#" onclick="selectLabTest('T4 (Thyroxine)')">T4 (Thyroxine)</a>
                         <a href="#" onclick="selectLabTest('TSH (Thyroid Stimulating Hormone)')">TSH (Thyroid Stimulating Hormone)</a>
                     </div>
                 </div>
                 <div class="nested-dropdown">
-                    <a href="#">Kidney Function Tests</a>
+                    <a href="#">&#x25B6; Kidney Function Tests</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Serum Creatinine, Estimated Glomerular Filtration Rate (eGFR), Blood Urea Nitrogen (BUN), Urinalysis')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('Serum Creatinine')">Serum Creatinine</a>
                         <a href="#" onclick="selectLabTest('Estimated Glomerular Filtration Rate (eGFR)')">Estimated Glomerular Filtration Rate (eGFR)</a>
                         <a href="#" onclick="selectLabTest('Blood Urea Nitrogen (BUN)')">Blood Urea Nitrogen (BUN)</a>
@@ -685,8 +695,11 @@
                     </div>
                 </div>
                 <div class="nested-dropdown">
-                    <a href="#">Liver Function Tests</a>
+                    <a href="#">&#x25B6; Liver Function Tests</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('ALT (Alanine Aminotransferase), AST (Aspartate Aminotransferase), ALP (Alkaline Phosphatase), Bilirubin')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('ALT (Alanine Aminotransferase)')">ALT (Alanine Aminotransferase)</a>
                         <a href="#" onclick="selectLabTest('AST (Aspartate Aminotransferase)')">AST (Aspartate Aminotransferase)</a>
                         <a href="#" onclick="selectLabTest('ALP (Alkaline Phosphatase)')">ALP (Alkaline Phosphatase)</a>
@@ -694,15 +707,21 @@
                     </div>
                 </div>
                 <div class="nested-dropdown">
-                    <a href="#">Cardiac Enzyme Tests</a>
+                    <a href="#">&#x25B6; Cardiac Enzyme Tests</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Troponin, Creatine Kinase-MB (CK-MB)')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('Troponin')">Troponin</a>
                         <a href="#" onclick="selectLabTest('Creatine Kinase-MB (CK-MB)')">Creatine Kinase-MB (CK-MB)</a>
                     </div>
                 </div>
                 <div class="nested-dropdown">
-                    <a href="#">Coagulation Profile</a>
+                    <a href="#">&#x25B6; Coagulation Profile</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Prothrombin Time (PT), Partial Thromboplastin Time (PTT), Partial Thromboplastin Time (PTT), INR (International Normalized Ratio)')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('Prothrombin Time (PT)')">Prothrombin Time (PT)</a>
                         <a href="#" onclick="selectLabTest('Partial Thromboplastin Time (PTT)')">Partial Thromboplastin Time (PTT)</a>
                         <a href="#" onclick="selectLabTest('INR (International Normalized Ratio)')">INR (International Normalized Ratio)</a>
@@ -772,8 +791,11 @@
                     <a href="#" onclick="selectLabTest('Erythrocyte Sedimentation Rate (ESR)')">Erythrocyte Sedimentation Rate (ESR)</a>
                 </div>                    
                 <div class="nested-dropdown">
-                    <a href="#">Immunological Tests</a>
+                    <a href="#">&#x25B6; Immunological Tests</a>
                     <div class="nested-dropdown-content">
+                        <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA), Rheumatoid Factor (RF)')">
+                            ALL
+                        </a>
                         <a href="#" onclick="selectLabTest('Antinuclear Antibody (ANA)')">Antinuclear Antibody (ANA)</a>
                         <a href="#" onclick="selectLabTest('Rheumatoid Factor (RF)')">Rheumatoid Factor (RF)</a>
                     </div>
@@ -1289,17 +1311,24 @@
 
      let currentTest = "";
         
-        document.getElementById('add_lab_test').addEventListener('click', function() {
+            // Event listener for the "Add Lab Test" button
+            document.getElementById('add_lab_test').addEventListener('click', function() {
             if (currentTest) {
-                // If the test is not already added, push it to the array
-                if (!selectedLabTests.includes(currentTest)) {
-                    selectedLabTests.push(currentTest);
-                    updateAddedLabTests();  // Function to update the display of added tests
-                } else {
-                    alert("This lab test has already been added.");
-                }
+                const tests = currentTest.includes(",") ? currentTest.split(",") : [currentTest];
 
-                // Optionally, you can reset the current selection after adding
+                // Trim whitespace from each test and add only unique tests
+                tests.forEach(test => {
+                    test = test.trim();
+                    if (test && !selectedLabTests.includes(test)) {
+                        selectedLabTests.push(test);
+                    } else if (selectedLabTests.includes(test)) {
+                        alert(`${test} has already been added.`);
+                    }
+                });
+
+                updateAddedLabTests(); // Function to update the display of added tests
+
+                // Reset current selection and input field after adding
                 currentTest = "";
                 document.getElementById('labValue').value = "";
             } else {
