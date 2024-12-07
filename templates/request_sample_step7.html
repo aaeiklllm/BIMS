@@ -136,7 +136,7 @@
         <div class="form-group">
             <div class="request-summary">
                 {% if research_project %}
-                    <p><strong>Research Project:</strong> {{ research_project.title }} (Research Project ID: {{ research_project.id }})</p>
+                    <p><strong>Research Project:</strong> {{ research_project.title }} (Research Project ID: {{ research_project.id|stringformat:"05d" }})</p>
                 {% else %}
                     <p>No research project linked.</p>
                 {% endif %}

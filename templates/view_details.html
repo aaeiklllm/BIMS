@@ -127,7 +127,7 @@
         <form method="post" enctype="multipart/form-data" action="{% url 'view_details' request_sample.id %}">
             {% csrf_token %}
 
-            <p style="color: #007bff; font-size: 22px;"><b>Research Project ID: <span class="project-id">{{ research_project.id }}</span></b></p>
+            <p style="color: #007bff; font-size: 22px;"><b>Research Project ID: <span class="project-id">{{ research_project.id|stringformat:"05d" }}</span></b></p>
             <p><b>Research Project:</b> {{ research_project.title }}</p>
             <p><b>Research Ethics Boards Approval (ERB):</b> 
                 {% if request_sample.erb_approval %}
