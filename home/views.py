@@ -548,7 +548,7 @@ def request_sample(request):
         has_requested_sample = project.request_samples.filter(requested_by=request.user).exists()
         
         # Check if the project is past its anticipated completion date
-        if project.anticipated_completion_date and project.anticipated_completion_date < datetime.now():
+        if project.anticipated_completion_date and project.anticipated_completion_date < datetime.now().date():
             is_past_due = True
         else:
             is_past_due = False
@@ -912,7 +912,7 @@ def edit_request_sample(request, sample_id):
         has_requested_sample = project.request_samples.filter(requested_by=request.user).exists()
         
         # Check if the project is past its anticipated completion date
-        if project.anticipated_completion_date and project.anticipated_completion_date < datetime.now():
+        if project.anticipated_completion_date and project.anticipated_completion_date < datetime.now().date():
             is_past_due = True
         else:
             is_past_due = False

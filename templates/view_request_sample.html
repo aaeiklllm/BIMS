@@ -160,7 +160,7 @@
                         text-approved
                     {% elif sample.status == 'pending' %}
                         text-pending
-                    {% endif %}">{{ sample.status }}</td>
+                    {% endif %}">{{ sample.status|capfirst }}</td>
                 </tr>
                 {% empty %}
                 <tr>
