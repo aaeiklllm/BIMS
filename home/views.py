@@ -830,26 +830,47 @@ def request_sample(request):
     return render(request, 'request_sample.html', {'research_projects': research_projects, 'request_samples': request_samples, 'projects_context': projects_context})
 
 def calculate_total_samples(step4, step5):
-    # Start with 1 sample from Step 3
-    total_samples = 1
+    # Start with 0 samples initially (after Step 3)
+    total_samples = 0
 
     # Step 4: Adding time points if multiple samples are requested
     if step4 and step4.multiple_samples == 'yes':
         time_points_step4 = step4.time_points1 or 0
-        total_samples += (time_points_step4 - 1)  # Subtract 1 to avoid double-counting the initial sample
+        total_samples += time_points_step4
 
-    # Step 5: Adding participants and multiplying if multiple time points are selected
-    if step5 and step5.different_sources == 'yes':
-        # Number of additional participants from Step 5
-        num_participants = step5.num_participants or 0
-        
-        # Check if multiple time points are required for each participant
-        if step5.multiple_timepoints_each == 'yes':
-            time_points_step5 = step5.time_points2 or 1
-            total_samples += num_participants * time_points_step5
-        else:
-            # If no time points, just add the number of participants
-            total_samples += num_participants
+        # Step 5: Adding participants and multiplying if multiple time points are selected
+        if step5 and step5.different_sources == 'yes':
+            # Number of additional participants from Step 5
+            num_participants = step5.num_participants or 0
+            
+            # Check if multiple time points are required for each participant
+            if step5.multiple_timepoints_each == 'yes':
+                time_points_step5 = step5.time_points2 or 1
+                total_samples += num_participants * time_points_step5
+            else:
+                # If no time points, just add the number of participants
+                total_samples += num_participants
+        if step5 and step5.different_sources == 'no':
+            total_samples = total_samples
+
+    elif step4 and step4.multiple_samples == 'no':
+        # If Step 4 is "no", we still account for the initial sample
+        total_samples = 0
+
+        # Step 5: Adding participants and multiplying if multiple time points are selected
+        if step5 and step5.different_sources == 'yes':
+            # Number of additional participants from Step 5
+            num_participants = step5.num_participants or 0
+            
+            # Check if multiple time points are required for each participant
+            if step5.multiple_timepoints_each == 'yes':
+                time_points_step5 = step5.time_points2 or 1
+                total_samples += num_participants * time_points_step5
+            else:
+                # If no time points, just add the number of participants
+                total_samples += num_participants
+        if step5 and step5.different_sources == 'no':
+            total_samples = 1
 
     return total_samples
 
@@ -1521,7 +1542,7 @@ def create_ack_receipt(request, id):
     context = {
         'project': research_project,
         'request_sample': request_sample,
-        'sample_range': range(1, total_samples + 1),
+        'sample_range': range(1, len(matching_samples) + 1),  # Dynamic row count based on matching samples
         'researcher': researcher,
         'biobank_manager': biobank_manager,
         'matching_samples': matching_samples,
