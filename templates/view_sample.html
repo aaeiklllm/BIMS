@@ -386,6 +386,7 @@
                     </select>
 
                     <br>
+                    <br>
 
                     <div class="filter-buttons">
                         <button type="submit" id="apply-filters">Apply Filters</button>
@@ -420,13 +421,13 @@
 
                 <div class="grid-item">
                     <label>Clinical Diagnosis:</label> 
-                    <span class="highlight">{{ sample.clinical_diagnosis }}</span>
+                    <span class="clinical highlight">{{ sample.clinical_diagnosis }}</span>
                 </div>
                 <div class="grid-item header-item">Comorbidities</div>
                 <div class="grid-item">
                     {% if sample.comorbidities_set.all %}
                         {% for comorbidity in sample.comorbidities_set.all %}
-                            <span>{{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}</span>
+                            <span class="comorbidity">{{ comorbidity.comorbidity }}{% if not forloop.last %}, {% endif %}</span>
                         {% endfor %}
                     {% else %}
                         <span class="no-info">None</span>
@@ -437,7 +438,7 @@
                 <div class="grid-item">
                     {% if sample.lab_test_set.all %}
                         {% for lab_test in sample.lab_test_set.all %}
-                            <span>{{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}</span>
+                            <span class="labtest">{{ lab_test.labtest }}{% if not forloop.last %}, {% endif %}</span>
                         {% endfor %}
                     {% else %}
                         <span class="no-info">None</span>
@@ -582,8 +583,8 @@
                     const typeMatch = !type || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(type);
                     const sexMatch = !sex || sample.querySelector('.grid-item span.sex').innerText.toLowerCase() === sex;
                     const clinicalDiagnosisMatch = !clinicalDiagnosis || sample.querySelector('.grid-item span.clinical').innerText.toLowerCase().includes(clinicalDiagnosis);
-                    const comorbiditiesMatch = comorbidities.length === 0 || comorbidities.every(c => sample.querySelector('.section-header + .grid-item').innerText.toLowerCase().includes(c));
-                    const labTestsMatch = labTests.length === 0 || labTests.every(l => sample.querySelector('.section-header + .lab').innerText.toLowerCase().includes(l));
+                    const comorbiditiesMatch = comorbidities.length === 0 || comorbidities.every(c => sample.querySelector('.grid-item span.comorbidity').innerText.toLowerCase().includes(c));
+                    const labTestsMatch = labTests.length === 0 || labTests.every(l => sample.querySelector('.grid-item span.labtest').innerText.toLowerCase().includes(l));
                     const dateMatch = !formattedDate || sample.querySelector('.grid-item span.date').innerText === formattedDate;
                     const projectMatch = !researchProject || sample.querySelector('.project').innerText.toLowerCase().includes(researchProject);
 
