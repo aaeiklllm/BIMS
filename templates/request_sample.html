@@ -334,7 +334,7 @@
                     <!-- Project details will appear here -->
                     <div id="project-details-{{ context.project.id }}" class="project-details" style="display: none;">
                         <h3>Research Project Details</h3>
-                        <p><strong>Research Project ID:</strong> {{ context.project.id }}</p>
+                        <p><strong>Research Project ID:</strong> {{ context.project.id|stringformat:"05d" }}</p>
                         <p><strong>Title:</strong> {{ context.project.title }}</p>
                         <p><strong>Principal Investigator:</strong> {{ context.project.principal_investigator }}</p>
                         <p><strong>Description:</strong> {{ context.project.description }}</p>
