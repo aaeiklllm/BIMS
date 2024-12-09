@@ -640,7 +640,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
+            overflow: hidden;
             background-color: rgba(0, 0, 0, 0.4); /* Background overlay */
             align-items: center; /* Vertically center */
             justify-content: center; /* Horizontally center */
@@ -653,8 +653,10 @@
             border-radius: 8px;
             width: 80%;
             max-width: 600px;
+            max-height: 750px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             animation: fadeIn 0.3s ease-in-out;
+            overflow-y: scroll;
         }
 
         .close-button {
