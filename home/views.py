@@ -1413,7 +1413,7 @@ def create_ack_receipt(request, id):
     # Assuming `request_sample.age`, `request_sample.age_from`, and `request_sample.age_to` are being passed
     matching_samples = Samples.objects.filter(
         type=request_sample.type,
-        sex=request_sample.sex,
+        # sex=request_sample.sex,
         clinical_diagnosis=request_sample.clinical_diagnosis,
     )
 
@@ -1542,7 +1542,7 @@ def create_ack_receipt(request, id):
     context = {
         'project': research_project,
         'request_sample': request_sample,
-        'sample_range': range(1, len(matching_samples) + 1),  # Dynamic row count based on matching samples
+        'sample_range': range(1, total_samples + 1),  # Dynamic row count based on matching samples
         'researcher': researcher,
         'biobank_manager': biobank_manager,
         'matching_samples': matching_samples,

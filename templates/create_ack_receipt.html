@@ -136,16 +136,28 @@
                             </select>
                         </td>
                         <td>
-                            <input type="hidden" name="sample_type_{{ i }}" value="{{ matching_samples.0.type }}">
-                            {{ matching_samples.0.type }}
+                            {% if matching_samples|length >= i %}
+                                <input type="hidden" name="sample_type_{{ i }}" value="{{ matching_samples.0.type }}">
+                                {{ matching_samples.0.type }}
+                            {% else %}
+                                <span>----------</span>
+                            {% endif %}
                         </td>
                         <td>
-                            <input type="hidden" name="quantity_volume_{{ i }}" value="{{ matching_samples.0.amount }} {{ matching_samples.0.unit }}">
-                            {{ matching_samples.0.amount }} {{ matching_samples.0.unit }}
+                            {% if matching_samples|length >= i %}
+                                <input type="hidden" name="quantity_volume_{{ i }}" value="{{ request_sample.amount }} {{ request_sample.unit }}">
+                                {{ request_sample.amount }} {{ request_sample.unit }}
+                            {% else %}
+                                <span>----------</span>
+                            {% endif %}
                         </td>
                         <td>
-                            <input type="hidden" name="container_location_{{ i }}" id="container_location_input_{{ i }}">
-                            <span id="container_location_{{ i }}"></span>
+                            {% if matching_samples|length >= i %}
+                                <input type="hidden" name="container_location_{{ i }}" id="container_location_input_{{ i }}">
+                                <span id="container_location_{{ i }}"></span>
+                            {% else %}
+                                <span>----------</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
