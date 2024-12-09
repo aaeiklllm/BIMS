@@ -213,6 +213,11 @@
             cursor: not-allowed;        /* Change cursor to indicate it's disabled */
         }
 
+        .selected-container {
+            background-color: #007bff; /* Blue background */
+            border: 2px solid #0056b3; /* Darker blue border */
+            color: white; /* Text color */
+        }
 
 
     </style>
@@ -683,6 +688,8 @@
                 </div>
                     <button type="submit" class="btn btn-success mt-2" style="margin-left: 538px;">Save Sample</button>
             </form>
+
+            <!-- Form for create sample from existing aliquot -->
             <form method="post" enctype="multipart/form-data" action="{% url 'createaliquot' %}" id="create-aliquot-form" style="display: none;">
                 {% csrf_token %}
                 
@@ -873,6 +880,33 @@
             }
         }
 
+        // Function to update the grid based on selected box
+        function updateContainerGrid() {
+            const selectedBox = document.getElementById('box').value; // Get selected box
+            const used = usedContainers[selectedBox] || [];  // Get the list of used containers for the selected box
+
+            // Loop through all container buttons
+            const allButtons = containerGrid.getElementsByClassName('container-btn');
+            for (let i = 0; i < allButtons.length; i++) {
+                const button = allButtons[i];
+                const containerNo = button.textContent;
+
+                // Disable the button if it's in the used containers list
+                if (used.includes(containerNo)) {
+                    button.disabled = true;
+                    button.classList.add('btn-secondary'); // Style disabled buttons
+                } else {
+                    button.disabled = false;
+                    button.classList.remove('btn-secondary'); // Enable available buttons
+                }
+            }
+        }
+
+        // Function to handle box selection changes
+        document.getElementById('box').addEventListener('change', function () {
+            updateContainerGrid(); // Update grid when box is changed
+        });
+
         const clinicalDiagnosis = document.getElementById('clinical_diagnosis');
         const otherDiagnosisInput = document.getElementById('other_diagnosis');
 
@@ -881,12 +915,25 @@
             otherDiagnosisInput.style.display = clinicalDiagnosis.value === 'Others' ? 'block' : 'none';
         });
 
-        // Function to select container
+        // Function to select a container and apply visual indication
         let selectedContainer = '';
 
         function selectContainer(containerNo) {
             selectedContainer = containerNo;
             document.getElementById("container-input").value = selectedContainer; // Set hidden input value
+
+            // Loop through all buttons and remove 'selected' class from previously selected ones
+            const allButtons = containerGrid.getElementsByClassName('container-btn');
+            for (let i = 0; i < allButtons.length; i++) {
+                allButtons[i].classList.remove('selected-container'); // Remove the 'selected' class
+            }
+
+            // Apply 'selected' class to the clicked container
+            const clickedButton = Array.from(allButtons).find(button => button.textContent === containerNo);
+            if (clickedButton) {
+                clickedButton.classList.add('selected-container'); // Add the selected class to the clicked container
+            }
+
             // alert('Selected Container: ' + selectedContainer); // Visual feedback
             const freezer = document.getElementById('freezer').value;
             const shelf = document.getElementById('shelf').value;
@@ -925,6 +972,32 @@
             }
         }
         
+        // Function to update the grid based on selected box in Grid 2
+        function updateContainerGrid2() {
+            const selectedBox2 = document.getElementById('box2').value; // Get selected box in Grid 2
+            const used2 = usedContainers2[selectedBox2] || [];  // Get the list of used containers for the selected box in Grid 2
+
+            // Loop through all container buttons
+            const allButtons2 = containerGrid2.getElementsByClassName('container-btn2');
+            for (let i = 0; i < allButtons2.length; i++) {
+                const button = allButtons2[i];
+                const containerNo2 = button.textContent;
+
+                // Disable the button if it's in the used containers list
+                if (used2.includes(containerNo2)) {
+                    button.disabled = true;
+                    button.classList.add('btn-secondary'); // Style disabled buttons
+                } else {
+                    button.disabled = false;
+                    button.classList.remove('btn-secondary'); // Enable available buttons
+                }
+            }
+        }
+
+        // Function to handle box selection changes in Grid 2
+        document.getElementById('box2').addEventListener('change', function () {
+            updateContainerGrid2(); // Update grid when box is changed in Grid 2
+        });
 
         // Function to select container
         let selectedContainer2 = '';
@@ -932,16 +1005,29 @@
         function selectContainer2(containerNo2) {
             selectedContainer2 = containerNo2;
             document.getElementById("container-input2").value = selectedContainer2; // Set hidden input value
-            // alert('Selected Container: ' + selectedContainer2); // Visual feedback
+
+            // Loop through all buttons and remove 'selected-container' class from previously selected ones
+            const allButtons2 = containerGrid2.getElementsByClassName('container-btn2');
+            for (let i = 0; i < allButtons2.length; i++) {
+                allButtons2[i].classList.remove('selected-container'); // Remove the 'selected' class from previous selections
+            }
+
+            // Apply 'selected-container' class to the clicked container
+            const clickedButton = Array.from(allButtons2).find(button => button.textContent === containerNo2);
+            if (clickedButton) {
+                clickedButton.classList.add('selected-container'); // Add the 'selected' class to the clicked container
+            }
+
+            // Update storage details (you can use this for feedback or storing the selected details)
             const freezer2 = document.getElementById('freezer2').value;
-            const shelf2= document.getElementById('shelf2').value;
+            const shelf2 = document.getElementById('shelf2').value;
             const rack2 = document.getElementById('rack2').value;
             const box2 = document.getElementById('box2').value;
 
-            // Combine storage details
             const storageDetails2 = `Freezer No: ${freezer2} / Shelf No: ${shelf2} / Rack No: ${rack2} / Box No: ${box2} / Container: ${selectedContainer2}`;
             document.getElementById('selectedStorage2').value = storageDetails2;
         }
+
 
         const addedComorbidities = new Set(); // Set to track added comorbidities
         // const addedLabTests = new Set(); // Set to track added lab tests
