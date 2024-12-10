@@ -354,7 +354,7 @@ def view_sample(request):
         ]
         projects.append({"name": project.title, "count": len(sample_ids), "sample_ids": sample_ids})
 
-    samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set')
+    samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set').order_by('last_modified')
     request_samples_dict = {}
     for sample in samples:
         sample_id = sample.id

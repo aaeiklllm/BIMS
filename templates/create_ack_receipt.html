@@ -130,7 +130,7 @@
                                 <option value="" disabled selected>Select sample</option>
                                 {% for sample in matching_samples %}
                                 <option value="{{ sample.id }}">
-                                    {{ sample.id }}
+                                    {{ sample.id|stringformat:"05d" }}
                                 </option>
                                 {% endfor %}
                             </select>
