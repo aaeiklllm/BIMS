@@ -16,7 +16,7 @@ from accounts.models import UserProfile
 from django.db.models import Q
 from django.utils import timezone
 from django.db import transaction
-
+from django.core.files.storage import default_storage
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -1262,10 +1262,13 @@ def view_request_sample_details(request, sample_id):
 
 def my_requests(request):
     user = request.user
+    
+    approval_record = Approve_Reject_Request.objects.filter(request_sample=request_sample).first()
+
     if user.is_authenticated:
         # Retrieve all samples requested by the user, including their related research project
         sample_requests = Request_Sample.objects.filter(requested_by=request.user).select_related('research_project')
-
+        
         # Add 'ack_receipt' to each sample request in the context
         for sample in sample_requests:
             try:
@@ -1302,24 +1305,33 @@ def view_details(request, id):
 
     # Calculate the total number of sample requests using the helper function
     total_number_of_samples = calculate_total_samples(step4, step5)
-
     if request.method == 'POST':
         approval = request.POST.get('approval')
         attach_file = request.FILES.get('attach_file')
         reject_reason = request.POST.get('reject_reason')
 
+        # Create a new acknowledgment receipt only if a file is uploaded
+        receipt = None
+        if attach_file:
+            receipt = Create_Ack_Receipt.objects.create(
+                officer_signature=None,  # Or provide a default value if needed
+                pdf_file=attach_file
+            )
+
         no_sample = request.POST.get('no_sample')
         approval_record.approve_reject = approval
-        approval_record.attach_file = attach_file
         approval_record.reject_reason = reject_reason
+        approval_record.attach_file = attach_file
         approval_record.no_available_samples = no_sample
 
+        # Default reject reason if no samples are available
         if approval_record.no_available_samples == 'No':
             approval_record.reject_reason = "No available sample/s for now."
 
-        if approval == 'approve' and attach_file:
-            approval_record.create_ack_receipt = None 
-            
+        # Associate the new acknowledgment receipt if approved
+        if approval == 'approve' and receipt:
+            approval_record.create_ack_receipt = receipt
+
         approval_record.save()
 
         # Logic to handle the approval or rejection
@@ -1360,16 +1372,35 @@ def update_view_details(request, id):
     # Calculate the total number of sample requests using the helper function
     total_number_of_samples = calculate_total_samples(step4, step5)
 
+    ack_receipt_id = approval_record.create_ack_receipt_id
+    # print(ack_receipt_id)
+
     if request.method == 'POST':
         attach_file = request.FILES.get('attach_file')
-        approval_record.attach_file = attach_file
+
+        if attach_file:
+            # Save the file to a permanent location
+            file_path = default_storage.save(f'ack_receipts/{attach_file.name}', attach_file)
+
+            # Update the acknowledgment receipt if it exists
+            if approval_record.create_ack_receipt:
+                receipt = approval_record.create_ack_receipt  # Directly access the related object
+                receipt.pdf_file.name = file_path  # Update the file path in the model
+                receipt.save()
+            else:
+                # Optionally create a new acknowledgment receipt if it doesn't exist
+                receipt = Create_Ack_Receipt.objects.create(pdf_file=file_path)
+                approval_record.create_ack_receipt = receipt
+
+        # Update the approval record with the uploaded file path
+        approval_record.attach_file.name = file_path
         approval_record.save()
 
-        # Update the 'updated_at' field to reflect the approval/rejection time
+        # Update the 'updated_at' field for the request sample
         request_sample.updated_at = timezone.now()
         request_sample.save()
 
-        # Redirect to a confirmation page or the same page
+        # Redirect to the confirmation or listing page
         return redirect('view_request_sample')
 
     context = {
