@@ -22,7 +22,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from collections import defaultdict
-
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.checks import messages
 from django.contrib import messages 
 
@@ -1369,6 +1369,7 @@ def view_details(request, id):
     return render(request, 'view_details.html', context)
 
 @transaction.atomic
+
 def update_view_details(request, id):
     request_sample = get_object_or_404(Request_Sample, id=id)
     research_project = request_sample.research_project
@@ -1381,28 +1382,27 @@ def update_view_details(request, id):
     # Calculate the total number of sample requests using the helper function
     total_number_of_samples = calculate_total_samples(step4, step5)
 
-    ack_receipt_id = approval_record.create_ack_receipt_id
-    # print(ack_receipt_id)
-
     if request.method == 'POST':
         attach_file = request.FILES.get('attach_file')
 
-        if attach_file:
-            # Save the file to a permanent location
-            file_path = default_storage.save(f'ack_receipts/{attach_file.name}', attach_file)
+        if attach_file and isinstance(attach_file, InMemoryUploadedFile):
+            # Process the file directly in memory without saving
+            file_content = attach_file.read()  # Read the file content
+            print(f"Uploaded file content: {file_content[:100]}...")  # Example: Print first 100 bytes
 
             # Update the acknowledgment receipt if it exists
             if approval_record.create_ack_receipt:
                 receipt = approval_record.create_ack_receipt  # Directly access the related object
-                receipt.pdf_file.name = file_path  # Update the file path in the model
+                receipt.pdf_file = attach_file  # Update the file field with the uploaded file
                 receipt.save()
             else:
                 # Optionally create a new acknowledgment receipt if it doesn't exist
-                receipt = Create_Ack_Receipt.objects.create(pdf_file=file_path)
+                receipt = Create_Ack_Receipt.objects.create(pdf_file=attach_file)
                 approval_record.create_ack_receipt = receipt
 
-        # Update the approval record with the uploaded file path
-        approval_record.attach_file.name = file_path
+        # Update the approval record with the uploaded file (in memory)
+        if attach_file:
+            approval_record.attach_file = attach_file
         approval_record.save()
 
         # Update the 'updated_at' field for the request sample
