@@ -191,7 +191,11 @@
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
                                         {% elif sample.status == 'approved' %}
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
-                                        <a href="{% url 'download_ack_receipt' approval_record.create_ack_receipt.id %}" target="_blank">Print Acknowledgement Receipt</a>
+                                        {% if sample.ack_receipt and sample.ack_receipt.id %}
+                                            <a href="{% url 'download_ack_receipt' sample.ack_receipt.id %}" target="_blank">
+                                                Print Acknowledgement Receipt
+                                            </a>
+                                        {% endif %}
                                         {% elif sample.status == 'pending' %}
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
                                         <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>

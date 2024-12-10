@@ -1262,28 +1262,37 @@ def view_request_sample_details(request, sample_id):
 
 def my_requests(request):
     user = request.user
-    
-    approval_record = Approve_Reject_Request.objects.filter(request_sample=request_sample).first()
 
-    if user.is_authenticated:
-        # Retrieve all samples requested by the user, including their related research project
-        sample_requests = Request_Sample.objects.filter(requested_by=request.user).select_related('research_project')
-        
-        # Add 'ack_receipt' to each sample request in the context
-        for sample in sample_requests:
-            try:
-                # Attempt to get the related Create_Ack_Receipt through Approve_Reject_Request
-                ack_receipt = Approve_Reject_Request.objects.get(request_sample=sample).create_ack_receipt
-            except Approve_Reject_Request.DoesNotExist:
-                ack_receipt = None  # If no related approval record exists, set ack_receipt to None
-
-            # Attach the ack_receipt to the sample object
-            sample.ack_receipt = ack_receipt
-
-        # Pass the modified sample_requests (with ack_receipt) to the template
-        return render(request, 'my_requests.html', {'sample_requests': sample_requests})
-    else:
+    if not user.is_authenticated:
         return redirect('login')
+
+    # Fetch all the samples requested by the user
+    sample_requests = (
+        Request_Sample.objects.filter(requested_by=user)
+        .select_related('research_project')  # Include related research project for efficiency
+    )
+
+    # Fetch all approval records associated with the user's samples
+    approval_records = (
+        Approve_Reject_Request.objects.filter(request_sample__in=sample_requests)
+        .select_related('request_sample', 'create_ack_receipt')  # Optimize related object access
+    )
+
+    # Create a mapping for quick lookup of approval records
+    approval_mapping = {
+        record.request_sample.id: record for record in approval_records
+    }
+
+    # Annotate each sample request with its approval record and acknowledgment receipt
+    for sample in sample_requests:
+        sample.approval_record = approval_mapping.get(sample.id)  # Attach approval record
+        if sample.approval_record and sample.approval_record.create_ack_receipt:
+            sample.ack_receipt = sample.approval_record.create_ack_receipt
+        else:
+            sample.ack_receipt = None  # Ensure no invalid reference
+
+    # Render the template with the annotated sample_requests
+    return render(request, 'my_requests.html', {'sample_requests': sample_requests})
     
 
 def view_request_sample(request):
