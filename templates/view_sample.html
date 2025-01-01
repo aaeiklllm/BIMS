@@ -386,6 +386,15 @@
                     </select>
 
                     <br>
+
+                    <label for="storage">By Location (Storage):</label>
+                    <select id="storageloc" name="storageloc">
+                        <option value="">Select Storage</option>
+                        {% for storage in formatted_storages %}
+                            <option value="{{ storage.display }}">{{ storage.display }}</option>
+                        {% endfor %}
+                    </select>
+
                     <br>
 
                     <div class="filter-buttons">
@@ -454,8 +463,9 @@
                 </div>
 
 
-            <div class="grid-item header-item">Storage Details
-                <span>{% if sample.storage_set.all %}
+            <div class="grid-item header-item">Storage Details</div>
+            <div class="grid-item">
+                <span class="storage">{% if sample.storage_set.all %}
                     {% for storage in sample.storage_set.all %}
                         {{ storage.freezer_num }}, Shelf No. {{ storage.shelf_num }}, Rack No. {{ storage.rack_num }}, Box No. {{ storage.box_num }}, {{ storage.container }}
                     {% endfor %}
@@ -573,12 +583,13 @@
                 }
 
                 const researchProject = document.getElementById("research-project").value.toLowerCase();
+                const storage = document.getElementById("storageloc").value.toLowerCase();
                 const ageFilterType = document.querySelector('input[name="age-filter"]:checked').value;
                 const exactAge = document.getElementById("exact-age").value;
                 const ageFrom = document.getElementById("age-from").value;
                 const ageTo = document.getElementById("age-to").value;
                 const samples = document.querySelectorAll('.sample-details');
-
+                console.log(storage)
                 samples.forEach(sample => {
                     const typeMatch = !type || sample.querySelector('.grid-item span.highlight').innerText.toLowerCase().includes(type);
                     const sexMatch = !sex || sample.querySelector('.grid-item span.sex').innerText.toLowerCase() === sex;
@@ -586,8 +597,9 @@
                     const comorbiditiesMatch = comorbidities.length === 0 || comorbidities.every(c => sample.querySelector('.grid-item span.comorbidity').innerText.toLowerCase().includes(c));
                     const labTestsMatch = labTests.length === 0 || labTests.every(l => sample.querySelector('.grid-item span.labtest').innerText.toLowerCase().includes(l));
                     const dateMatch = !formattedDate || sample.querySelector('.grid-item span.date').innerText === formattedDate;
-                    const projectMatch = !researchProject || sample.querySelector('.project').innerText.toLowerCase().includes(researchProject);
-
+                    const projectMatch = !researchProject || sample.querySelector('.grid-item span.project').innerText.toLowerCase().includes(researchProject);
+                    const storageMatch = !storage || sample.querySelector('.grid-item span.storage').innerText.toLowerCase().includes(storage);
+                    console.log(sample.querySelector('.grid-item span.storage').innerText.toLowerCase())
                     let ageMatch = true;
                     const sampleAge = parseInt(sample.querySelector('.grid-item span.age').innerText);
 
@@ -597,7 +609,7 @@
                         ageMatch = (ageFrom ? sampleAge >= parseInt(ageFrom) : true) && (ageTo ? sampleAge <= parseInt(ageTo) : true);
                     }
 
-                    sample.style.display = (typeMatch && sexMatch && ageMatch && clinicalDiagnosisMatch && comorbiditiesMatch && labTestsMatch && dateMatch && projectMatch) ? "" : "none";
+                    sample.style.display = (typeMatch && sexMatch && ageMatch && clinicalDiagnosisMatch && comorbiditiesMatch && labTestsMatch && dateMatch && projectMatch && storageMatch) ? "" : "none";
                 });
 
                 updateSampleCount();

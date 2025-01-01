@@ -355,6 +355,20 @@ def view_sample(request):
         projects.append({"name": project.title, "count": len(sample_ids), "sample_ids": sample_ids})
 
     samples = Samples.objects.prefetch_related('comorbidities_set', 'lab_test_set', 'aliquot_set', 'storage_set').order_by('last_modified')
+
+    unique_storages = Storage.objects.values(
+        'freezer_num', 'shelf_num', 'rack_num', 'box_num', 'container'
+    ).distinct()
+
+    # Format the storage data for easier use in the template
+    formatted_storages = [
+        {
+            "display": f"{storage['freezer_num']}, Shelf No. {storage['shelf_num']}, Rack No. {storage['rack_num']}, Box No. {storage['box_num']}, {storage['container']}",
+            "value": f"{storage['freezer_num']}-{storage['shelf_num']}-{storage['rack_num']}-{storage['box_num']}-{storage['container']}",
+        }
+        for storage in unique_storages
+    ]
+
     request_samples_dict = {}
     for sample in samples:
         sample_id = sample.id
@@ -396,7 +410,7 @@ def view_sample(request):
         if request_samples:
             request_samples_dict[sample_id] = request_samples
             print(f"request_samples_dict: {request_samples_dict}")
-    return render(request, 'view_sample.html', {'samples': samples, 'projects': projects, 'request_samples': request_samples, 'request_samples_dict': request_samples_dict})
+    return render(request, 'view_sample.html', {'samples': samples, 'projects': projects, 'request_samples': request_samples, 'request_samples_dict': request_samples_dict, 'formatted_storages': formatted_storages})
 
 # def sample_detail(request, sample_id):
 #     # Fetch the specific sample, prefetching related comorbidities, lab tests, aliquots, and storage
