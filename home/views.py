@@ -1656,6 +1656,7 @@ def sample_detail(request, sample_id):
 
     # Get individual aliquots and their associated storage
     aliquots = sample.aliquot_set.prefetch_related('storage_set').all()
+    print(sample.consent_form)
 
     return render(request, 'sample_detail.html', {
         'sample': sample,

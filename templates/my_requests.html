@@ -188,14 +188,24 @@
                                     <span class="icon-button">&#9776;</span>
                                     <div class="hover-menu">
                                         {% if sample.status == 'rejected' %}
-                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
-                                        {% elif sample.status == 'approved' %}
-                                        <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
-                                        {% if sample.ack_receipt and sample.ack_receipt.id %}
-                                            <a href="{% url 'download_ack_receipt' sample.ack_receipt.id %}" target="_blank">
-                                                Print Acknowledgement Receipt
+                                            <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                            <a href="{% url 'delete_request_sample' sample.id %}" 
+                                            class="btn btn-back" 
+                                            onclick="return confirm('Are you sure you want to delete this sample?');">
+                                            Delete
                                             </a>
-                                        {% endif %}
+                                        {% elif sample.status == 'approved' %}
+                                            <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
+                                            <a href="{% url 'delete_request_sample' sample.id %}" 
+                                            class="btn btn-back" 
+                                            onclick="return confirm('Are you sure you want to delete this sample?');">
+                                            Delete
+                                            </a>
+                                            {% if sample.ack_receipt and sample.ack_receipt.id %}
+                                                <a href="{% url 'download_ack_receipt' sample.ack_receipt.id %}" target="_blank">
+                                                    Print Acknowledgement Receipt
+                                                </a>
+                                            {% endif %}
                                         {% elif sample.status == 'pending' %}
                                         <a href="{% url 'viewrequestsampledetails' sample.id %}">View Details</a>
                                         <a href="{% url 'editrequestsample' sample.id %}">Edit Details</a>

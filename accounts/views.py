@@ -385,6 +385,32 @@ def custom_login(request):
             except User.DoesNotExist:
                 user = None
 
+            # print(request.POST)
+            if 'forgot_password' in request.POST:
+                if not email:
+                    messages.error(request, "Please enter your username.")
+                    return redirect('loginpage')
+                # Proceed with password reset logic
+                # Send the reset code to the email/username
+                # Generate a random verification code
+                reset_code = random.randint(100000, 999999)
+                # Save code in the PasswordResetCode model (linked with User)
+                PasswordResetCode.objects.create(user=user, code=reset_code, created_at=timezone.now())
+                # Send code via email
+                try:
+                    send_mail(
+                        subject='Password Reset Code',
+                        message='',  # Leave plain text message empty since we're using HTML
+                        html_message=f'''Your password reset code is {reset_code}''',
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[user.email]
+                )
+                except Exception as e:
+                    print(e)
+                    return render(request, 'index.html',{'message':'Failed To Send Email'})
+                messages.success(request, "Password reset code sent to your email.")
+                return render(request, 'reset.html')
+            
             if user is None:
                 messages.add_message(request, messages.ERROR, "Invalid credentials/User not activated!")
                 # Redirect back with role as a query parameter
